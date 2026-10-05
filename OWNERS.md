@@ -12,7 +12,7 @@ Files that can't hold a comment (json, csv, txt, svg) follow this list instead o
 ## Setup (once)
 - The repo is private on GitHub until submission, when we make it public together.
 - Clone it, run `npm install`, then `cp .env.example .env`.
-- Get your OWN Nebius key (Token Factory > Team & Access > Add user > create a key). Never share or paste keys anywhere, including AI tools, chats, and the shared doc.
+
 
 ## Every work session
 1. **Sync first.** VS Code Source Control tab > Sync Changes (pulls the other person's work).
