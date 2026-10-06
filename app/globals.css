@@ -1,27 +1,143 @@
 /* owner: m */
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Paper and ink */
+  --color-paper: #f4f6fb;
+  --color-sheet: #ffffff;
+  --color-ink: #14213a;
+  --color-ink-soft: #46536b;
+  --color-line: #d5dce9;
+
+  /* Fountain-pen blue: the one accent, also the envelope lining */
+  --color-postal: #2447a8;
+  --color-postal-deep: #1a3582;
+  --color-tint: #e8eefa;
+
+  /* Verification states. Each also differs by icon, border and wording. */
+  --color-verified: #14633f;
+  --color-verified-tint: #e5f3eb;
+  --color-unsure: #7a4300;
+  --color-unsure-tint: #fff5dc;
+  --color-unsure-line: #dba633;
+  --color-missing: #475266;
+  --color-missing-tint: #eef1f6;
+  --color-missing-line: #97a2b6;
+  --color-alert: #9b2c2c;
+  --color-alert-tint: #fcebea;
+
+  --color-highlighter: #ffe04a;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-besley), Georgia, "Times New Roman", serif;
+  --font-quote: var(--font-courier-prime), "Courier New", Courier, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-postal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Headings receive focus when the view changes; no ring needed for that. */
+h1:focus {
+  outline: none;
+}
+
+/* The real file input is visually hidden; its label shows the focus ring. */
+.file-input:focus-visible ~ * label {
+  outline: 3px solid var(--color-postal);
+  outline-offset: 3px;
+}
+
+/*
+ * The security tint printed inside envelopes so the letter can't be read
+ * through the paper. Used wherever a letter is held: the upload pocket and
+ * the letter panel.
+ */
+.envelope-lining {
+  background-color: var(--color-postal);
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgb(255 255 255 / 0.17) 0 1.5px,
+      transparent 1.5px 7px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgb(255 255 255 / 0.17) 0 1.5px,
+      transparent 1.5px 7px
+    );
+}
+
+.envelope-lining-soft {
+  background-color: var(--color-tint);
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgb(36 71 168 / 0.09) 0 1.5px,
+      transparent 1.5px 7px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgb(36 71 168 / 0.09) 0 1.5px,
+      transparent 1.5px 7px
+    );
+}
+
+/* An opened envelope seen from the back: the flap lifted into a point. */
+.envelope-open {
+  clip-path: polygon(0 5rem, 50% 0, 100% 5rem, 100% 100%, 0 100%);
+}
+
+/* Striped band that marks a detail Unsealed could not confirm. */
+.unsure-band {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-unsure-line) 0 4px,
+    var(--color-unsure-tint) 4px 8px
+  );
+}
+
+.scroll-calm {
+  scroll-behavior: smooth;
+}
+
+@keyframes stage-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.stage-pulse {
+  animation: stage-pulse 1.6s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
