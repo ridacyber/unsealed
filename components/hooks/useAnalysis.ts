@@ -17,7 +17,7 @@ import type { AnalysisResult } from "@/lib/schema";
  * The one switch between canned results and the real service. Set to true
  * once POST /api/analyze exists; nothing else in the UI needs to change.
  */
-const USE_LIVE_API = false;
+const USE_LIVE_API = true;
 
 const defaultClient: AnalysisClient = USE_LIVE_API ? httpClient : mockClient;
 
