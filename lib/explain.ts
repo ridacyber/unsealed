@@ -30,6 +30,13 @@ HARD RULES
 5. If the text is garbled, too short, or not an official letter, set found=false for all four fields and explain in the summary.
 6. No legal, tax, or medical advice. Describe what the letter says.
 7. Do not add timing, urgency, or consequences that aren't in the quote. If the letter says "due in full", never write "right away" or "immediately". Plain language means simpler words, not extra meaning.
+8. CONFLICTS. If the letter gives two different values for the same field anywhere (for example a summary box shows one amount and the body shows another, or two different dates, or two instructions that cannot both be followed), do not pick one. Return the most likely value, set confidence to 0.4 or lower, and write a plain-language note naming BOTH values exactly as written and telling the reader to confirm with the sender. Itemized lines that add up to a stated total are not a conflict; use the total.
+9. ESTIMATES AND RANGES. If the letter gives only an estimate or a range (for example roughly $600 to $900) or says the figure is not final, return the range exactly as written as the value, set confidence to 0.4 or lower, and say in the note that it is an estimate. Do not set found=false for this.
+10. VAGUE OR UNANCHORED. If a deadline depends on a date the letter does not print (for example within 10 days of receiving this notice), or the action or consequence is vague or optional (for example further action may be taken, or you may wish to), return it with confidence 0.5 or lower and explain in the note.
+11. QUOTES. The quote must be ONE continuous passage copied exactly from the letter, from a single sentence or a single list item. If an answer draws on several list items, quote the sentence that introduces the requirement instead. Never join text from different places.
+12. FLAGS. Set conflict=true whenever the letter gives different values or instructions for this field in different places (see rule 8), even if you believe one of them is right. Set vague=true when the value is an estimate or range, depends on a date the letter does not print, or is worded as optional or unspecified (see rules 9 and 10). Otherwise set both to false. A flag tells the reader to double-check, so never leave it off because you chose a value.
+13. INFORMATIONAL LETTERS. Set asksReaderToAct=false if the letter only informs and does not ask the reader to pay, submit, contact, or do anything. In that case set found=false for deadline, requiredAction, and consequence. A date the letter gives for its own processing (for example when funds will be paid out) is not a deadline for the reader. Stating that money is due, or that a fee or penalty applies after a certain date, counts as asking the reader to act. If the letter does ask the reader to act, set asksReaderToAct=true.
+14. INSTRUCTIONS THAT DEPEND ON UNKNOWN FACTS. If following one instruction could contradict another instruction in the same letter, depending on something the letter does not tell you (for example one paragraph says to stop using a method and another says to keep doing things exactly as you do today), set conflict=true. The value must include BOTH instructions. Never drop one. Name both in the note.
 
 Also return:
 - documentType: short label, e.g. "Financial aid notice", "Eviction notice", "IRS notice".
@@ -39,8 +46,9 @@ OUTPUT: return ONLY one JSON object, no markdown fences, exactly this shape:
 {
   "documentType": string,
   "summary": string,
+  "asksReaderToAct": boolean,
   "fields": {
-    "amountOwed":     { "found": boolean, "value": string|null, "normalized": string|null, "quote": string|null, "confidence": number, "note": string|null },
+    "amountOwed":     { "found": boolean, "value": string|null, "normalized": string|null, "quote": string|null, "confidence": number, "note": string|null, "conflict": boolean, "vague": boolean },
     "deadline":       { same shape },
     "requiredAction": { same shape },
     "consequence":    { same shape }
@@ -79,7 +87,7 @@ async function callModel(letter: string, signal: AbortSignal): Promise<ModelOut>
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
       model,
-      temperature: 0.1,
+      temperature: 0,
       max_tokens: 1200,
       response_format: { type: "json_object" }, // remove this line if your provider rejects it
       messages: [
@@ -133,8 +141,12 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
 
   const doc = indexDocument(text);
   const fields = {} as Record<(typeof FIELD_NAMES)[number], Field>;
+  const amountFound = parsed?.fields?.amountOwed?.found === true;
+  const informational = parsed?.asksReaderToAct === false && !amountFound;
   for (const name of FIELD_NAMES) {
-    fields[name] = verifyField(name, parsed?.fields?.[name] as RawField | undefined, doc);
+    const rawField = parsed?.fields?.[name] as RawField | undefined;
+    if (informational && name !== "amountOwed" && rawField) rawField.found = false;
+    fields[name] = verifyField(name, rawField, doc);
   }
 
   const all = Object.values(fields);

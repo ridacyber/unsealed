@@ -9,6 +9,8 @@ export interface RawField {
   quote: string | null;
   confidence: number;
   note: string | null;
+  conflict?: boolean;
+  vague?: boolean;
 }
 
 const CONFIDENCE_FLOOR = 0.6;
@@ -93,6 +95,13 @@ export function verifyField(name: FieldName, raw: RawField | undefined, doc: Doc
   // Amounts: the digits the model reported must actually appear in the quoted text.
   if (name === "amountOwed" && !digits(quote).includes(digits(value))) {
     return unsure("The amount we read doesn't match the letter's wording. Please double-check.", hit.start, hit.end);
+  }
+
+  if (raw.conflict) {
+    return unsure(raw.note ?? "This letter gives different answers in different places. Please confirm with the sender.", hit.start, hit.end);
+  }
+  if (raw.vague) {
+    return unsure(raw.note ?? "The letter is vague here. Please confirm with the sender.", hit.start, hit.end);
   }
 
   if (confidence < CONFIDENCE_FLOOR) {
