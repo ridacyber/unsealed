@@ -19,19 +19,12 @@ const CONFIDENCE_FLOOR = 0.6;
 function normalizeWithMap(text: string): { out: string; map: number[] } {
   let out = "";
   const map: number[] = [];
-  let prevSpace = true; // also trims leading space
   for (let i = 0; i < text.length; i++) {
     let ch = text[i];
     if (ch === "\u2018" || ch === "\u2019") ch = "'";
     else if (ch === "\u201c" || ch === "\u201d") ch = '"';
     else if (ch === "\u2013" || ch === "\u2014") ch = "-";
-    if (/\s/.test(ch)) {
-      if (prevSpace) continue;
-      ch = " ";
-      prevSpace = true;
-    } else {
-      prevSpace = false;
-    }
+    if (/\s/.test(ch)) continue; // ignore all whitespace: PDF extraction drops or splits spaces
     for (const c of ch.toLowerCase()) {
       out += c;
       map.push(i);
@@ -60,6 +53,18 @@ function locate(quote: string, doc: DocIndex): { start: number; end: number } | 
 
 const digits = (s: string) => s.replace(/\D/g, "");
 const clamp01 = (n: unknown) => (typeof n === "number" && isFinite(n) ? Math.min(1, Math.max(0, n)) : 0);
+
+const MONEY_RE = /\$\s?\d[\d,]*(?:\.\d+)?/g;
+const DATE_RE = /\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4}\b/gi;
+
+// True when the model's own note names a different amount or date than the one it chose.
+function noteNamesOtherFigure(name: FieldName, value: string, note: string | null): boolean {
+  if (!note || (name !== "amountOwed" && name !== "deadline")) return false;
+  const squash = (x: string) => x.toLowerCase().replace(/[\s,$]/g, "");
+  const mine = squash(value);
+  const found = note.match(name === "amountOwed" ? MONEY_RE : DATE_RE) ?? [];
+  return found.some((x) => !mine.includes(squash(x)));
+}
 
 export function verifyField(name: FieldName, raw: RawField | undefined, doc: DocIndex): Field {
   const missing = (status: Field["status"], note: string | null, confidence = 0): Field => ({
@@ -106,6 +111,10 @@ export function verifyField(name: FieldName, raw: RawField | undefined, doc: Doc
 
   if (confidence < CONFIDENCE_FLOOR) {
     return unsure(raw.note ?? "We're not confident about this one. Please check with a person.", hit.start, hit.end);
+  }
+
+  if (noteNamesOtherFigure(name, value, raw.note)) {
+    return unsure(raw.note!.trim(), hit.start, hit.end);
   }
 
   return { ...base, status: "verified", citation: { quote, start: hit.start, end: hit.end }, note: raw.note ?? null };

@@ -39,7 +39,7 @@ HARD RULES
 14. INSTRUCTIONS THAT DEPEND ON UNKNOWN FACTS. If following one instruction could contradict another instruction in the same letter, depending on something the letter does not tell you (for example one paragraph says to stop using a method and another says to keep doing things exactly as you do today), set conflict=true. The value must include BOTH instructions. Never drop one. Name both in the note.
 
 Also return:
-- documentType: short label, e.g. "Financial aid notice", "Eviction notice", "IRS notice".
+- documentType: a short label that matches how the letter describes itself. Use its own title or "Re:" line when it has one (for example "Notice of Past-Due Rent"). Never label a letter with a more severe type than it states: a letter that only says eviction proceedings may follow is not an eviction notice.
 - summary: 2 to 3 plain-language sentences on what this letter is and what it wants.
 
 OUTPUT: return ONLY one JSON object, no markdown fences, exactly this shape:
