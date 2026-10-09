@@ -158,4 +158,3 @@ export function FieldCard({
     </article>
   );
 }
-//writing this so i can push it to git after a test
