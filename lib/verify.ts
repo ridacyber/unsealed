@@ -43,7 +43,7 @@ export function indexDocument(text: string): DocIndex {
   return { text, ...normalizeWithMap(text) };
 }
 
-function locate(quote: string, doc: DocIndex): { start: number; end: number } | null {
+export function locate(quote: string, doc: DocIndex): { start: number; end: number } | null {
   const q = normalizeWithMap(quote).out.trim();
   if (q.length < 3) return null;
   const idx = doc.out.indexOf(q);
