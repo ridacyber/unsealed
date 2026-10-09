@@ -3,11 +3,7 @@
 
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import type { AnalysisClient, ProcessingStage } from "@/components/lib/client";
-import {
-  toErrorCode,
-  toErrorDetail,
-  type AnalysisErrorCode,
-} from "@/components/lib/errors";
+import { toErrorCode, type AnalysisErrorCode } from "@/components/lib/errors";
 import { httpClient } from "@/components/lib/httpClient";
 import { analyzeSample, mockClient } from "@/components/lib/mockClient";
 import { getSample, type SampleId } from "@/components/lib/samples";
@@ -40,18 +36,13 @@ export type AnalysisState =
       stage: ProcessingStage | null;
     }
   | { phase: "done"; source: AnalysisSource; result: AnalysisResult }
-  | {
-      phase: "failed";
-      source: AnalysisSource;
-      code: AnalysisErrorCode;
-      detail: string | null;
-    };
+  | { phase: "failed"; source: AnalysisSource; code: AnalysisErrorCode };
 
 export type AnalysisAction =
   | { type: "started"; source: AnalysisSource }
   | { type: "stage_changed"; stage: ProcessingStage }
   | { type: "succeeded"; result: AnalysisResult }
-  | { type: "failed"; code: AnalysisErrorCode; detail: string | null }
+  | { type: "failed"; code: AnalysisErrorCode }
   | { type: "reset" };
 
 export function analysisReducer(
@@ -75,12 +66,7 @@ export function analysisReducer(
     case "succeeded":
       return { phase: "done", source, result: action.result };
     case "failed":
-      return {
-        phase: "failed",
-        source,
-        code: action.code,
-        detail: action.detail,
-      };
+      return { phase: "failed", source, code: action.code };
   }
 }
 
@@ -114,11 +100,7 @@ export function useAnalysis(client: AnalysisClient = defaultClient) {
         })
         .catch((error: unknown) => {
           if (isCurrent()) {
-            dispatch({
-              type: "failed",
-              code: toErrorCode(error),
-              detail: toErrorDetail(error),
-            });
+            dispatch({ type: "failed", code: toErrorCode(error) });
           }
         });
     },

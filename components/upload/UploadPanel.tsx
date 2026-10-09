@@ -58,7 +58,7 @@ export function UploadPanel({ onAnalyze, privacyNote }: UploadPanelProps) {
     if (file) {
       onAnalyze(file);
     } else {
-      setError("Add your letter first: a PDF, or a JPG or PNG photo of it.");
+      setError("Add your letter first, as a PDF.");
       inputRef.current?.focus();
     }
   }
@@ -118,19 +118,19 @@ export function UploadPanel({ onAnalyze, privacyNote }: UploadPanelProps) {
               height={28}
               className="mx-auto text-postal"
             />
-            <p className="mt-3 text-lg font-semibold">Drag your letter here</p>
+            <p className="mt-3 text-lg font-semibold">Drag your PDF here</p>
             <p className="mt-1 text-ink-soft">or</p>
             <label
               htmlFor={inputId}
               className="mt-2 inline-flex min-h-12 cursor-pointer items-center rounded-lg border border-ink/25 bg-sheet px-5 font-semibold transition-colors hover:border-ink/60"
             >
-              Choose a file
+              Choose a PDF
             </label>
           </div>
         )}
 
         <p id={hintId} className="mt-3 text-sm text-ink-soft">
-          PDF, JPG or PNG, up to {MAX_FILE_SIZE_MB} MB.
+          PDF only, up to {MAX_FILE_SIZE_MB} MB.
         </p>
 
         {error && (

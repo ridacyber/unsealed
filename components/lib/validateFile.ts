@@ -4,8 +4,6 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const ACCEPTED_TYPES: Readonly<Record<string, readonly string[]>> = {
   "application/pdf": [".pdf"],
-  "image/jpeg": [".jpg", ".jpeg"],
-  "image/png": [".png"],
 };
 
 /** Value for the file input's `accept` attribute. */
@@ -21,10 +19,6 @@ export type FileValidation =
 function extensionOf(fileName: string): string {
   const dot = fileName.lastIndexOf(".");
   return dot === -1 ? "" : fileName.slice(dot).toLowerCase();
-}
-
-export function isPdf(file: File): boolean {
-  return file.type === "application/pdf" || extensionOf(file.name) === ".pdf";
 }
 
 function isAcceptedType(file: File): boolean {
@@ -43,7 +37,7 @@ export function validateFile(file: File): FileValidation {
       ok: false,
       problem: "unsupported_type",
       message:
-        "That file type isn't supported. Choose a PDF, or a JPG or PNG photo of your letter.",
+        "That file isn't a PDF. Unsealed can only read PDF files.",
     };
   }
   if (file.size === 0) {
@@ -51,14 +45,14 @@ export function validateFile(file: File): FileValidation {
       ok: false,
       problem: "empty",
       message:
-        "That file looks empty. Try saving or scanning the letter again, then choose the new file.",
+        "That file looks empty. Try downloading or saving the letter again, then choose the new file.",
     };
   }
   if (file.size > MAX_FILE_SIZE_BYTES) {
     return {
       ok: false,
       problem: "too_large",
-      message: `That file is larger than ${MAX_FILE_SIZE_MB} MB. Try a smaller scan or a photo of the letter instead.`,
+      message: `That file is larger than ${MAX_FILE_SIZE_MB} MB. Choose a smaller PDF.`,
     };
   }
   return { ok: true };

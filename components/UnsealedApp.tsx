@@ -74,7 +74,6 @@ export function UnsealedApp() {
         {state.phase === "failed" && (
           <ErrorView
             code={state.code}
-            detail={state.detail}
             fileName={sourceLabel(state.source)}
             onRetry={() => start(state.source)}
             onStartOver={reset}

@@ -17,7 +17,7 @@ const QUESTIONS = [
 
 const PRIVACY_NOTES = {
   mock: "This is a demo build. Your file stays in this browser and isn't sent anywhere.",
-  live: "Your letter is sent to Unsealed so it can be read. Letters often contain personal details, so only upload what you're comfortable sharing.",
+  live: "When you choose Analyze, your PDF is sent to Unsealed, and the text of your letter is processed by Nebius, an external AI provider. Letters often contain personal details, so only upload what you're comfortable sharing.",
 };
 
 interface LandingProps {

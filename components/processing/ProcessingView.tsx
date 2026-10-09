@@ -93,10 +93,17 @@ export function ProcessingView({
             })}
           </ol>
         ) : (
-          <p className="flex items-center gap-4 text-lg font-semibold">
-            <StageMarker state="current" />
-            Working on your letter
-          </p>
+          <>
+            <p className="flex items-center gap-4 text-lg font-semibold">
+              <StageMarker state="current" />
+              Working on your letter
+            </p>
+            <p className="mt-4 text-ink-soft">
+              Unsealed is reading the text in your PDF and checking each answer
+              against the letter&rsquo;s own words. This happens in one go, so
+              there are no steps to show.
+            </p>
+          </>
         )}
 
         {/* Announces each stage once, without re-reading the whole list. */}
@@ -106,7 +113,8 @@ export function ProcessingView({
       </div>
 
       <p className="mt-6 text-ink-soft">
-        This usually takes a few moments. Keep this page open.
+        This may take a little while. Keep this page open; your results will
+        appear here when they&rsquo;re ready.
       </p>
       <Button variant="secondary" onClick={onCancel} className="mt-6">
         Cancel

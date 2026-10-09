@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { AlertIcon } from "@/components/ui/icons";
 import { useFocusOnMount } from "@/components/hooks/useFocusOnMount";
 import type { AnalysisErrorCode } from "@/components/lib/errors";
+import { MAX_FILE_SIZE_MB } from "@/components/lib/validateFile";
 
 interface ErrorCopy {
   title: string;
@@ -19,9 +20,24 @@ export const ERROR_COPY: Record<AnalysisErrorCode, ErrorCopy> = {
     body: "The connection dropped before the file arrived. Check that you're online, then try again.",
     canRetry: true,
   },
+  invalid_file: {
+    title: "This file can't be used",
+    body: `Unsealed reads PDF files up to ${MAX_FILE_SIZE_MB} MB. This one is empty, too large, or isn't really a PDF. Choose a PDF copy of your letter.`,
+    canRetry: false,
+  },
   unreadable: {
-    title: "We couldn't read this file",
-    body: "The text isn't clear enough to make out. A sharper scan usually works, or a photo taken in good light with the whole page in frame.",
+    title: "We couldn't open this PDF",
+    body: "The file may be damaged or password-protected. Try downloading or saving the letter again, then choose the new file.",
+    canRetry: false,
+  },
+  no_text: {
+    title: "This PDF has no text we can read",
+    body: "It looks like a scan or photo of the pages saved as a PDF. Unsealed reads the text inside a PDF and can't read pictures of text. If you have the original digital copy of the letter, try that instead.",
+    canRetry: false,
+  },
+  too_long: {
+    title: "This letter is too long",
+    body: "Unsealed can only read shorter letters for now. If the PDF holds several documents, try one with just the letter.",
     canRetry: false,
   },
   processing_failed: {
@@ -33,8 +49,6 @@ export const ERROR_COPY: Record<AnalysisErrorCode, ErrorCopy> = {
 
 interface ErrorViewProps {
   code: AnalysisErrorCode;
-  /** The service's own explanation, when it sent one. */
-  detail?: string | null;
   fileName: string;
   onRetry: () => void;
   onStartOver: () => void;
@@ -42,7 +56,6 @@ interface ErrorViewProps {
 
 export function ErrorView({
   code,
-  detail = null,
   fileName,
   onRetry,
   onStartOver,
@@ -63,12 +76,6 @@ export function ErrorView({
         {title}
       </h1>
       <p className="mt-4 text-lg text-ink-soft">{body}</p>
-      {detail && (
-        <p className="mt-4 rounded-lg border border-line bg-sheet p-4 break-words text-ink-soft">
-          What the service reported:{" "}
-          <span className="text-ink">{detail}</span>
-        </p>
-      )}
       <p className="mt-4 break-words text-ink-soft">
         File: <span className="font-semibold text-ink">{fileName}</span>
       </p>

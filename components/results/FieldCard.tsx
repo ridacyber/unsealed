@@ -139,9 +139,11 @@ export function FieldCard({
             onClick={() => onToggle(!isOpen)}
             className="mt-4 inline-flex min-h-11 items-center gap-1 font-semibold text-postal underline decoration-postal/40 underline-offset-4 hover:decoration-postal"
           >
-            {status === "verified"
-              ? "Where the letter says this"
-              : "What the letter says"}
+            {!located
+              ? "Show the unmatched quote"
+              : status === "verified"
+                ? "Where the letter says this"
+                : "What the letter says"}
             <ChevronIcon
               direction={isOpen ? "up" : "down"}
               width={18}
