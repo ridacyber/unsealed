@@ -14,6 +14,7 @@ export class ExplainError extends Error {
 }
 
 interface ModelJson {
+  status?: string;
   documentType?: unknown;
   summary?: unknown;
   asksReaderToAct?: unknown;
@@ -50,7 +51,7 @@ HARD RULES
 11. QUOTES. The quote must be ONE continuous passage copied exactly from the letter, from a single sentence or a single list item. If an answer draws on several list items, quote the sentence that introduces the requirement instead. Never join text from different places.
 12. FLAGS. Set conflict=true whenever the letter gives different values or instructions for this field in different places (see rule 8), even if you believe one of them is right. Set vague=true when the value is an estimate or range, depends on a date the letter does not print, or is worded as optional or unspecified (see rules 9 and 10). Otherwise set both to false. A flag tells the reader to double-check, so never leave it off because you chose a value.
 13. INFORMATIONAL LETTERS. Set asksReaderToAct=false if the letter only informs and does not ask the reader to pay, submit, contact, or do anything. In that case set found=false for deadline, requiredAction, and consequence. A date the letter gives for its own processing (for example when funds will be paid out) is not a deadline for the reader. Stating that money is due, or that a fee or penalty applies after a certain date, counts as asking the reader to act. If the letter does ask the reader to act, set asksReaderToAct=true.
-14. INSTRUCTIONS THAT DEPEND ON UNKNOWN FACTS. If following one instruction could contradict another instruction in the same letter, depending on something the letter does not tell you (for example one paragraph says to stop using a method and another says to keep doing things exactly as you do today), set conflict=true. The value must include BOTH instructions. Never drop one. Name both in the note.
+14. INSTRUCTIONS THAT DEPEND ON UNKNOWN FACTS. If following one instruction could contradict another instruction in the same letter depending on facts the letter does not clarify (e.g., stop using a method vs keep doing things exactly as today), you MUST set "status": "review_required".
 
 Also return:
 - documentType: a short label that matches how the letter describes itself. Use its own title or "Re:" line when it has one (for example "Notice of Past-Due Rent"). Never label a letter with a more severe type than it states: a letter that only says eviction proceedings may follow is not an eviction notice.
@@ -58,6 +59,7 @@ Also return:
 
 OUTPUT: return ONLY one JSON object, no markdown fences, exactly this shape:
 {
+  "status": "verified" | "review_required" | "unsure" | "not_found",
   "documentType": string,
   "summary": string,
   "asksReaderToAct": boolean,
