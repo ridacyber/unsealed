@@ -4,7 +4,21 @@ import { randomUUID } from "node:crypto";
 import { AnalysisResultSchema, FIELD_NAMES, type AnalysisResult, type Field } from "./schema";
 import { indexDocument, verifyField, type RawField } from "./verify";
 
-export class ExplainError extends Error {}
+export class ExplainError extends Error {
+  // internal=true: the message is for server logs only and must never reach the user.
+  readonly internal: boolean;
+  constructor(message: string, internal = false) {
+    super(message);
+    this.internal = internal;
+  }
+}
+
+interface ModelJson {
+  documentType?: unknown;
+  summary?: unknown;
+  asksReaderToAct?: unknown;
+  fields?: Record<string, RawField | undefined>;
+}
 
 const MAX_CHARS = 20_000;
 const MIN_CHARS = 20;
@@ -55,14 +69,14 @@ OUTPUT: return ONLY one JSON object, no markdown fences, exactly this shape:
   }
 }`;
 
-function extractJson(raw: string): any {
+function extractJson(raw: string): ModelJson {
   const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
   try {
     return JSON.parse(cleaned);
   } catch {
     const s = cleaned.indexOf("{");
     const e = cleaned.lastIndexOf("}");
-    if (s === -1 || e <= s) throw new ExplainError("Model did not return JSON");
+    if (s === -1 || e <= s) throw new ExplainError("Model did not return JSON", true);
     return JSON.parse(cleaned.slice(s, e + 1));
   }
 }
@@ -78,7 +92,7 @@ async function callModel(letter: string, signal: AbortSignal): Promise<ModelOut>
   const baseUrl = (process.env.LLM_BASE_URL ?? "").replace(/\/$/, "");
   const model = process.env.LLM_MODEL;
   if (!apiKey || !baseUrl || !model) {
-    throw new ExplainError("Missing LLM_API_KEY, LLM_BASE_URL, or LLM_MODEL in .env");
+    throw new ExplainError("Missing LLM_API_KEY, LLM_BASE_URL, or LLM_MODEL in .env", true);
   }
 
   const res = await fetch(`${baseUrl}/chat/completions`, {
@@ -100,10 +114,13 @@ async function callModel(letter: string, signal: AbortSignal): Promise<ModelOut>
     }),
   });
 
-  if (!res.ok) throw new ExplainError(`Model API ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  if (!res.ok) {
+    const detail = process.env.NODE_ENV === "production" ? "" : `: ${(await res.text()).slice(0, 300)}`;
+    throw new ExplainError(`Model API ${res.status}${detail}`, true);
+  }
   const data = await res.json();
   const content = data?.choices?.[0]?.message?.content;
-  if (typeof content !== "string") throw new ExplainError("Empty model response");
+  if (typeof content !== "string") throw new ExplainError("Empty model response", true);
   return {
     content,
     inputTokens: data?.usage?.prompt_tokens ?? 0,
@@ -119,7 +136,7 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
   const started = Date.now();
   let totalIn = 0;
   let totalOut = 0;
-  let parsed: any;
+  let parsed: ModelJson | undefined;
   let lastErr: unknown;
 
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -137,7 +154,7 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
       clearTimeout(timer);
     }
   }
-  if (!parsed) throw lastErr instanceof Error ? lastErr : new ExplainError("Analysis failed");
+  if (!parsed) throw lastErr instanceof Error ? lastErr : new ExplainError("Analysis failed", true);
 
   const doc = indexDocument(text);
   const fields = {} as Record<(typeof FIELD_NAMES)[number], Field>;
