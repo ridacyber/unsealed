@@ -31,8 +31,8 @@ export function ResultsPreview({ sample }: { sample: SampleId }) {
           letterName={title}
           notice={
             <>
-              <strong>Preview: this is sample data.</strong> It shows the
-              shared mock results, not a letter you uploaded.{" "}
+              <strong>Preview: this is sample data.</strong> It shows a
+              sample result, not a letter you uploaded.{" "}
               {SAMPLE_LETTERS.filter(({ id }) => id !== sample).map((other) => (
                 <Link
                   key={other.id}
@@ -41,7 +41,7 @@ export function ResultsPreview({ sample }: { sample: SampleId }) {
                       ? "/results"
                       : `/results?mock=${other.id}`
                   }
-                  className={LINK}
+                  className={`${LINK} mr-4 inline-block`}
                 >
                   See &ldquo;{other.title}&rdquo;
                 </Link>

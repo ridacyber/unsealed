@@ -2,9 +2,16 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { DocumentPanel } from "@/components/document/DocumentPanel";
+import {
+  DocumentPanel,
+  type EvidenceFocus,
+} from "@/components/document/DocumentPanel";
 import { useFocusOnMount } from "@/components/hooks/useFocusOnMount";
-import { resolveCitation, type TextRange } from "@/components/lib/citation";
+import {
+  resolveCitation,
+  verifiedConflicts,
+  type TextRange,
+} from "@/components/lib/citation";
 import { FIELD_META } from "@/components/lib/fields";
 import { Button } from "@/components/ui/Button";
 import {
@@ -12,6 +19,7 @@ import {
   type AnalysisResult,
   type FieldName,
 } from "@/lib/schema";
+import { ConflictWarnings, type ConflictSelection } from "./ConflictWarnings";
 import { FieldCard } from "./FieldCard";
 import { VerificationOverview } from "./VerificationOverview";
 
@@ -20,6 +28,11 @@ const PROMINENT_FIELDS: ReadonlySet<FieldName> = new Set([
   "amountOwed",
   "deadline",
 ]);
+
+/** The one thing being shown in the letter: an answer's quote or a passage. */
+type Shown =
+  | { kind: "field"; name: FieldName }
+  | ({ kind: "conflict" } & ConflictSelection);
 
 interface ResultsViewProps {
   result: AnalysisResult;
@@ -37,11 +50,30 @@ export function ResultsView({
   onStartOver,
 }: ResultsViewProps) {
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
-  const [openField, setOpenField] = useState<FieldName | null>(null);
+  const [shown, setShown] = useState<Shown | null>(null);
+  const conflicts = verifiedConflicts(result);
 
   function rangeOf(name: FieldName): TextRange | null {
     const { citation } = result.fields[name];
     return citation ? resolveCitation(result.documentText, citation) : null;
+  }
+
+  function letterFocus(): EvidenceFocus | null {
+    if (shown?.kind === "field") {
+      return {
+        kind: "claim",
+        claim: FIELD_META[shown.name].name,
+        range: rangeOf(shown.name),
+      };
+    }
+    if (shown?.kind === "conflict") {
+      return {
+        kind: "conflict",
+        position: shown.side === 0 ? 1 : 2,
+        range: conflicts[shown.index].passages[shown.side].range,
+      };
+    }
+    return null;
   }
 
   return (
@@ -72,8 +104,18 @@ export function ResultsView({
             {result.summary}
           </p>
 
-          <div className="mt-8">
-            <VerificationOverview result={result} />
+          <div className="mt-8 space-y-4">
+            <ConflictWarnings
+              conflicts={conflicts}
+              active={shown?.kind === "conflict" ? shown : null}
+              onSelect={(selection) =>
+                setShown(selection && { kind: "conflict", ...selection })
+              }
+            />
+            <VerificationOverview
+              result={result}
+              possibleConflict={conflicts.length > 0}
+            />
           </div>
 
           <div className="@container mt-6">
@@ -86,9 +128,11 @@ export function ResultsView({
                       name={name}
                       field={result.fields[name]}
                       prominent={prominent}
-                      isOpen={openField === name}
+                      isOpen={shown?.kind === "field" && shown.name === name}
                       located={rangeOf(name) !== null}
-                      onToggle={(open) => setOpenField(open ? name : null)}
+                      onToggle={(open) =>
+                        setShown(open ? { kind: "field", name } : null)
+                      }
                     />
                   </div>
                 );
@@ -111,12 +155,7 @@ export function ResultsView({
           <DocumentPanel
             documentText={result.documentText}
             letterName={letterName}
-            focus={
-              openField && {
-                claim: FIELD_META[openField].name,
-                range: rangeOf(openField),
-              }
-            }
+            focus={letterFocus()}
           />
         </aside>
       </div>
