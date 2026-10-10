@@ -11,6 +11,7 @@ import "./globals.css";
 const atkinson = Atkinson_Hyperlegible_Next({
   variable: "--font-atkinson",
   subsets: ["latin"],
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
 });
 
 // Headings and key figures.
