@@ -18,20 +18,10 @@ const SERVICE_ERRORS: ReadonlyMap<string, AnalysisErrorCode> = new Map<
   ["No file was uploaded.", "invalid_file"],
   ["That file is empty.", "invalid_file"],
   ["That file is over 10 MB.", "invalid_file"],
-  ["Please upload a PDF, JPG, or PNG.", "invalid_file"],
-  // Only a file that isn't a PDF reaches the service's image handling.
-  [
-    "Photo uploads aren't available yet. Please upload a text PDF.",
-    "invalid_file",
-  ],
-  ["We couldn't read that image. Try a clearer photo or a PDF.", "invalid_file"],
-  [
-    "We couldn't find readable text in that image. Try a clearer, well-lit photo.",
-    "invalid_file",
-  ],
+  ["Please upload a PDF.", "invalid_file"],
   ["We couldn't open that PDF. Try a different file.", "unreadable"],
   [
-    "That PDF looks like a scan with no readable text. Try uploading a photo of it instead.",
+    "That PDF has no readable text (it may be a scan). Try a PDF saved or exported from the original document.",
     "no_text",
   ],
   ["We couldn't read enough text from that letter.", "no_text"],
