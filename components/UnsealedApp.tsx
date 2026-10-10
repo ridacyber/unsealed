@@ -26,6 +26,8 @@ export function UnsealedApp() {
   // In a demo build an uploaded file gets canned answers about another letter.
   const isCannedUpload =
     state.phase === "done" && mode === "mock" && state.source.kind === "upload";
+  // A sample's answers were written ahead of time; nothing analyzes it.
+  const isSample = state.phase !== "idle" && state.source.kind === "sample";
 
   return (
     <>
@@ -48,6 +50,7 @@ export function UnsealedApp() {
           <ProcessingView
             fileName={sourceLabel(state.source)}
             stage={state.stage}
+            prepared={isSample}
             onCancel={reset}
           />
         )}
@@ -59,12 +62,21 @@ export function UnsealedApp() {
               isCannedUpload ? "Sample letter" : sourceLabel(state.source)
             }
             notice={
-              isCannedUpload && (
+              isCannedUpload ? (
                 <>
                   <strong>Demo build: this is sample data.</strong> Analysis
                   isn&rsquo;t connected yet, so the answers below describe one
                   of our sample letters, not the file you uploaded.
                 </>
+              ) : (
+                isSample && (
+                  <>
+                    <strong>Sample result, prepared in advance.</strong> This
+                    letter is made up, and these answers were prepared ahead of
+                    time, not produced by a live analysis. No AI call was made.
+                    To see a live analysis, start over and upload a PDF.
+                  </>
+                )
               )
             }
             onStartOver={reset}

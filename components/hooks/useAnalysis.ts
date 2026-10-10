@@ -89,9 +89,11 @@ export function useAnalysis(client: AnalysisClient = defaultClient) {
       };
 
       dispatch({ type: "started", source });
+      // A sample is prepared in advance: it has no stages to report and
+      // nothing to wait for.
       const analysis =
         source.kind === "sample"
-          ? analyzeSample(source.id, options)
+          ? analyzeSample(source.id, { signal: controller.signal }, 0)
           : client.analyze(source.file, options);
 
       analysis

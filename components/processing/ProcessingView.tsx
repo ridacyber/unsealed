@@ -42,12 +42,15 @@ interface ProcessingViewProps {
   fileName: string;
   /** Null until the service reports a stage (or if it never does). */
   stage: ProcessingStage | null;
+  /** True for a sample prepared in advance: nothing is being analyzed. */
+  prepared?: boolean;
   onCancel: () => void;
 }
 
 export function ProcessingView({
   fileName,
   stage,
+  prepared = false,
   onCancel,
 }: ProcessingViewProps) {
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
@@ -60,12 +63,16 @@ export function ProcessingView({
         tabIndex={-1}
         className="font-display text-4xl font-semibold tracking-tight"
       >
-        Going through your letter
+        {prepared ? "Opening prepared sample" : "Going through your letter"}
       </h1>
       <p className="mt-3 text-lg break-words text-ink-soft">{fileName}</p>
 
       <div className="mt-8 rounded-2xl border border-line bg-sheet p-6 sm:p-8">
-        {stage ? (
+        {prepared ? (
+          <p className="text-lg">
+            This sample was prepared in advance. No analysis is being run.
+          </p>
+        ) : stage ? (
           <ol className="space-y-5">
             {PROCESSING_STAGES.map((name, index) => {
               const state: StageState =
@@ -108,14 +115,20 @@ export function ProcessingView({
 
         {/* Announces each stage once, without re-reading the whole list. */}
         <p role="status" className="sr-only">
-          {stage ? `${STAGE_LABELS[stage]}…` : "Working on your letter…"}
+          {prepared
+            ? "Opening prepared sample…"
+            : stage
+              ? `${STAGE_LABELS[stage]}…`
+              : "Working on your letter…"}
         </p>
       </div>
 
-      <p className="mt-6 text-ink-soft">
-        This may take a little while. Keep this page open; your results will
-        appear here when they&rsquo;re ready.
-      </p>
+      {!prepared && (
+        <p className="mt-6 text-ink-soft">
+          This may take a little while. Keep this page open; your results will
+          appear here when they&rsquo;re ready.
+        </p>
+      )}
       <Button variant="secondary" onClick={onCancel} className="mt-6">
         Cancel
       </Button>

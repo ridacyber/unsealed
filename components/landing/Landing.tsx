@@ -77,7 +77,10 @@ export function Landing({ onAnalyze, mode, returning }: LandingProps) {
       </section>
 
       <div className="space-y-16">
-        <SampleLetters onChoose={(id) => onAnalyze({ kind: "sample", id })} />
+        <SampleLetters
+          onChoose={(id) => onAnalyze({ kind: "sample", id })}
+          live={mode === "live"}
+        />
         <HonestySection />
       </div>
     </div>
