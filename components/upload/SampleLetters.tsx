@@ -15,12 +15,12 @@ export function SampleLetters({
         No letter to hand? Try a sample.
       </h2>
       <p className="mt-2 max-w-2xl text-lg text-ink-soft">
-        Two results for one made-up letter. They show how Unsealed responds
-        when a detail can&rsquo;t be confirmed, and when it isn&rsquo;t stated
-        at all.
+        Three results for made-up letters. They show how Unsealed responds
+        when a detail can&rsquo;t be confirmed, when it isn&rsquo;t stated at
+        all, and when a letter disagrees with itself.
       </p>
 
-      <ul className="mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
+      <ul className="mt-6 grid max-w-3xl gap-4 sm:grid-cols-2 lg:max-w-none lg:grid-cols-3">
         {SAMPLE_LETTERS.map((sample) => (
           <li key={sample.id}>
             <button

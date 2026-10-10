@@ -5,12 +5,20 @@ import { useEffect, useRef, useState } from "react";
 import type { TextRange } from "@/components/lib/citation";
 import { HighlightedText } from "./HighlightedText";
 
-/** The evidence being inspected, and what to call the claim it supports. */
-export interface EvidenceFocus {
-  claim: string;
-  /** Where the quote sits in the letter's text, when that is known. */
-  range: TextRange | null;
-}
+/**
+ * The evidence being inspected: the quote behind one answer, or one of two
+ * passages that may not agree.
+ */
+export type EvidenceFocus =
+  | {
+      kind: "claim";
+      /** What to call the claim the quote supports. */
+      claim: string;
+      /** Where the quote sits in the letter's text, when that is known. */
+      range: TextRange | null;
+    }
+  // A passage is only offered once its place in the letter is confirmed.
+  | { kind: "conflict"; position: 1 | 2; range: TextRange };
 
 interface DocumentPanelProps {
   /** The text read from the letter; citations point into it. */
@@ -106,6 +114,12 @@ export function DocumentPanel({
 function EvidenceCaption({ focus }: { focus: EvidenceFocus | null }) {
   if (!focus) {
     return <p>Choose a detail to see where it appears in your letter.</p>;
+  }
+
+  if (focus.kind === "conflict") {
+    return (
+      <p>Highlighted: passage {focus.position} of the 2 that may disagree.</p>
+    );
   }
 
   if (focus.range) {
