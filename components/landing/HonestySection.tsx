@@ -6,7 +6,7 @@ const STATES: ReadonlyArray<{ status: FieldStatus; meaning: string }> = [
   {
     status: "verified",
     meaning:
-      "The letter states it. You can see the exact words, and where they sit in the letter.",
+      "The answer is supported by words found in your letter. You can review the supporting quote and, when available, see where it appears in the letter.",
   },
   {
     status: "unsure",
@@ -30,7 +30,7 @@ export function HonestySection() {
         id="honesty-heading"
         className="max-w-2xl font-display text-2xl font-semibold text-balance sm:text-3xl"
       >
-        When the letter isn&rsquo;t clear, Unsealed says so.
+        What Unsealed can&mdash;and can&rsquo;t&mdash;confirm
       </h2>
       <p className="mt-3 max-w-2xl text-lg text-ink-soft">
         A wrong date or amount is worse than none. Every detail is marked with
@@ -47,6 +47,14 @@ export function HonestySection() {
           </div>
         ))}
       </dl>
+
+      <p className="mt-8 max-w-2xl text-ink-soft">
+        Verified is about those words only. A letter can say different things
+        in different places, and Unsealed can miss that, especially when two
+        instructions don&rsquo;t agree. Before you pay, sign or act on
+        something important, read the original letter and check with the
+        sender.
+      </p>
     </section>
   );
 }
