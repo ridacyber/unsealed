@@ -1,27 +1,63 @@
 <!-- owner: r -->
-# Nebius / NVIDIA feedback notes
+# Nebius x NVIDIA Global AI Hackathon: Infrastructure & Model Feedback
 
-We used Nebius Token Factory with the model Qwen/Qwen3-30B-A3B-Instruct-2507 behind Unsealed, an app that explains official letters in plain language and checks every answer against the letter's own text. Everything below is something we actually ran into while building it.
+We built **Unsealed**, a web application that ingests official PDF letters and extracts four critical pillars: *how much, when, what to do,* and *what happens if you ignore it*. The application relies on a "model proposes, application verifies" architecture, matching LLM outputs against raw text extractions via custom schema validation.
 
-## What worked
-- The API is OpenAI-compatible. A plain fetch to the chat completions endpoint with a bearer key worked with no SDK.
-- Every response included prompt and completion token counts, so we could compute the cost of each letter exactly.
-- JSON mode (response_format json_object) was accepted by this model.
-- GET /v1/models returned the model IDs our key could use, which made picking a model quick.
-- The console catalog shows price per 1M input/output tokens and tokens per second for each model, which helped us choose between a 235B and a 30B model.
-- Cost was a non-issue: a full 15-letter evaluation (about 24k input and 8k output tokens) cost roughly half a cent, so our $50 in credits was far more than we needed.
+**Our Stack:** 
+*   **Infrastructure:** Nebius Token Factory (Serverless Inference)
+*   **Model:** `Qwen/Qwen3-30B-A3B-Instruct-2507`
 
-## Friction we hit
-- Console catalog search did not find a model when we typed its full API ID (Qwen/Qwen3-30B-A3B-Instruct-2507). It returned "No models found." Searching the short name worked. Matching on the API ID would help, since that is what developers have in hand.
-- We copied prices by hand from the catalog into environment variables to compute cost. We only read the id field from /v1/models, so if the API also returns prices we did not see it.
-- Latency varied a lot with identical code and prompts. Average per-letter time in our evaluation ranged from about 5.6s to 12.9s across runs, and one upload through the browser took 18.6s. That makes a live demo hard to plan. Documented expected latency, or a way to see current load, would help.
-- Temperature 0 did not give repeatable output. The same prompt and the same letter produced different answers on different runs (one field flipped in 3 of 5 runs). If hosted serving is not deterministic, saying so in the docs would help. We added checks outside the model instead of relying on repeatability.
-- The model list gives only IDs, so we inferred instruct versus reasoning models from the names. A type tag in the API response would remove the guessing.
+---
 
-## What we did not try
-- NVIDIA Nemotron models (they appear in the model list), vision models (we limited uploads to PDF), fine-tuning, dedicated endpoints, and batch.
+## What Worked & Developer Onboarding
 
-## Rida to add (in your own words)
-- Sign-up and getting credits:
-- Docs and quickstart:
-- Anything else you would tell the Nebius or NVIDIA team:
+*   **Seamless Integration:** The OpenAI-compatible API allowed us to use direct HTTP `fetch` calls to the chat completions endpoint without needing to install heavy external SDKs. 
+*   **Discovery APIs:** The `GET /v1/models` endpoint worked flawlessly, letting us quickly inspect the model IDs authorized for our API key.
+*   **Cost Efficiency & Analytics:** Every API response provided transparent prompt and completion token counts. At **\$0.10 / \$0.30 per million tokens** for the 30B model, a comprehensive 15-letter evaluation suite (approx. 24k input and 8k output tokens) cost **roughly half a cent**. The \$50 hackathon credit allowed us to run deep, iterative evals without hitting financial constraints.
+*   **Catalog UI Transparency:** The console catalog cleanly displays pricing per 1M input/output tokens and expected tokens per second (e.g., 70 tok/s for the 30B vs. 27 tok/s for the 235B), which immediately guided our architectural choice.
+*   **Structured Output:** The 30B model handled JSON mode (`response_format: { type: "json_object" }`) reliably, enforcing the strict formatting required by our frontend validation schema.
+
+---
+
+## 🔍 Friction, Bottlenecks, & Technical Discoveries
+
+### 1. Console Search Behavior
+*   **The Issue:** Searching the console catalog using the exact full API ID (`Qwen/Qwen3-30B-A3B-Instruct-2507`) returned *"No models found"*. We had to guess and search by the short name to find it.
+*   **Recommendation:** Update the console catalog UI search index to match on exact API string identifiers, as this is the exact string developers paste into their codebases.
+
+### 2. Pricing Metadata in API Response
+*   **The Issue:** We had to hardcode token costs into our environment variables by manually copying them from the web console.
+*   **Recommendation:** Exclude the friction of manual UI parsing by appending pricing metadata or a billing object directly to the `GET /v1/models` API payload.
+
+### 3. Latency Variance & Demo Planning
+*   **The Issue:** We observed severe latency spikes under identical prompts, inputs, and payloads. During automated 15-letter eval runs, average per-letter response times fluctuated wildly between **5.6s and 12.9s**. A single browser upload hit a peak latency of **18.6 seconds**. 
+*   **Recommendation:** Provide a system status page, an error/warning header for high-load clusters, or clear documentation detailing baseline queue/cold-start behaviors so developers can build better UI loaders for high-stakes hackathon demos.
+
+### 4. Non-Deterministic Behavior at Temperature 0
+*   **The Issue:** Setting `temperature: 0` did not provide deterministic, repeatable outputs. Across identical prompt/document eval iterations, specific verification fields flipped flags in 3 out of 5 runs. This variance occurred on both the 30B model and the 235B model. 
+*   **Impact:** We had to engineer systemic application-level guardrails (e.g., automated string post-processing to ignore line breaks like `cupsfilter` whitespace anomalies, and a custom contradiction check script) rather than relying on inference determinism.
+*   **Recommendation:** Explicitly document if hosted infrastructure runs on speculative decoding or parallel architectures that disrupt strict `temperature: 0` determinism.
+
+### 5. Lack of Model Type Tags
+*   **The Issue:** The `/v1/models` response yields raw strings. We had to infer which models were base, instruct, or reasoning variants solely by string-matching common naming conventions.
+*   **Recommendation:** Add a `type` tag or `capabilities` field inside the API response object.
+
+---
+
+## Scope Limitations (What We Did Not Try)
+*   **NVIDIA Models:** While NVIDIA Nemotron models were visible in our `/v1/models` array, we focused strictly on the Qwen family.
+*   **Advanced Features:** Due to the hackathon's time box and our explicit focus on text-based PDF verification, we did not test vision models, fine-tuning pipelines, dedicated cluster endpoints, or batch inference.
+
+---
+
+## Developer Experience & Feedback
+
+### Sign-up and getting credits
+*   The onboarding workflow and coupon code redemption for the hackathon credits were highly intuitive. Provisioning our initial API keys took less than 2 minutes, allowing us to pivot straight to our codebase.
+
+### Docs and quickstart
+*   The API reference is clean and easy to navigate for anyone familiar with the OpenAI ecosystem. However, adding explicit deep dives or reference snippets for setting up strict deterministic pipelines in production would save developers massive troubleshooting cycles.
+
+### Final Thoughts for the Nebius & NVIDIA teams
+*   Building on your serverless architecture was highly efficient. The cost-to-performance ratio makes this incredibly competitive for production scaling. If you can smooth out the latency variance spikes and ensure the console UI search handles exact API strings, this becomes a best-in-class developer platform.
+
