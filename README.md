@@ -44,6 +44,12 @@ We built an open-book automated evaluation framework (`eval/run-eval.ts`) to gra
 *   **Wrong Amounts/Dates:** 0
 *   **Safe Underclaims:** 2
 *   **Dangerous Overclaims:** 1 (See Known Limitations below)
+### Final Holdout Set Scores (Blind Test)
+*   **Strict Scoring Accuracy:** **31 / 32** fields correct (**96.9%**).
+*   **Broad Correctness:** **32 / 32** fields correct (**100%**).
+*   **Zero Hallucinations:** The framework successfully returned *Not Found* across all four core fields for empty/irrelevant test letters (e.g., **H03**).
+*   **Edge Case Nuance (H08):** The single strict variance occurred on a semantic boundary where the letter stated a deadline *“by December 11”* and the model extracted *“before December 11”*.
+
 
 ---
 
