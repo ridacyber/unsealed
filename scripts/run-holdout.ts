@@ -20,7 +20,7 @@ import type { AnalysisResult } from "../lib/schema";
   }
 })();
 
-const DIR = join(process.cwd(), "eval/letters/holdout");
+const DIR = join(process.cwd(), process.argv[2] ?? "eval/letters/holdout");
 const FIELDS = ["amountOwed", "deadline", "requiredAction", "consequence"] as const;
 const SHORT: Record<(typeof FIELDS)[number], string> = {
   amountOwed: "amount", deadline: "deadline", requiredAction: "action", consequence: "conseq",

@@ -23,7 +23,7 @@ function sh(cmd: string): string {
 }
 
 async function main() {
-  const dir = join(process.cwd(), "eval/letters/holdout");
+  const dir = join(process.cwd(), process.argv[2] ?? "eval/letters/holdout");
   if (!existsSync(dir)) { console.log("No holdout folder. Run git pull first."); return; }
   const files = readdirSync(dir).filter((f) => f.endsWith(".txt")).sort();
   const commit = sh("git rev-parse --short HEAD");
