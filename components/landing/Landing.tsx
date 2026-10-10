@@ -39,7 +39,7 @@ export function Landing({ onAnalyze, mode, returning }: LandingProps) {
   return (
     <div className="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-8">
       {/* On small screens the upload panel comes before the question list. */}
-      <section className="grid items-start gap-x-16 gap-y-10 pt-8 pb-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,29rem)] lg:pt-14">
+      <section className="grid grid-cols-1 items-start gap-x-16 gap-y-10 pt-8 pb-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,29rem)] lg:pt-14">
         <div>
           <h1
             ref={headingRef}

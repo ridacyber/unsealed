@@ -52,8 +52,8 @@ export function ResultsView({
         </p>
       )}
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] xl:gap-14">
-        <div>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] xl:gap-14">
+        <div className="break-words">
           <p className="text-sm font-semibold tracking-widest text-ink-soft uppercase">
             Type of letter
           </p>
@@ -77,7 +77,7 @@ export function ResultsView({
           </div>
 
           <div className="@container mt-6">
-            <div className="grid gap-4 @2xl:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 @2xl:grid-cols-2">
               {FIELD_NAMES.map((name) => {
                 const prominent = PROMINENT_FIELDS.has(name);
                 return (

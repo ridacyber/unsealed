@@ -56,7 +56,7 @@ export function DocumentPanel({
         <h2 id="letter-heading" className="font-display text-xl font-semibold">
           Your letter
         </h2>
-        <p className="truncate text-sm text-ink-soft">
+        <p className="text-sm break-words text-ink-soft lg:truncate">
           {letterName} · the text as Unsealed read it
         </p>
       </div>
