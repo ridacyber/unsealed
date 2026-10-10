@@ -34,6 +34,14 @@ export const MetricsSchema = z.object({
   costUsd: z.number(),
 });
 
+// A contradiction found inside the letter: two passages that cannot both be followed or both be true.
+// Only included when the backend found BOTH passages in the letter text.
+export const WarningSchema = z.object({
+  kind: z.literal("conflict"),
+  message: z.string(),
+  quotes: z.tuple([CitationSchema, CitationSchema]),
+});
+
 export const AnalysisResultSchema = z.object({
   id: z.string(),
   documentType: z.string(),  // e.g. "Financial aid notice"
@@ -46,6 +54,7 @@ export const AnalysisResultSchema = z.object({
     consequence: FieldSchema,
   }),
   overall: z.enum(["ok", "partial", "abstained"]), // partial = at least one field unsure
+  warnings: z.array(WarningSchema).optional(), // contradictions in the letter, each with both passages
   disclaimer: z.string(),
   metrics: MetricsSchema,
 });
@@ -61,5 +70,6 @@ export type FieldStatus = z.infer<typeof FieldStatusSchema>;
 export type Field = z.infer<typeof FieldSchema>;
 export type FieldName = z.infer<typeof FieldNameSchema>;
 export type Metrics = z.infer<typeof MetricsSchema>;
+export type Warning = z.infer<typeof WarningSchema>;
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;
 export type AnalyzeResponse = z.infer<typeof AnalyzeResponseSchema>;
