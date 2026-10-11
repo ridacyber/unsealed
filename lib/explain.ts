@@ -1,7 +1,8 @@
 // lib/explain.ts
 // Core of Unsealed: letter text in -> AnalysisResult out (schema-validated).
 import { randomUUID } from "node:crypto";
-import { AnalysisResultSchema, FIELD_NAMES, type AnalysisResult, type Field } from "./schema";
+import { AnalysisResultSchema, FIELD_NAMES, type AnalysisResult, type Field, type Warning } from "./schema";
+import { findContradictions } from "./contradictions";
 import { indexDocument, verifyField, type RawField } from "./verify";
 import { extraBody, maxTokens } from "./llmOptions";
 
@@ -136,6 +137,11 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
   if (text.length > MAX_CHARS) throw new ExplainError("That letter is too long for now.");
 
   const started = Date.now();
+  // The contradiction check runs alongside extraction and can never fail or block an upload.
+  const checkP = findContradictions(text).catch((err) => {
+    console.error("contradiction check failed", err);
+    return null;
+  });
   let totalIn = 0;
   let totalOut = 0;
   let parsed: ModelJson | undefined;
@@ -168,6 +174,26 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
     fields[name] = verifyField(name, rawField, doc);
   }
 
+  // Contradictions: add the banner data, and downgrade only the field each conflict is about.
+  const check = await checkP;
+  const warnings: Warning[] = [];
+  const TOPIC_TO_FIELD: Record<string, (typeof FIELD_NAMES)[number]> = {
+    amount: "amountOwed",
+    date: "deadline",
+    action: "requiredAction",
+  };
+  for (const c of check?.contradictions ?? []) {
+    warnings.push({ kind: "conflict", message: c.message, quotes: c.quotes });
+    const target = TOPIC_TO_FIELD[c.topic];
+    if (target && fields[target].status === "verified") {
+      fields[target] = {
+        ...fields[target],
+        status: "unsure",
+        note: "This letter gives different answers in different places. Please confirm with the sender.",
+      };
+    }
+  }
+
   const all = Object.values(fields);
   const overall: AnalysisResult["overall"] = !all.some((f) => f.status === "verified")
     ? "abstained"
@@ -185,6 +211,7 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
     summary: typeof parsed?.summary === "string" ? parsed.summary : "",
     fields,
     overall,
+    warnings: warnings.length ? warnings : undefined,
     disclaimer: DISCLAIMER,
     metrics: {
       model: process.env.LLM_MODEL ?? "unknown",
