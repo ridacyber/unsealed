@@ -1,6 +1,5 @@
 // owner: m
 import type { Metadata } from "next";
-import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ResultsPreview } from "./ResultsPreview";
 
 export const metadata: Metadata = {
@@ -24,10 +23,5 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   const { mock } = await searchParams;
   const sample = mock === "not-found" || mock === "conflict" ? mock : "partial";
 
-  return (
-    <>
-      <ResultsPreview sample={sample} />
-      <SiteFooter />
-    </>
-  );
+  return <ResultsPreview sample={sample} />;
 }

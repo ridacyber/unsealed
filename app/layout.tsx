@@ -5,6 +5,7 @@ import {
   Besley,
   Courier_Prime,
 } from "next/font/google";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import "./globals.css";
 
 // Body text: a typeface designed for legibility under stress.
@@ -39,7 +40,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${atkinson.variable} ${besley.variable} ${courierPrime.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }
