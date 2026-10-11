@@ -1,5 +1,5 @@
 # Who owns what
-**m (frontend):** app/page.tsx, app/layout.tsx, app/globals.css, app/results/, components/, samples/, eval/letters/, eval/answer-key.csv
+**m (frontend):** app/page.tsx, app/layout.tsx, app/globals.css, app/results/, components/, samples/, public/samples/, eval/letters/, eval/answer-key.csv
 **r (backend):** app/api/, lib/, scripts/, eval/run-eval.ts, FEEDBACK.md, .env*
 **Shared (talk first):** lib/schema.ts, README.md, config files
 
