@@ -90,10 +90,10 @@ Scored independently by Muhammad who wrote the letters and the key. These letter
 *   We did not tune against these results. After this run we connected the check to the app and wrote a new blind set.
 
 ### Blind Set B01-B08 (full pipeline: Qwen extraction + Nemotron Ultra check)
-*   Eight new letters written by a teammate: two clear successes, two expected failures, two 50/50 cases, and two built to throw the model off. The answer key was kept outside the repository and the author of the pipeline had not seen it.
+*   Eight new letters written by Muhammad: two clear successes, two expected failures, two 50/50 cases, and two built to throw the model off. The answer key was kept outside the repository and the author of the pipeline had not seen it.
 *   One run per letter, with the rules written down and committed before the run (`eval/results/blind-b-prereg.md`). Raw outputs are in `eval/results/blind-b-run1/`.
 *   All 8 letters produced output with no errors, and the contradiction check ran on every letter.
-*   **RESULTS PENDING: scoring against the private key is still in progress. Replace this line with the per-category and per-field results before submitting.**
+*   **RESULTS PENDING: scoring against the private key is still in progress. Rida will replace this line with the per-category and per-field results before submitting.**
 *   This run used the `.txt` versions of the letters, so it does not test PDF text extraction.
 
 ---
