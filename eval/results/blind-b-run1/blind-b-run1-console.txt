@@ -1,0 +1,67 @@
+Holdout run: 8 letters | model Qwen/Qwen3-30B-A3B-Instruct-2507 + checker nvidia/Nemotron-3-Ultra-550b-a55b | commit b9c06dd
+
+B01  B01.txt
+  amount    verified   "$1,406.27"
+  deadline  verified   "December 1, 2026"
+  action    verified   "Pay the second installment of your 2026 property tax by December 1, 20"
+  conseq    verified   "If you do not pay by December 1, 2026, a 10% penalty is added to the u"
+  check: ok
+
+B02  B02.txt
+  amount    verified   "$75.00"
+  deadline  verified   "November 20, 2026"
+  action    verified   "Pay the $75.00 fee by November 20, 2026 using the online portal or by "
+  conseq    verified   "If you do not pay, a $25.00 late fee will be added and your alarm perm"
+  check: ok
+
+B03  B03.txt
+  amount    not_found  
+  deadline  unsure     "Tuesday, November 17, 2026 at 8:15 a.m."
+  action    unsure     "Report to the Halverstoke County Courts Annex on Tuesday, November 17,"
+  conseq    verified   "If you do not report and are not excused, you may be fined up to $250."
+  check: ok
+  WARNING: The letter gives two different reporting dates: Monday, November 9, 2026 and Tuesday, November 17, 2026. | A: "You are now required to report on Tuesday, November 17, 2026" | B: "Report on:   Monday, November 9, 2026 at 8:15 a.m."
+  WARNING: The letter gives two different reporting locations: Halverstoke County Courthouse, 1 Court Square, Jury Assembly Room 2B and Halverstoke County Courts Annex, 40 Dray Street, Room 110. | A: "at the Halverstoke County Courts Annex, 40 Dray Street, Room" | B: "Report to:   Halverstoke County Courthouse, 1 Court Square, "
+
+B04  B04.txt
+  amount    verified   "$1,250.00"
+  deadline  verified   "November 11, 2026"
+  action    verified   "Pay the remaining $1,250.00 by November 11, 2026 using a check, phone "
+  conseq    not_found  
+  check: ok
+
+B05  B05.txt
+  amount    unsure     "$169.00"
+  deadline  verified   "October 30, 2026"
+  action    verified   "Pay $169.00 in full by October 30, 2026 at the facility office using c"
+  conseq    verified   "If you do not pay the full amount by October 30, 2026, your belongings"
+  check: ok
+  WARNING: The letter states the total now due is $159.00 but later says you must pay $169.00 to end the default. | A: "Total now due             $159.00" | B: "you must pay $169.00 in full no later than October 30, 2026"
+
+B06  B06.txt
+  amount    unsure     "$170.00"
+  deadline  not_found  
+  action    unsure     "Pay $170.00 using a card online, or in person by card, cash, or money "
+  conseq    unsure     "If the payment is not made before teams are set, Eli's spot will be ca"
+  check: ok
+  WARNING: The letter states the returned check was for $145.00 but says the amount needed to replace it is $170.00, which adds a $25.00 fee, creating two different payment amounts. | A: "check number 1187, for $145.00" | B: "The amount needed is $170.00"
+
+B07  B07.txt
+  amount    verified   "$312.07"
+  deadline  verified   "December 7, 2026"
+  action    verified   "Complete and sign the Owner Response Form and return it by December 7,"
+  conseq    verified   "If you do not return the form by December 7, 2026, the money will be s"
+  check: ok
+
+B08  B08.txt
+  amount    not_found  
+  deadline  not_found  
+  action    not_found  
+  conseq    not_found  
+  check: ok
+
+============================================================
+Letters 8 | errors 0 | cost $0.0029 | latency avg 21683ms max 29002ms
+Results for m to score: /tmp/unsealed-holdout-2026-10-12T19-04-39-819Z.csv
+Full outputs: /tmp/unsealed-holdout-2026-10-12T19-04-39-819Z.json
+Run this once per prompt version. Don't tune against these letters.
