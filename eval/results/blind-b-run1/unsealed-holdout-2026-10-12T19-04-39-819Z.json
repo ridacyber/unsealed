@@ -1,0 +1,648 @@
+{
+  "commit": "b9c06dd",
+  "model": "Qwen/Qwen3-30B-A3B-Instruct-2507 + checker nvidia/Nemotron-3-Ultra-550b-a55b",
+  "runs": [
+    {
+      "file": "B01.txt",
+      "result": {
+        "id": "80916e8b-adf5-4178-9574-df117d4d5a59",
+        "documentType": "2026 Real Property Tax - Second Installment Reminder",
+        "documentText": "TARNWICK COUNTY TREASURER\nProperty Tax Division\n\nStatement date: October 12, 2026\n\nOwner of record: Nadia Ferreira-Stroud\nParcel number: 07-2219-004-0310\nProperty location: 418 Linnet Row\nAssessed value: $184,300\n\n2026 REAL PROPERTY TAX - SECOND INSTALLMENT REMINDER\n\nDear Property Owner,\n\nThe second installment of the 2026 real property tax on the parcel listed above is now payable.\n\n  Second installment amount due:   $1,406.27\n  Due date:                        December 1, 2026\n\nOur records show that your first installment was received on April 27, 2026 and was paid in full. Nothing further is owed on the first installment.\n\nHow to pay\n\nOnline: Visit the Tarnwick County tax payment portal and search by parcel number. Payment by electronic check is free. Card payments carry a service fee that is charged by the card processor and shown before you confirm.\n\nBy mail: Send a check or money order payable to Tarnwick County Treasurer, together with the enclosed payment coupon. Write the parcel number on your check. A mailed payment is on time if it is postmarked on or before December 1, 2026.\n\nIn person: The Treasurer's counter in the County Administration Building accepts checks, money orders and cards during business hours.\n\nIf the installment is not paid on time\n\nAny part of the second installment that is unpaid after December 1, 2026 becomes delinquent. A penalty of 10 percent of the unpaid amount is added at that time, and interest of 1 percent per month is charged on the unpaid tax from then until it is paid.\n\nIf you no longer own this property, please forward this statement to the new owner or return it to our office.\n\nTarnwick County Treasurer\nProperty Tax Division",
+        "summary": "This letter reminds you that the second installment of your 2026 property tax is due on December 1, 2026. It shows the amount due and explains how to pay. If you don't pay by the deadline, a 10% penalty and monthly interest will be added.",
+        "fields": {
+          "amountOwed": {
+            "status": "verified",
+            "value": "$1,406.27",
+            "normalized": "1406.27",
+            "citation": {
+              "quote": "Second installment amount due:   $1,406.27",
+              "start": 389,
+              "end": 431
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "December 1, 2026",
+            "normalized": "2026-12-01",
+            "citation": {
+              "quote": "Due date:                        December 1, 2026",
+              "start": 434,
+              "end": 483
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Pay the second installment of your 2026 property tax by December 1, 2026 using online, mail, or in-person methods.",
+            "normalized": null,
+            "citation": {
+              "quote": "The second installment of the 2026 real property tax on the parcel listed above is now payable.",
+              "start": 290,
+              "end": 385
+            },
+            "confidence": 0.9,
+            "note": "The letter gives multiple payment methods, but the core action is to pay by the deadline."
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do not pay by December 1, 2026, a 10% penalty is added to the unpaid amount, and interest of 1% per month is charged until the tax is paid.",
+            "normalized": null,
+            "citation": {
+              "quote": "Any part of the second installment that is unpaid after December 1, 2026 becomes delinquent. A penalty of 10 percent of the unpaid amount is added at that time, and interest of 1 percent per month is charged on the unpaid tax from then until it is paid.",
+              "start": 1281,
+              "end": 1534
+            },
+            "confidence": 0.95,
+            "note": null
+          }
+        },
+        "overall": "ok",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1840,
+          "outputTokens": 590,
+          "latencyMs": 21372,
+          "costUsd": 0.000361,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 931,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 1061,
+          "checkCostUsd": 0.0000961
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "B02.txt",
+      "result": {
+        "id": "743a04cf-f4f4-471e-ab52-0064c48e813c",
+        "documentType": "Notice of False Alarm Fee",
+        "documentText": "CITY OF PELLERTON POLICE DEPARTMENT\nAlarm Administration Unit\n\nNotice date: October 13, 2026\n\nPermit holder: Emeka Lindqvist\nAlarm permit number: AP-118264\nProtected address: 62 Cordwainer Street\n\nNOTICE OF FALSE ALARM FEE\n\nDear Emeka Lindqvist,\n\nOfficers were sent to the protected address at 2:47 a.m. on October 4, 2026 in response to a signal from your alarm system. They checked the building and found no sign of a break-in, attempted entry or other emergency. Under the City's alarm ordinance the response has been recorded as a false alarm.\n\n1. Fee assessed. This was the third false alarm recorded at this address during your current permit year. The first two false alarms in a permit year carry no charge. A fee of $75.00 has been assessed for this one.\n\n2. When payment is due. The fee must be paid within 30 days of the date of this notice.\n\n3. How to pay. You may pay online through the City's alarm permit portal using your permit number, or mail a check payable to the City of Pellerton to the Alarm Administration Unit. Do not send cash. To be on time, your payment must reach us by the due date of November 20, 2026.\n\n4. If the fee is not paid. A late charge of $25.00 will be added and your alarm permit will be suspended. While a permit is suspended, officers are not sent in response to an alarm signal from the address unless someone at the scene confirms that an emergency is taking place.\n\n5. If you disagree. If you believe the alarm was caused by an actual or attempted crime, you may ask for a review by writing to the Alarm Administrator and explaining why. Include any report or photographs that support your request. The fee remains payable while a review is pending.\n\nWe encourage you to have your alarm company inspect the system. Most false alarms are caused by user error or by equipment that needs service.\n\nAlarm Administration Unit\nCity of Pellerton Police Department",
+        "summary": "This letter tells you that your alarm system triggered a false alarm on October 4, 2026. You are being charged $75.00 because this was your third false alarm this year. You must pay by November 20, 2026, or a $25.00 late fee will be added and your alarm permit will be suspended.",
+        "fields": {
+          "amountOwed": {
+            "status": "verified",
+            "value": "$75.00",
+            "normalized": "75.00",
+            "citation": {
+              "quote": "A fee of $75.00 has been assessed for this one.",
+              "start": 716,
+              "end": 763
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "November 20, 2026",
+            "normalized": "2026-11-20",
+            "citation": {
+              "quote": "Your payment must reach us by the due date of November 20, 2026.",
+              "start": 1069,
+              "end": 1133
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Pay the $75.00 fee by November 20, 2026 using the online portal or by mailing a check.",
+            "normalized": null,
+            "citation": {
+              "quote": "You may pay online through the City's alarm permit portal using your permit number, or mail a check payable to the City of Pellerton to the Alarm Administration Unit.",
+              "start": 869,
+              "end": 1035
+            },
+            "confidence": 0.9,
+            "note": null
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do not pay, a $25.00 late fee will be added and your alarm permit will be suspended.",
+            "normalized": null,
+            "citation": {
+              "quote": "A late charge of $25.00 will be added and your alarm permit will be suspended.",
+              "start": 1162,
+              "end": 1240
+            },
+            "confidence": 0.95,
+            "note": null
+          }
+        },
+        "overall": "ok",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1869,
+          "outputTokens": 533,
+          "latencyMs": 17460,
+          "costUsd": 0.0003468,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 947,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 1043,
+          "checkCostUsd": 0.0000977
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "B03.txt",
+      "result": {
+        "id": "d0881ae1-b541-458a-a188-7d473e307132",
+        "documentType": "Notice of Change - Jury Service",
+        "documentText": "SUPERIOR COURT OF HALVERSTOKE COUNTY\nJury Services\n\nMailed: October 14, 2026\n\nJuror: Rosalind Achterberg\nJuror ID: 5-0077-3412\nGroup: 14\n\nNOTICE OF CHANGE - PLEASE READ THIS FIRST\n\nThe reporting date and place printed in Part 1 of this summons were set before the schedule for repairs to the main courthouse was final. Both have changed.\n\nYou are now required to report on Tuesday, November 17, 2026 at 8:15 a.m. at the Halverstoke County Courts Annex, 40 Dray Street, Room 110.\n\nThis notice replaces the date and place shown in Part 1. Do not report on the date or to the building printed there. Everything else in the summons still applies.\n\nPART 1 - SUMMONS FOR JURY SERVICE\n\nYou are summoned to appear for jury service in the Superior Court of Halverstoke County.\n\n  Report on:   Monday, November 9, 2026 at 8:15 a.m.\n  Report to:   Halverstoke County Courthouse, 1 Court Square, Jury Assembly Room 2B\n\nYour term of service is one day or, if you are selected to sit on a jury, the length of one trial.\n\nPART 2 - WHAT YOU NEED TO DO\n\nBring this summons and government-issued photo identification when you report. After 5:00 p.m. on the evening before your reporting date, call the juror information line or check the juror portal to confirm that your group is still needed.\n\nIf you have a serious hardship or are not qualified to serve, tell Jury Services through the juror portal before your reporting date so that your request can be considered.\n\nPART 3 - FAILURE TO APPEAR\n\nJury service is a legal duty. A juror who does not report as directed, and who has not been excused by the Court, may be ordered to appear before a judge to explain the absence and may be fined up to $250.00.\n\nJury Services\nSuperior Court of Halverstoke County",
+        "summary": "This letter tells you that your jury service date and location have changed. You must now report on Tuesday, November 17, 2026, at the Halverstoke County Courts Annex. The old date and place no longer apply.",
+        "fields": {
+          "amountOwed": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not mention any amount to be paid."
+          },
+          "deadline": {
+            "status": "unsure",
+            "value": "Tuesday, November 17, 2026 at 8:15 a.m.",
+            "normalized": "2026-11-17",
+            "citation": {
+              "quote": "You are now required to report on Tuesday, November 17, 2026 at 8:15 a.m.",
+              "start": 339,
+              "end": 412
+            },
+            "confidence": 0.95,
+            "note": "This letter gives different answers in different places. Please confirm with the sender."
+          },
+          "requiredAction": {
+            "status": "unsure",
+            "value": "Report to the Halverstoke County Courts Annex on Tuesday, November 17, 2026, at 8:15 a.m.",
+            "normalized": null,
+            "citation": {
+              "quote": "You are now required to report on Tuesday, November 17, 2026 at 8:15 a.m. at the Halverstoke County Courts Annex, 40 Dray Street, Room 110.",
+              "start": 339,
+              "end": 478
+            },
+            "confidence": 0.95,
+            "note": "This letter gives different answers in different places. Please confirm with the sender."
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do not report and are not excused, you may be fined up to $250.00.",
+            "normalized": null,
+            "citation": {
+              "quote": "A juror who does not report as directed, and who has not been excused by the Court, may be ordered to appear before a judge to explain the absence and may be fined up to $250.00.",
+              "start": 1510,
+              "end": 1688
+            },
+            "confidence": 0.9,
+            "note": "The letter clearly states the consequence of not appearing."
+          }
+        },
+        "overall": "partial",
+        "warnings": [
+          {
+            "kind": "conflict",
+            "message": "The letter gives two different reporting dates: Monday, November 9, 2026 and Tuesday, November 17, 2026.",
+            "quotes": [
+              {
+                "quote": "You are now required to report on Tuesday, November 17, 2026 at 8:15 a.m.",
+                "start": 339,
+                "end": 412
+              },
+              {
+                "quote": "Report on:   Monday, November 9, 2026 at 8:15 a.m.",
+                "start": 771,
+                "end": 821
+              }
+            ]
+          },
+          {
+            "kind": "conflict",
+            "message": "The letter gives two different reporting locations: Halverstoke County Courthouse, 1 Court Square, Jury Assembly Room 2B and Halverstoke County Courts Annex, 40 Dray Street, Room 110.",
+            "quotes": [
+              {
+                "quote": "at the Halverstoke County Courts Annex, 40 Dray Street, Room 110",
+                "start": 413,
+                "end": 477
+              },
+              {
+                "quote": "Report to:   Halverstoke County Courthouse, 1 Court Square, Jury Assembly Room 2B",
+                "start": 824,
+                "end": 905
+              }
+            ]
+          }
+        ],
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1884,
+          "outputTokens": 580,
+          "latencyMs": 18867,
+          "costUsd": 0.00036239999999999997,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 977,
+          "checkOutputTokens": 253,
+          "checkLatencyMs": 1480,
+          "checkCostUsd": 0.0001736
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "B04.txt",
+      "result": {
+        "id": "956b7ab1-28d7-49b8-8813-3e0b6ab311db",
+        "documentType": "Invoice",
+        "documentText": "FENWARDEN CHIMNEY AND MASONRY\nLicensed and insured. Serving the Aldersea Valley since 1998.\n\nInvoice no. 2026-0473\nOctober 12, 2026\n\nBill to: Harriet Okonjo-Bell\nJob address: 19 Sexton Close\n\nDear Ms. Okonjo-Bell,\n\nThank you for having us out. The work at your home was finished on October 8, 2026, and I went up myself the next morning to check it. The new crown has set properly, the flashing is tight, and the cap is seated and screwed down on all four sides. Photos from before and after are enclosed with this letter for your records.\n\nHere is how the bill works out:\n\n  Chimney crown rebuild, labor and materials     $1,480.00\n  Stainless steel flue cap, supplied and fitted    $370.00\n  Job total                                      $1,850.00\n  Less deposit received September 21, 2026         $600.00\n  Balance due                                    $1,250.00\n\nThe balance of $1,250.00 is due by November 11, 2026.\n\nYou can pay whichever way suits you. Most customers mail a check made out to Fenwarden Chimney and Masonry to the address on the enclosed remittance slip. We also take cards over the phone, and the slip has our bank details if you would rather send a transfer. Please put the invoice number on your payment so that we can match it to your job.\n\nOur workmanship on the crown is guaranteed for two years from the day the job was finished, and the cap carries the manufacturer's lifetime warranty against rust-through. Hold on to this invoice, since it is your proof of both.\n\nIf anything about the work or this bill does not look right to you, call the office and ask for me directly.\n\nWith thanks,\n\nJoaquin Fenwarden\nOwner, Fenwarden Chimney and Masonry",
+        "summary": "This is a bill from a chimney repair company for work completed on October 8, 2026. It asks you to pay the remaining $1,250.00 by November 11, 2026.",
+        "fields": {
+          "amountOwed": {
+            "status": "verified",
+            "value": "$1,250.00",
+            "normalized": "1250.00",
+            "citation": {
+              "quote": "Balance due                                    $1,250.00",
+              "start": 812,
+              "end": 868
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "November 11, 2026",
+            "normalized": "2026-11-11",
+            "citation": {
+              "quote": "The balance of $1,250.00 is due by November 11, 2026.",
+              "start": 870,
+              "end": 923
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Pay the remaining $1,250.00 by November 11, 2026 using a check, phone card, or bank transfer.",
+            "normalized": null,
+            "citation": {
+              "quote": "You can pay whichever way suits you. Most customers mail a check made out to Fenwarden Chimney and Masonry to the address on the enclosed remittance slip. We also take cards over the phone, and the slip has our bank details if you would rather send a transfer. Please put the invoice number on your payment so that we can match it to your job.",
+              "start": 925,
+              "end": 1268
+            },
+            "confidence": 0.9,
+            "note": "The letter gives multiple payment options, but all require payment of the balance by the deadline."
+          },
+          "consequence": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not say what happens if the payment is not made by the deadline."
+          }
+        },
+        "overall": "ok",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1868,
+          "outputTokens": 539,
+          "latencyMs": 18013,
+          "costUsd": 0.0003485,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 948,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 672,
+          "checkCostUsd": 0.0000978
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "B05.txt",
+      "result": {
+        "id": "b6647e5f-3c62-4880-b4db-f89a55f681a0",
+        "documentType": "Notice of Default and Lien Sale",
+        "documentText": "BRINDLOW SELF STORAGE\nFacility 3 - Harrow Pike\n\nDate of notice: October 12, 2026\nSent by certified and first-class mail\n\nOccupant: Mateo Halvorsen\nUnit: C-114\nRental agreement: 3-C114-2291\n\nNOTICE OF DEFAULT AND LIEN SALE\n\nMateo Halvorsen:\n\nYOUR ACCOUNT IS IN DEFAULT. Rent for the unit listed above was due on the first of the month and has not been paid. Under your rental agreement and the state self-service storage law, Brindlow Self Storage holds a lien on everything stored in the unit for unpaid rent and charges.\n\nCharges on your account as of the date of this notice:\n\n  October rent              $124.00\n  Late fee                   $20.00\n  Lien notice fee            $15.00\n  Total now due             $159.00\n\nAccess to the unit has been suspended, and our lock has been placed on the door. It will be removed when the account is paid.\n\nTo end the default and keep your property, you must pay $169.00 in full no later than October 30, 2026. Payment has to be made at the facility office in cash, by money order or by card. We cannot take a personal check on an account that is in default, and a partial payment will not stop the sale.\n\nIF THE FULL AMOUNT IS NOT PAID BY OCTOBER 30, 2026, THE CONTENTS OF THE UNIT WILL BE SOLD AT PUBLIC AUCTION ON OR AFTER NOVEMBER 14, 2026 TO SATISFY THE LIEN. Money from the sale is applied first to what you owe and to the costs of the sale. Anything left over is held for you for one year. Property that cannot be sold may be thrown away.\n\nIf you are on active military duty, or you believe this notice was sent in error, contact the facility manager in writing before October 30, 2026.\n\nBrindlow Self Storage\nFacility Manager, Facility 3",
+        "summary": "This letter tells you that your storage unit is in default because rent is unpaid. You must pay $169.00 by October 30, 2026, or your belongings will be sold at auction. The unit is locked and access is denied until the debt is paid.",
+        "fields": {
+          "amountOwed": {
+            "status": "unsure",
+            "value": "$169.00",
+            "normalized": "169.00",
+            "citation": {
+              "quote": "To end the default and keep your property, you must pay $169.00 in full no later than October 30, 2026.",
+              "start": 851,
+              "end": 954
+            },
+            "confidence": 0.95,
+            "note": "The total due is $169.00, which includes $159.00 in charges plus a $10.00 increase not listed in the itemized charges. The letter states this amount explicitly."
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "October 30, 2026",
+            "normalized": "2026-10-30",
+            "citation": {
+              "quote": "To end the default and keep your property, you must pay $169.00 in full no later than October 30, 2026.",
+              "start": 851,
+              "end": 954
+            },
+            "confidence": 0.95,
+            "note": "The deadline is clearly stated in the letter. The phrase 'no later than' confirms it is the final date."
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Pay $169.00 in full by October 30, 2026 at the facility office using cash, money order, or card.",
+            "normalized": null,
+            "citation": {
+              "quote": "To end the default and keep your property, you must pay $169.00 in full no later than October 30, 2026. Payment has to be made at the facility office in cash, by money order or by card.",
+              "start": 851,
+              "end": 1036
+            },
+            "confidence": 0.95,
+            "note": "The letter specifies the exact amount, deadline, and acceptable payment methods. It also says personal checks and partial payments are not accepted."
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do not pay the full amount by October 30, 2026, your belongings will be sold at public auction on or after November 14, 2026.",
+            "normalized": null,
+            "citation": {
+              "quote": "IF THE FULL AMOUNT IS NOT PAID BY OCTOBER 30, 2026, THE CONTENTS OF THE UNIT WILL BE SOLD AT PUBLIC AUCTION ON OR AFTER NOVEMBER 14, 2026 TO SATISFY THE LIEN.",
+              "start": 1150,
+              "end": 1308
+            },
+            "confidence": 0.95,
+            "note": "The consequence is clearly stated and directly tied to the deadline. The auction date is 'on or after' November 14, 2026, so the exact date is not known."
+          }
+        },
+        "overall": "partial",
+        "warnings": [
+          {
+            "kind": "conflict",
+            "message": "The letter states the total now due is $159.00 but later says you must pay $169.00 to end the default.",
+            "quotes": [
+              {
+                "quote": "Total now due             $159.00",
+                "start": 689,
+                "end": 722
+              },
+              {
+                "quote": "you must pay $169.00 in full no later than October 30, 2026",
+                "start": 894,
+                "end": 953
+              }
+            ]
+          }
+        ],
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1881,
+          "outputTokens": 764,
+          "latencyMs": 24112,
+          "costUsd": 0.0004173,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 966,
+          "checkOutputTokens": 112,
+          "checkLatencyMs": 960,
+          "checkCostUsd": 0.00013020000000000002
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "B06.txt",
+      "result": {
+        "id": "ff5dce57-8e7f-4ff7-874d-c555a034ef53",
+        "documentType": "Notice of Returned Payment and Payment Request",
+        "documentText": "ESKERFIELD PARKS AND RECREATION DISTRICT\nYouth Programs Office\n\nOctober 13, 2026\n\nTo: Simone Drakeford\nHousehold account: H-20931\nParticipant: Eli Drakeford\nProgram: Winter Youth Basketball, Grades 3-4\n\nSubject: Your registration payment was returned\n\nDear Simone,\n\nThank you for signing Eli up for winter basketball. I am writing because the check you gave us for the registration fee (check number 1187, for $145.00) came back from your bank unpaid on October 9, 2026. That means Eli's registration has not been paid for yet.\n\nWe would like to keep Eli in the program, so please replace the payment as soon as you can. The amount needed is $170.00. That is the $145.00 registration fee plus the District's $25.00 returned-payment fee, which we have to charge whenever a bank sends a payment back.\n\nBecause the first payment was returned, we are not able to accept another check for this balance. You can pay by card through your online household account, or you can come to the front desk at the Eskerfield Community Center and pay by card, cash or money order.\n\nFor now we are holding Eli's place. Coaches are being assigned and teams will be drawn up soon. Once the teams are set, any registration that is still unpaid is cancelled and the place goes to the next child on the waiting list. I cannot tell you exactly which day that will be, so please do not put this off.\n\nIf paying the whole amount at once would be a hardship for your family, talk to us before you pay. The District has a fee assistance fund for youth programs, and the application is short.\n\nWarm regards,\n\nDale Ruskin-Amato\nYouth Programs Coordinator\nEskerfield Parks and Recreation District",
+        "summary": "This letter tells Simone that a check for her son's basketball registration was returned unpaid. It asks her to pay $170.00 to keep her son in the program. The letter says the spot will be given to someone else if payment is not made soon.",
+        "fields": {
+          "amountOwed": {
+            "status": "unsure",
+            "value": "$170.00",
+            "normalized": "170.00",
+            "citation": {
+              "quote": "The amount needed is $170.00. That is the $145.00 registration fee plus the District's $25.00 returned-payment fee",
+              "start": 621,
+              "end": 735
+            },
+            "confidence": 0.95,
+            "note": "The $145.00 registration fee and $25.00 returned-payment fee are both stated explicitly. The total is clearly given as $170.00."
+          },
+          "deadline": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not give a specific date by which payment must be made. It says 'as soon as you can' and warns not to put it off, but no deadline is stated."
+          },
+          "requiredAction": {
+            "status": "unsure",
+            "value": "Pay $170.00 using a card online, or in person by card, cash, or money order.",
+            "normalized": null,
+            "citation": {
+              "quote": "Please replace the payment as soon as you can. You can pay by card through your online household account, or you can come to the front desk at the Eskerfield Community Center and pay by card, cash or money order.",
+              "start": -1,
+              "end": -1
+            },
+            "confidence": 0.9,
+            "note": "We couldn't find this in your letter's text. Please check with a person."
+          },
+          "consequence": {
+            "status": "unsure",
+            "value": "If the payment is not made before teams are set, Eli's spot will be cancelled and given to the next child on the waiting list.",
+            "normalized": null,
+            "citation": {
+              "quote": "Once the teams are set, any registration that is still unpaid is cancelled and the place goes to the next child on the waiting list.",
+              "start": 1161,
+              "end": 1293
+            },
+            "confidence": 0.9,
+            "note": "The consequence is clearly stated, though the exact timing is not. The letter says 'soon' and 'I cannot tell you exactly which day,' but the consequence is still explicit."
+          }
+        },
+        "overall": "abstained",
+        "warnings": [
+          {
+            "kind": "conflict",
+            "message": "The letter states the returned check was for $145.00 but says the amount needed to replace it is $170.00, which adds a $25.00 fee, creating two different payment amounts.",
+            "quotes": [
+              {
+                "quote": "check number 1187, for $145.00",
+                "start": 387,
+                "end": 417
+              },
+              {
+                "quote": "The amount needed is $170.00",
+                "start": 621,
+                "end": 649
+              }
+            ]
+          }
+        ],
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1821,
+          "outputTokens": 651,
+          "latencyMs": 21499,
+          "costUsd": 0.00037739999999999996,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 905,
+          "checkOutputTokens": 119,
+          "checkLatencyMs": 913,
+          "checkCostUsd": 0.00012619999999999998
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "B07.txt",
+      "result": {
+        "id": "c22caf21-44b4-4b75-b6c8-d7e1cee32a7e",
+        "documentType": "Re: Uncashed wages - we need to hear from you",
+        "documentText": "FERNSBY & COATE GROCERS, INC.\nPayroll Department\n\nOctober 14, 2026\n\nLeocadia Brennan-Voss\nReference: UP-2026-0388\n\nRe: Uncashed wages - we need to hear from you\n\nDear Leocadia Brennan-Voss,\n\nOur payroll records show that a paycheck issued to you has never been cashed:\n\n  Check number:   204417\n  Check date:     August 18, 2023\n  Net amount:     $312.07\n  Description:    Final pay, Harlow Street store\n\nThis money belongs to you. We are writing because state law treats wages that have gone unclaimed for three years as abandoned property. Unless we hear from you, we are required to report the amount and hand it over to the State Treasurer's Unclaimed Property Division.\n\nTo claim your wages directly from us, complete and sign the enclosed Owner Response Form and return it so that we receive it by December 7, 2026. The form asks you to confirm your current mailing address. You can send it back in the enclosed envelope, or scan it and use the secure upload link printed on the form.\n\nOnce we have your form, we will cancel the old check and mail a replacement for $312.07 to the address you give us, normally within 15 business days. If you still have the original check, please do not try to deposit it. It is too old to be honored and your bank is likely to reject it.\n\nIf we do not receive your form by December 7, 2026, the $312.07 will be sent to the State Treasurer with our annual report. You will not lose the money, but you would then have to file a claim with the Unclaimed Property Division to get it, and we would no longer be able to pay you ourselves.\n\nThere is no fee for responding, and you do not owe the company anything. This is not a request for payment.\n\nPayroll Department\nFernsby & Coate Grocers, Inc.",
+        "summary": "This letter tells you that a paycheck for $312.07 from August 18, 2023, has not been cashed. To get the money, you must return a form by December 7, 2026. If you don’t, the money will be sent to the state, and you’ll have to claim it there instead.",
+        "fields": {
+          "amountOwed": {
+            "status": "verified",
+            "value": "$312.07",
+            "normalized": "312.07",
+            "citation": {
+              "quote": "Net amount:     $312.07",
+              "start": 331,
+              "end": 354
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "December 7, 2026",
+            "normalized": "2026-12-07",
+            "citation": {
+              "quote": "return it so that we receive it by December 7, 2026",
+              "start": 769,
+              "end": 820
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Complete and sign the Owner Response Form and return it by December 7, 2026, so we receive it on time.",
+            "normalized": null,
+            "citation": {
+              "quote": "To claim your wages directly from us, complete and sign the enclosed Owner Response Form and return it so that we receive it by December 7, 2026.",
+              "start": 676,
+              "end": 821
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do not return the form by December 7, 2026, the money will be sent to the State Treasurer, and you will have to claim it from the Unclaimed Property Division instead.",
+            "normalized": null,
+            "citation": {
+              "quote": "If we do not receive your form by December 7, 2026, the $312.07 will be sent to the State Treasurer with our annual report. You will not lose the money, but you would then have to file a claim with the Unclaimed Property Division to get it, and we would no longer be able to pay you ourselves.",
+              "start": 1280,
+              "end": 1573
+            },
+            "confidence": 0.95,
+            "note": null
+          }
+        },
+        "overall": "ok",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1867,
+          "outputTokens": 606,
+          "latencyMs": 29002,
+          "costUsd": 0.0003685,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 944,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 959,
+          "checkCostUsd": 0.00009740000000000001
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "B08.txt",
+      "result": {
+        "id": "0fb00a84-9fde-4d0d-b21e-a3f5338bb1ca",
+        "documentType": "Notice of Dispute Received",
+        "documentText": "HETHERSOUND BRIDGE AND TUNNEL AUTHORITY\nCustomer Review Unit\n\nOctober 13, 2026\n\nRegistered owner: Caoimhe Stavros\nLicense plate: HTS 4417\nToll invoice: TI-55081932\nDispute reference: DR-26-14406\n\nWE HAVE RECEIVED YOUR DISPUTE\n\nDear Caoimhe Stavros,\n\nWe received your dispute of the toll invoice listed above on October 6, 2026. You told us that the vehicle shown in the photographs had been sold before the dates of travel.\n\nFor reference, the invoice you are disputing shows:\n\n  Tolls for 3 crossings, September 2 to 5, 2026    $11.75\n  Administrative fees                              $35.00\n  Invoice total                                    $46.75\n\nWhat happens now\n\nThe invoice has been placed on hold. While your dispute is under review you do not need to pay it, no further fees will be added, and it will not be sent to collections. You do not need to do anything else at this time.\n\nWe will mail you a written decision within 45 days of the date we received your dispute, which means by November 20, 2026.\n\nIf the reviewer needs something more from you, we will write and explain what is needed. You would then have 15 days from the date of that letter to reply.\n\nHow the review can end\n\nIf your dispute is approved, the invoice will be cancelled and you will owe nothing.\n\nIf your dispute is denied in whole or in part, the decision letter will state the amount that remains payable and the date by which it must be paid. That date will be at least 21 days after the decision is mailed.\n\nPlease keep this letter and quote the dispute reference if you contact us.\n\nCustomer Review Unit\nHethersound Bridge and Tunnel Authority",
+        "summary": "This letter confirms that your dispute of a toll invoice has been received and is now being reviewed. The invoice is on hold, so you don’t need to pay it now, and no extra fees will be added. You will get a decision by November 20, 2026.",
+        "fields": {
+          "amountOwed": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not state a current amount owed because the invoice is on hold. The $46.75 listed is the original invoice total, not an amount the reader must pay now."
+          },
+          "deadline": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter says a decision will be mailed by November 20, 2026, but this is a deadline for the authority, not the reader. The reader is not required to act by a specific date at this time."
+          },
+          "requiredAction": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter says 'You do not need to do anything else at this time.' No action is required from the reader until a follow-up letter is sent."
+          },
+          "consequence": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not state a consequence for not acting, because no action is required at this time. Future consequences depend on a future decision, which is not yet known."
+          }
+        },
+        "overall": "abstained",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1836,
+          "outputTokens": 480,
+          "latencyMs": 23140,
+          "costUsd": 0.00032760000000000005,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 913,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 925,
+          "checkCostUsd": 0.00009430000000000002
+        }
+      },
+      "error": null
+    }
+  ]
+}
