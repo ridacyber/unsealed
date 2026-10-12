@@ -147,9 +147,12 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
   let parsed: ModelJson | undefined;
   let lastErr: unknown;
 
+  const deadline = started + 55_000; // stay under the route's 60s limit
   for (let attempt = 0; attempt < 2; attempt++) {
+    const remaining = deadline - Date.now();
+    if (attempt > 0 && remaining < 15_000) break; // not enough time for a useful retry
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 45_000);
+    const timer = setTimeout(() => controller.abort(), Math.min(45_000, remaining));
     try {
       const out = await callModel(text, controller.signal);
       totalIn += out.inputTokens;   // count retries too so cost is honest
