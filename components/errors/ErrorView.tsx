@@ -16,8 +16,8 @@ interface ErrorCopy {
 
 export const ERROR_COPY: Record<AnalysisErrorCode, ErrorCopy> = {
   upload_failed: {
-    title: "Your letter didn't upload",
-    body: "The connection dropped before the file arrived. Check that you're online, then try again.",
+    title: "The connection failed",
+    body: "We couldn't retrieve your analysis results. Check your connection before trying again. The request may have continued processing.",
     canRetry: true,
   },
   invalid_file: {
@@ -42,7 +42,7 @@ export const ERROR_COPY: Record<AnalysisErrorCode, ErrorCopy> = {
   },
   processing_failed: {
     title: "Your letter wasn't analyzed",
-    body: "Something went wrong on our side partway through. Try again in a moment. If it keeps happening, try a different copy of the letter.",
+    body: "Something went wrong on our side. Try again in a moment. If it keeps happening, try a different copy of the letter.",
     canRetry: true,
   },
 };

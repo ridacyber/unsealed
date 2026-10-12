@@ -1,6 +1,7 @@
 // owner: m
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { CheckIcon } from "@/components/ui/icons";
 import { useFocusOnMount } from "@/components/hooks/useFocusOnMount";
@@ -12,6 +13,37 @@ export const STAGE_LABELS: Record<ProcessingStage, string> = {
   verifying: "Verifying evidence",
   preparing: "Preparing your summary",
 };
+
+/** How long a wait runs before the view says it is taking longer than expected. */
+export const LONG_WAIT_SECONDS = 30;
+
+export const LONG_WAIT_MESSAGE =
+  "This is taking longer than expected. You can keep waiting or cancel.";
+
+/** Whole seconds since the view appeared, read from the device's clock. */
+function useElapsedSeconds(): number {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const startedAt = Date.now();
+    // Ticks faster than once a second, and reads the clock each time, so the
+    // figure stays right when the browser slows timers in a background tab.
+    const timer = setInterval(() => {
+      setSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 250);
+    return () => clearInterval(timer);
+  }, []);
+
+  return seconds;
+}
+
+export function formatElapsed(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const secondsPart = `${seconds} ${seconds === 1 ? "second" : "seconds"}`;
+  if (minutes === 0) return secondsPart;
+  return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ${secondsPart}`;
+}
 
 type StageState = "done" | "current" | "upcoming";
 
@@ -54,6 +86,8 @@ export function ProcessingView({
   onCancel,
 }: ProcessingViewProps) {
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
+  const elapsedSeconds = useElapsedSeconds();
+  const isLongWait = !prepared && elapsedSeconds >= LONG_WAIT_SECONDS;
   const currentIndex = stage ? PROCESSING_STAGES.indexOf(stage) : -1;
 
   return (
@@ -107,8 +141,8 @@ export function ProcessingView({
             </p>
             <p className="mt-4 text-ink-soft">
               Unsealed is reading the text in your PDF and checking each answer
-              against the letter&rsquo;s own words. This happens in one go, so
-              there are no steps to show.
+              against the letter&rsquo;s own words. The whole letter is handled
+              together, so your results will appear all at once.
             </p>
           </>
         )}
@@ -121,12 +155,29 @@ export function ProcessingView({
               ? `${STAGE_LABELS[stage]}…`
               : "Working on your letter…"}
         </p>
+
+        {!prepared && (
+          <>
+            {/* A timer is silent to screen readers unless they go and read it. */}
+            <p className="mt-5 border-t border-line pt-5 text-ink-soft">
+              Time so far:{" "}
+              <span role="timer" className="font-semibold text-ink tabular-nums">
+                {formatElapsed(elapsedSeconds)}
+              </span>
+            </p>
+            {/* Stays mounted and empty so that filling it in is announced, once. */}
+            <p role="status" className={isLongWait ? "mt-3 font-semibold" : ""}>
+              {isLongWait ? LONG_WAIT_MESSAGE : ""}
+            </p>
+          </>
+        )}
       </div>
 
       {!prepared && (
         <p className="mt-6 text-ink-soft">
-          This may take a little while. Keep this page open; your results will
-          appear here when they&rsquo;re ready.
+          This can take a little while, and some letters take longer than
+          others. Keep this page open; your results will appear here when
+          they&rsquo;re ready.
         </p>
       )}
       <Button variant="secondary" onClick={onCancel} className="mt-6">
