@@ -6,6 +6,7 @@ import { execSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { analyze } from "../lib/explain";
+import { fileToText } from "../lib/extract";
 import type { AnalysisResult } from "../lib/schema";
 
 (function loadEnv() {
@@ -48,12 +49,16 @@ async function pool<T, R>(items: T[], n: number, fn: (t: T) => Promise<R>): Prom
 
 async function main() {
   if (!existsSync(DIR)) { console.log("No eval/letters/holdout folder. Run git pull first."); return; }
-  const files = readdirSync(DIR).filter((f) => f.endsWith(".txt")).sort();
+  const PREFIX = process.argv[3] ?? "";
+  const EXT = (process.argv[4] ?? "").toLowerCase();
+  const files = readdirSync(DIR)
+    .filter((f) => /\.(txt|pdf)$/i.test(f) && f.startsWith(PREFIX) && (!EXT || f.toLowerCase().endsWith("." + EXT)))
+    .sort();
   if (!files.length) { console.log("No .txt letters found in the holdout folder."); return; }
 
   const commit = sh("git rev-parse --short HEAD");
   const dirty = sh("git status --porcelain lib");
-  const model = process.env.LLM_MODEL ?? "(LLM_MODEL not set)";
+  const model = (process.env.LLM_MODEL ?? "(LLM_MODEL not set)") + " + checker " + (process.env.CHECK_MODEL ?? process.env.LLM_MODEL ?? "(not set)");
   console.log(`Holdout run: ${files.length} letters | model ${model} | commit ${commit}`);
   if (dirty && dirty !== "unknown") {
     console.log("WARNING: lib/ has uncommitted changes, so these results don't match any commit:\n" + dirty);
@@ -62,7 +67,10 @@ async function main() {
 
   const runs = await pool(files, 3, async (file) => {
     try {
-      const text = readFileSync(join(DIR, file), "utf8");
+      const buf = readFileSync(join(DIR, file));
+      const text = file.toLowerCase().endsWith(".pdf")
+        ? await fileToText(new File([buf], file, { type: "application/pdf" }))
+        : buf.toString("utf8");
       return { file, result: (await analyze(text)) as AnalysisResult, error: null as string | null };
     } catch (e) {
       return { file, result: null as AnalysisResult | null, error: e instanceof Error ? e.message : String(e) };
@@ -71,14 +79,14 @@ async function main() {
 
   const header = ["letter_id", "file", "overall"];
   for (const f of FIELDS) header.push(`${SHORT[f]}_status`, `${SHORT[f]}_value`, `${SHORT[f]}_quote`);
-  header.push("latency_ms", "error");
+  header.push("latency_ms", "error", "warnings");
   const csv: string[] = [header.join(",")];
 
   let cost = 0, errors = 0;
   const lat: number[] = [];
 
   for (const { file, result, error } of runs) {
-    const id = file.split("-")[0];
+    const id = file.replace(/\.[^.]+$/, "").split("-")[0];
     console.log(id + "  " + file);
     const row: string[] = [csvCell(id), csvCell(file)];
     if (!result) {
@@ -86,7 +94,7 @@ async function main() {
       console.log("  ERROR: " + error + "\n");
       row.push(csvCell("error"));
       for (let i = 0; i < FIELDS.length * 3; i++) row.push(csvCell(""));
-      row.push(csvCell(""), csvCell(error ?? ""));
+      row.push(csvCell(""), csvCell(error ?? ""), csvCell(""));
       csv.push(row.join(","));
       continue;
     }
@@ -98,7 +106,12 @@ async function main() {
       console.log(`  ${SHORT[name].padEnd(9)} ${f.status.padEnd(10)} ${f.value ? JSON.stringify(f.value.slice(0, 70)) : ""}`);
       row.push(csvCell(f.status), csvCell(f.value ?? ""), csvCell(f.citation?.quote ?? ""));
     }
-    row.push(csvCell(String(result.metrics.latencyMs)), csvCell(""));
+    console.log("  check: " + (result.metrics.checkStatus ?? "n/a"));
+    for (const w of result.warnings ?? []) {
+      console.log("  WARNING: " + w.message + " | A: " + JSON.stringify(w.quotes[0].quote.slice(0, 60)) + " | B: " + JSON.stringify(w.quotes[1].quote.slice(0, 60)));
+    }
+    const warn = (result.warnings ?? []).map((w) => w.message + " [A: " + w.quotes[0].quote + " || B: " + w.quotes[1].quote + "]").join(" ; ");
+    row.push(csvCell(String(result.metrics.latencyMs)), csvCell(""), csvCell(warn));
     csv.push(row.join(","));
     console.log("");
   }

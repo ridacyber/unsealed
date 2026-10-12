@@ -32,6 +32,13 @@ export const MetricsSchema = z.object({
   outputTokens: z.number().int(),
   latencyMs: z.number(),
   costUsd: z.number(),
+  // Contradiction check, reported separately. Optional so older clients keep working.
+  checkStatus: z.enum(["ok", "failed"]).optional(),
+  checkModel: z.string().optional(),
+  checkInputTokens: z.number().int().optional(),
+  checkOutputTokens: z.number().int().optional(),
+  checkLatencyMs: z.number().optional(),
+  checkCostUsd: z.number().optional(),
 });
 
 // A contradiction found inside the letter: two passages that cannot both be followed or both be true.

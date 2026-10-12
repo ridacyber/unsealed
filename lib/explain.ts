@@ -206,6 +206,8 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
 
   const inRate = Number(process.env.LLM_INPUT_USD_PER_M ?? 0);
   const outRate = Number(process.env.LLM_OUTPUT_USD_PER_M ?? 0);
+  const checkInRate = Number(process.env.CHECK_INPUT_USD_PER_M ?? process.env.LLM_INPUT_USD_PER_M ?? 0);
+  const checkOutRate = Number(process.env.CHECK_OUTPUT_USD_PER_M ?? process.env.LLM_OUTPUT_USD_PER_M ?? 0);
 
   return AnalysisResultSchema.parse({
     id: randomUUID(),
@@ -222,6 +224,12 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
       outputTokens: totalOut,
       latencyMs: Date.now() - started,
       costUsd: (totalIn * inRate + totalOut * outRate) / 1_000_000,
+      checkStatus: check ? "ok" : "failed",
+      checkModel: process.env.CHECK_MODEL ?? process.env.LLM_MODEL ?? "unknown",
+      checkInputTokens: check?.inputTokens ?? 0,
+      checkOutputTokens: check?.outputTokens ?? 0,
+      checkLatencyMs: check?.latencyMs ?? 0,
+      checkCostUsd: ((check?.inputTokens ?? 0) * checkInRate + (check?.outputTokens ?? 0) * checkOutRate) / 1_000_000,
     },
   });
 }
