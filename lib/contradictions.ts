@@ -45,6 +45,7 @@ Do NOT report any of these. They are not contradictions:
 - Wording that is only vague, optional, or an estimate. Vague is not the same as contradictory.
 
 Most letters contain no contradiction. If you are not sure, report nothing.
+Only include an item when you conclude the two passages truly conflict. If your explanation would say the passages are consistent, or that there is no contradiction, leave that item out.
 
 For each contradiction, copy BOTH passages exactly as written in the letter. Each quote must be one continuous passage from a single place in the letter (at most 30 words), and the two quotes must come from different places.
 
