@@ -83,7 +83,7 @@ We built an open-book automated evaluation (`eval/run-eval.ts`) that grades a 15
 *   **Edge Case Nuance (H08):** The single strict variance occurred on a semantic boundary where the letter stated a deadline *"by December 11"* and the model extracted *"before December 11"*.
 
 ### Blind Set N01-N06, first run (before the check was connected to the app)
-Scored independently by a teammate who wrote the letters and the key. These letters were deliberately harder.
+Scored independently by Muhammad who wrote the letters and the key. These letters were deliberately harder.
 *   **Strict field accuracy:** 17 / 24 (70.8%).
 *   **Fields shown Verified despite conflicting evidence:** 5. Two fields were Unsure when they did not need to be.
 *   **Contradiction detector, run separately:** flagged 3 of the 4 letters with a real conflict, with no false alarms on the 2 clean letters. It missed N04, where the letter says "two hundred seventy dollars ($290.00)".
