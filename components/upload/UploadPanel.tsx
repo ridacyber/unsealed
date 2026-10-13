@@ -65,10 +65,10 @@ export function UploadPanel({ onAnalyze, privacyNote }: UploadPanelProps) {
 
   return (
     <section aria-labelledby="upload-heading" className="relative pt-14">
-      <div
-        aria-hidden="true"
-        className="envelope-lining envelope-open absolute inset-0"
-      />
+      {/* The glow sits on a wrapper because clip-path would cut it off. */}
+      <div aria-hidden="true" className="neon-glow-wide absolute inset-0">
+        <div className="envelope-lining envelope-open absolute inset-0" />
+      </div>
 
       <div
         onDragOver={(event) => {

@@ -9,9 +9,18 @@
   --color-ink-soft: #46536b;
   --color-line: #d5dce9;
 
-  /* Fountain-pen blue: the one accent, also the envelope lining */
+  /* Fountain-pen blue: the one accent for links, buttons and focus */
   --color-postal: #2447a8;
   --color-postal-deep: #1a3582;
+
+  /*
+   * Brand colours from the logo artwork. Kept to the logo, the upload
+   * envelope and the hairline above the page, so the interface stays calm.
+   */
+  --color-brand-navy: #10225a;
+  --color-brand-blue: #314bec;
+  --color-brand-cyan: #0bc0fc;
+  --color-brand-violet: #8662f6;
   --color-tint: #e8eefa;
 
   /* Verification states. Each also differs by icon, border and wording. */
@@ -45,6 +54,35 @@ body {
   font-family: var(--font-sans);
 }
 
+/* A hairline of the logo's gradient above every page. */
+body::before {
+  content: "";
+  flex: none;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-cyan),
+    var(--color-brand-blue) 45%,
+    var(--color-brand-violet)
+  );
+}
+
+/* The logo's soft neon halo. Static, so there is no motion to reduce. */
+.neon-glow {
+  filter: drop-shadow(
+    0 1px 5px color-mix(in srgb, var(--color-brand-blue) 32%, transparent)
+  );
+}
+
+.neon-glow-wide {
+  filter: drop-shadow(
+      -6px 10px 26px color-mix(in srgb, var(--color-brand-blue) 28%, transparent)
+    )
+    drop-shadow(
+      8px 12px 26px color-mix(in srgb, var(--color-brand-violet) 24%, transparent)
+    );
+}
+
 :focus-visible {
   outline: 3px solid var(--color-postal);
   outline-offset: 3px;
@@ -68,17 +106,23 @@ h1:focus {
  * the letter panel.
  */
 .envelope-lining {
-  background-color: var(--color-postal);
+  background-color: var(--color-brand-navy);
   background-image:
     repeating-linear-gradient(
       45deg,
-      rgb(255 255 255 / 0.17) 0 1.5px,
+      rgb(255 255 255 / 0.13) 0 1.5px,
       transparent 1.5px 7px
     ),
     repeating-linear-gradient(
       -45deg,
-      rgb(255 255 255 / 0.17) 0 1.5px,
+      rgb(255 255 255 / 0.13) 0 1.5px,
       transparent 1.5px 7px
+    ),
+    linear-gradient(
+      105deg,
+      var(--color-brand-navy) 20%,
+      var(--color-brand-blue) 72%,
+      var(--color-brand-violet) 100%
     );
 }
 

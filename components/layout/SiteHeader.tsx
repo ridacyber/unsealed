@@ -20,8 +20,8 @@ export function SiteHeader({
         wide ? "max-w-[90rem]" : "max-w-6xl"
       }`}
     >
-      <p className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight">
-        <EnvelopeMark className="text-postal" />
+      <p className="flex items-center gap-2.5 font-display text-2xl font-semibold tracking-tight text-brand-navy">
+        <EnvelopeMark className="neon-glow shrink-0" />
         Unsealed
       </p>
 
