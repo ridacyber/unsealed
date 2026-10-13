@@ -26,6 +26,10 @@ const SERVICE_ERRORS: ReadonlyMap<string, AnalysisErrorCode> = new Map<
   ],
   ["We couldn't read enough text from that letter.", "no_text"],
   ["That letter is too long for now.", "too_long"],
+  [
+    "That took longer than expected. Please try again in a moment.",
+    "timed_out",
+  ],
 ]);
 
 /**

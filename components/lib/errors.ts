@@ -8,6 +8,7 @@
  * - unreadable: the PDF arrived but could not be opened.
  * - no_text: the PDF opened but held no text to read, as a scan does.
  * - too_long: the letter has more text than the service takes.
+ * - timed_out: the service gave up because the analysis ran too long.
  * - processing_failed: anything else that went wrong while analyzing.
  */
 export type AnalysisErrorCode =
@@ -16,6 +17,7 @@ export type AnalysisErrorCode =
   | "unreadable"
   | "no_text"
   | "too_long"
+  | "timed_out"
   | "processing_failed";
 
 export class AnalysisError extends Error {

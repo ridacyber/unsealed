@@ -3,7 +3,7 @@ import { countByStatus } from "@/components/lib/fields";
 import { CheckIcon, QuestionIcon } from "@/components/ui/icons";
 import { FIELD_NAMES, type AnalysisResult } from "@/lib/schema";
 
-const CAUTION =
+export const CAUTION =
   "flex gap-3 rounded-xl border border-unsure-line bg-unsure-tint p-4 text-unsure";
 
 /**
@@ -13,10 +13,13 @@ const CAUTION =
 export function VerificationOverview({
   result,
   possibleConflict = false,
+  checkUnavailable = false,
 }: {
   result: AnalysisResult;
   /** True when the letter is shown to hold passages that may not agree. */
   possibleConflict?: boolean;
+  /** True when the check for conflicting passages could not be completed. */
+  checkUnavailable?: boolean;
 }) {
   const counts = countByStatus(result);
   const total = FIELD_NAMES.length;
@@ -49,6 +52,23 @@ export function VerificationOverview({
             disagree with itself.
           </strong>{" "}
           Check the passages above and confirm with the sender before you act.
+        </span>
+      </p>
+    );
+  }
+
+  // The check for passages that disagree didn't finish, so having none to
+  // show says nothing about the letter. The notice above explains why; this
+  // only holds back the plain success.
+  if (unconfirmed === 0 && checkUnavailable) {
+    return (
+      <p className={CAUTION}>
+        <QuestionIcon className="mt-0.5 shrink-0" />
+        <span>
+          <strong>
+            Supporting passages are available for all four details.
+          </strong>{" "}
+          Review them carefully against your letter before acting.
         </span>
       </p>
     );
