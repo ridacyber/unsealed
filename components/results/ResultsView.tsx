@@ -19,6 +19,10 @@ import {
   type AnalysisResult,
   type FieldName,
 } from "@/lib/schema";
+import {
+  CheckUnavailableNotice,
+  isCheckUnavailable,
+} from "./CheckUnavailableNotice";
 import { ConflictWarnings, type ConflictSelection } from "./ConflictWarnings";
 import { FieldCard } from "./FieldCard";
 import { VerificationOverview } from "./VerificationOverview";
@@ -52,6 +56,7 @@ export function ResultsView({
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
   const [shown, setShown] = useState<Shown | null>(null);
   const conflicts = verifiedConflicts(result);
+  const checkUnavailable = isCheckUnavailable(result);
 
   function rangeOf(name: FieldName): TextRange | null {
     const { citation } = result.fields[name];
@@ -112,9 +117,11 @@ export function ResultsView({
                 setShown(selection && { kind: "conflict", ...selection })
               }
             />
+            {checkUnavailable && <CheckUnavailableNotice />}
             <VerificationOverview
               result={result}
               possibleConflict={conflicts.length > 0}
+              checkUnavailable={checkUnavailable}
             />
           </div>
 

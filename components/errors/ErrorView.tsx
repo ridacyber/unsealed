@@ -40,6 +40,11 @@ export const ERROR_COPY: Record<AnalysisErrorCode, ErrorCopy> = {
     body: "Unsealed can only read shorter letters for now. If the PDF holds several documents, try one with just the letter.",
     canRetry: false,
   },
+  timed_out: {
+    title: "That took longer than expected",
+    body: "We stopped before your letter was finished, so there are no results to show. This is usually temporary and not a problem with your file. Please try again in a moment.",
+    canRetry: true,
+  },
   processing_failed: {
     title: "Your letter wasn't analyzed",
     body: "Something went wrong on our side. Try again in a moment. If it keeps happening, try a different copy of the letter.",
