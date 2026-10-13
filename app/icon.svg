@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <style>
+    .flap-start, .text { stop-color: #314bec; fill: #314bec; }
+    .flap-end { stop-color: #8662f6; }
+    .letter { fill: #fff; stroke: #10225a; }
+    .front { fill: #10225a; }
+    @media (prefers-color-scheme: dark) {
+      .flap-start { stop-color: #4fcdfc; }
+      .flap-end { stop-color: #a48bfa; }
+      .letter { stroke: #a9b8ff; }
+      .front { fill: #a9b8ff; }
+    }
+  </style>
+  <linearGradient id="flap" x1="2" y1="0" x2="30" y2="0" gradientUnits="userSpaceOnUse">
+    <stop class="flap-start" offset=".15"/>
+    <stop class="flap-end" offset=".85"/>
+  </linearGradient>
+  <path fill="url(#flap)" d="M2 14L16 4l14 10v4H2v-4z"/>
+  <rect class="letter" x="8" y="2" width="16" height="22" rx="2" stroke-width="2"/>
+  <path class="text" d="M12 7h8v2h-8zM12 12h8v2h-8z"/>
+  <path class="front" d="M2 14l14 9 14-9v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V14z"/>
+</svg>

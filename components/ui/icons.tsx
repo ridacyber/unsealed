@@ -1,5 +1,5 @@
 // owner: m
-import type { ReactNode, SVGProps } from "react";
+import { useId, type ReactNode, type SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -101,34 +101,95 @@ export function ChevronIcon({
   );
 }
 
-/** The Unsealed mark: an envelope with its flap lifted. */
+/**
+ * The Unsealed mark: an opened envelope with an official letter rising out
+ * of it. app/icon.svg is the same drawing, simplified for browser-tab sizes.
+ */
 export function EnvelopeMark(props: IconProps) {
+  // Unique per instance, so two marks on one page keep their own gradients.
+  const id = useId();
+  const neon = `${id}neon`;
+  const front = `${id}front`;
+
   return (
     <svg
-      viewBox="0 0 28 28"
-      width="28"
-      height="28"
+      viewBox="0 0 32 32"
+      width="32"
+      height="32"
       fill="none"
       aria-hidden="true"
       focusable="false"
       {...props}
     >
+      <defs>
+        <linearGradient
+          id={neon}
+          x1="2.5"
+          y1="0"
+          x2="29.5"
+          y2="0"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop className="[stop-color:var(--color-brand-cyan)]" />
+          <stop
+            offset="0.45"
+            className="[stop-color:var(--color-brand-blue)]"
+          />
+          <stop
+            offset="1"
+            className="[stop-color:var(--color-brand-violet)]"
+          />
+        </linearGradient>
+        <linearGradient
+          id={front}
+          x1="8"
+          y1="16"
+          x2="44"
+          y2="42"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop
+            offset="0.3"
+            className="[stop-color:var(--color-brand-navy)]"
+          />
+          <stop
+            offset="1"
+            className="[stop-color:var(--color-brand-violet)]"
+          />
+        </linearGradient>
+      </defs>
+      {/* The lifted flap, seen behind the letter */}
+      <path d="M2.5 14.5L16 4.5l13.5 10V18h-27v-3.5z" fill={`url(#${neon})`} />
+      {/* The letter, with two lines of text and its seal */}
       <path
-        d="M3.5 12.5L14 4l10.5 8.5v10a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5v-10z"
-        fill="currentColor"
+        d="M8.5 4.75A1.75 1.75 0 0 1 10.25 3h11.5a1.75 1.75 0 0 1 1.75 1.75V23h-15V4.75z"
+        className="fill-sheet stroke-brand-navy"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
       />
-      <path d="M7 9.5h14V17l-7 4.5L7 17V9.5z" fill="#fff" />
       <path
-        d="M9.75 12.5h8.5M9.75 15.25h5.5"
-        stroke="currentColor"
+        d="M12 8h8M12 11.5h8"
+        className="stroke-brand-blue"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
+      <circle cx="16" cy="16.25" r="1.6" className="fill-brand-violet" />
+      {/* The front of the envelope, its lit opening and its fold lines */}
       <path
-        d="M3.5 12.75l10.5 7 10.5-7"
-        stroke="#fff"
-        strokeWidth="1.25"
+        d="M2.5 14.5L16 23l13.5-8.5v12a2 2 0 0 1-2 2h-23a2 2 0 0 1-2-2v-12z"
+        fill={`url(#${front})`}
+      />
+      <path
+        d="M3 15.4L16 23.6l13-8.2"
+        stroke={`url(#${neon})`}
+        strokeLinecap="round"
         strokeLinejoin="round"
+      />
+      <path
+        d="M3.6 27.9l8.8-7.2M28.4 27.9l-8.8-7.2"
+        stroke={`url(#${neon})`}
+        strokeOpacity="0.55"
+        strokeLinecap="round"
       />
     </svg>
   );
