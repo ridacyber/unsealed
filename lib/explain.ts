@@ -131,6 +131,24 @@ async function callModel(letter: string, signal: AbortSignal): Promise<ModelOut>
   };
 }
 
+const MONEY_RE = /\$\s?\d[\d,]*(?:\.\d{1,2})?/g;
+const MONTH = "(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+const DATE_RE = new RegExp(`\\b${MONTH}\\.?\\s+\\d{1,2}(?:,\\s*\\d{4})?`, "gi");
+const squash = (s: string) => s.toLowerCase().replace(/\s+/g, "");
+
+// Only the disputed kind of value counts: amounts for amount conflicts, dates for date conflicts.
+function disputedTokens(topic: string, quotes: { quote: string }[]): string[] {
+  const re = topic === "amount" ? MONEY_RE : topic === "date" ? DATE_RE : null;
+  if (!re) return [];
+  return quotes.flatMap((q) => q.quote.match(re) ?? []).map(squash);
+}
+
+function mentions(value: string | null, token: string): boolean {
+  if (!value) return false;
+  const esc = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`${esc}(?!\\d)`).test(squash(value));
+}
+
 export async function analyze(documentText: string): Promise<AnalysisResult> {
   const text = documentText.trim();
   if (text.length < MIN_CHARS) throw new ExplainError("We couldn't read enough text from that letter.");
@@ -185,15 +203,18 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
     date: "deadline",
     action: "requiredAction",
   };
+  const UNSURE_NOTE = "This letter gives different answers in different places. Please confirm with the sender.";
   for (const c of check?.contradictions ?? []) {
     warnings.push({ kind: "conflict", message: c.message, quotes: c.quotes });
     const target = TOPIC_TO_FIELD[c.topic];
-    if (target && fields[target].status === "verified") {
-      fields[target] = {
-        ...fields[target],
-        status: "unsure",
-        note: "This letter gives different answers in different places. Please confirm with the sender.",
-      };
+    const tokens = disputedTokens(c.topic, c.quotes);
+    for (const name of FIELD_NAMES) {
+      const f = fields[name];
+      if (f.status !== "verified") continue;
+      const repeatsDisputed = tokens.some((t) => mentions(f.value, t));
+      if (name === target || repeatsDisputed) {
+        fields[name] = { ...f, status: "unsure", note: UNSURE_NOTE };
+      }
     }
   }
 
