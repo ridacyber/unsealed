@@ -30,5 +30,3 @@ export async function fileToText(file: File): Promise<string> {
   }
   return text;
 }
-
-//test
