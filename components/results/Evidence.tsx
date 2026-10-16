@@ -1,23 +1,53 @@
 // owner: m
+import type { PassageInContext } from "@/components/document/letterMarks";
+
 interface EvidenceProps {
   quote: string;
   /** Whether the quote's place in the letter is known, so it can be shown. */
   located: boolean;
+  /**
+   * The confirmed passage with a little of the letter around it, as the
+   * letter's own text. Only given when the passage is located.
+   */
+  context?: PassageInContext | null;
 }
 
 /**
- * The words behind a claim. The quote is always shown, but it is only called
- * the letter's own when its place in the letter's text is known.
+ * The words behind a claim. A located passage is shown as the letter's own
+ * text, with what comes before and after it, so it can be read in place even
+ * where the letter itself is out of view. A quote that couldn't be matched is
+ * shown as quoted and is never called the letter's own.
  */
-export function Evidence({ quote, located }: EvidenceProps) {
+export function Evidence({ quote, located, context }: EvidenceProps) {
+  const inPlace = located && context ? context : null;
+
   return (
-    <div className="mt-4">
-      <figure className="rounded-lg border border-postal bg-sheet p-4 shadow-[inset_4px_0_0_var(--color-postal)]">
+    <div className="rw-evidence">
+      <figure
+        className="rw-evidence-figure"
+        data-located={located ? "" : undefined}
+      >
         <figcaption className="text-sm font-semibold text-ink-soft">
           {located ? "From your letter" : "Not matched to your letter's text"}
         </figcaption>
-        <blockquote className="mt-1.5 font-quote text-[1.05rem] leading-relaxed break-words">
-          &ldquo;{quote}&rdquo;
+        <blockquote className="mt-1.5 font-quote text-[1rem] leading-[1.7] break-words">
+          {inPlace ? (
+            <>
+              <span className="rw-context">
+                {inPlace.clippedBefore && "… "}
+                {inPlace.before}
+              </span>
+              <mark className="rw-mark" data-tone="active">
+                {inPlace.passage}
+              </mark>
+              <span className="rw-context">
+                {inPlace.after}
+                {inPlace.clippedAfter && " …"}
+              </span>
+            </>
+          ) : (
+            <>&ldquo;{quote}&rdquo;</>
+          )}
         </blockquote>
         {!located && (
           <p className="mt-3 text-sm text-ink-soft">
@@ -29,10 +59,7 @@ export function Evidence({ quote, located }: EvidenceProps) {
       </figure>
 
       {located && (
-        <a
-          href="#your-letter"
-          className="mt-3 inline-block font-semibold text-postal underline decoration-postal/40 underline-offset-4 hover:decoration-postal lg:hidden"
-        >
+        <a href="#your-letter" className="rw-link mt-3 inline-block lg:hidden">
           See it in your letter
         </a>
       )}

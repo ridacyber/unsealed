@@ -3,8 +3,9 @@ import { countByStatus } from "@/components/lib/fields";
 import { CheckIcon, QuestionIcon } from "@/components/ui/icons";
 import { FIELD_NAMES, type AnalysisResult } from "@/lib/schema";
 
-export const CAUTION =
-  "flex gap-3 rounded-xl border border-unsure-line bg-unsure-tint p-4 text-unsure";
+// Notices are slips of paper on the desk, so their colours stay the ones
+// checked for contrast on paper.
+export const CAUTION = "rw-notice rw-notice-caution flex gap-3 p-4 text-unsure";
 
 /**
  * States up front whether anything was left unconfirmed, so a page of
@@ -76,7 +77,7 @@ export function VerificationOverview({
 
   if (unconfirmed === 0) {
     return (
-      <p className="flex gap-3 rounded-xl bg-verified-tint p-4 text-verified">
+      <p className="rw-notice rw-notice-verified flex gap-3 p-4 text-verified">
         <CheckIcon className="mt-0.5 shrink-0" />
         <span>
           <strong>All {total} details are stated in your letter.</strong> Open

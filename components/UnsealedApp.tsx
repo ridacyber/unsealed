@@ -28,18 +28,19 @@ export function UnsealedApp() {
     state.phase === "done" && mode === "mock" && state.source.kind === "upload";
   // A sample's answers were written ahead of time; nothing analyzes it.
   const isSample = state.phase !== "idle" && state.source.kind === "sample";
-  // The landing page sits on the midnight desk; the other views are on paper.
-  const isLanding = state.phase === "idle";
+  // The landing page and the results sit on the midnight desk; processing
+  // and failures are still on paper.
+  const onDesk = state.phase === "idle" || state.phase === "done";
 
   return (
     <div
-      className={`flex flex-1 flex-col ${isLanding ? "surface-midnight" : ""}`}
+      className={`flex flex-1 flex-col ${onDesk ? "surface-midnight" : ""}`}
     >
       <SiteHeader
         onStartOver={state.phase === "idle" ? undefined : reset}
         showDemoTag={mode === "mock"}
         wide={state.phase === "done"}
-        surface={isLanding ? "midnight" : "paper"}
+        surface={onDesk ? "midnight" : "paper"}
       />
 
       <main className="flex-1">
