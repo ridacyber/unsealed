@@ -25,6 +25,11 @@ export const ERROR_COPY: Record<AnalysisErrorCode, ErrorCopy> = {
     body: `Unsealed reads PDF files up to ${MAX_FILE_SIZE_MB} MB. This one is empty, too large, or isn't really a PDF. Choose a PDF copy of your letter.`,
     canRetry: false,
   },
+  file_too_large: {
+    title: "This file is too large to send",
+    body: `Unsealed reads PDF files up to ${MAX_FILE_SIZE_MB} MB. Choose a smaller PDF copy of your letter, or save the letter again at a lower quality.`,
+    canRetry: false,
+  },
   unreadable: {
     title: "We couldn't open this PDF",
     body: "The file may be damaged or password-protected. Try downloading or saving the letter again, then choose the new file.",

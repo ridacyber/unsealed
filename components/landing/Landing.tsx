@@ -5,15 +5,8 @@ import { useEffect, useRef } from "react";
 import type { AnalysisSource } from "@/components/hooks/useAnalysis";
 import { SampleLetters } from "@/components/upload/SampleLetters";
 import { UploadPanel } from "@/components/upload/UploadPanel";
+import { EnvelopeScene } from "./EnvelopeScene";
 import { HonestySection } from "./HonestySection";
-
-const QUESTIONS = [
-  "What does this letter mean?",
-  "How much?",
-  "When?",
-  "What do I need to do?",
-  "What happens if I ignore it?",
-];
 
 const PRIVACY_NOTES = {
   mock: "This is a demo build. Your file stays in this browser and isn't sent anywhere.",
@@ -37,51 +30,56 @@ export function Landing({ onAnalyze, mode, returning }: LandingProps) {
   }, [returning]);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-8">
-      {/* On small screens the upload panel comes before the question list. */}
-      <section className="grid grid-cols-1 items-start gap-x-16 gap-y-10 pt-8 pb-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,29rem)] lg:pt-14">
-        <div>
-          <h1
-            ref={headingRef}
-            tabIndex={-1}
-            className="font-display text-[2.6rem] leading-[1.08] font-semibold tracking-tight text-balance sm:text-6xl"
-          >
-            Make sense of an official letter.
-          </h1>
-          <p className="mt-6 max-w-xl text-xl leading-relaxed text-ink-soft">
-            Upload a bill, notice or demand. Unsealed explains it in plain
-            English and shows you the exact words in the letter behind every
-            answer.
-          </p>
-        </div>
+    // The light around the envelope may reach past the window's edge.
+    <div className="overflow-x-clip">
+      {/* The hero: the headline and the upload beside the envelope. On a
+          phone the envelope follows the upload, so the upload is never far
+          away. On a small laptop the text column gives up a little width,
+          so the envelope keeps enough to show its passages, and both
+          columns start at the top, as the envelope's notes stack under it. */}
+      <section className="mx-auto w-full max-w-[86rem] px-5 sm:px-8">
+        <div className="grid grid-cols-1 items-start gap-x-12 gap-y-12 pt-6 pb-14 sm:pt-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:pt-14 lg:pb-24 xl:items-center min-[90rem]:grid-cols-[minmax(0,34rem)_minmax(0,1fr)] min-[90rem]:gap-x-16">
+          <div>
+            <p className="flex items-center gap-3 text-xs font-semibold tracking-[0.14em] text-fog uppercase">
+              <span aria-hidden="true" className="eyebrow-rule" />
+              Re: bills, notices and demands
+            </p>
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="mt-5 font-display text-[2.5rem] leading-[1.04] font-semibold tracking-[-0.025em] text-balance sm:text-[3.25rem] lg:text-[3.5rem] min-[90rem]:text-[3.85rem]"
+            >
+              Make sense of an{" "}
+              <em className="font-medium text-ice">official letter</em>.
+            </h1>
+            <p className="mt-5 max-w-[30rem] text-lg leading-[1.55] text-fog">
+              Upload a bill, notice or demand. Unsealed explains it in plain
+              English and shows you the exact words in the letter behind every
+              answer.
+            </p>
 
-        <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
-          <UploadPanel
-            onAnalyze={(file) => onAnalyze({ kind: "upload", file })}
-            privacyNote={PRIVACY_NOTES[mode]}
-          />
-        </div>
+            <UploadPanel
+              onAnalyze={(file) => onAnalyze({ kind: "upload", file })}
+              privacyNote={PRIVACY_NOTES[mode]}
+            />
+          </div>
 
-        <div className="lg:col-start-1 lg:row-start-2">
-          <h2 className="text-sm font-semibold tracking-widest text-ink-soft uppercase">
-            Five questions, answered
-          </h2>
-          <ul className="mt-3 max-w-md divide-y divide-line border-y border-line">
-            {QUESTIONS.map((question) => (
-              <li key={question} className="py-3 font-display text-xl">
-                {question}
-              </li>
-            ))}
-          </ul>
+          <EnvelopeScene />
         </div>
       </section>
 
-      <div className="space-y-16">
-        <SampleLetters
-          onChoose={(id) => onAnalyze({ kind: "sample", id })}
-          live={mode === "live"}
-        />
-        <HonestySection />
+      {/* Still on the desk: the same letter, read for how sure each answer
+          is. */}
+      <HonestySection />
+
+      {/* Then onto paper, where a sample can be opened. */}
+      <div className="band-paper band-dawn pb-12 sm:pb-16 lg:pb-20">
+        <div className="mx-auto w-full max-w-[80rem] px-5 sm:px-8">
+          <SampleLetters
+            onChoose={(id) => onAnalyze({ kind: "sample", id })}
+            live={mode === "live"}
+          />
+        </div>
       </div>
     </div>
   );

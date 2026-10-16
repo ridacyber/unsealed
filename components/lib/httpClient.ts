@@ -17,7 +17,7 @@ const SERVICE_ERRORS: ReadonlyMap<string, AnalysisErrorCode> = new Map<
 >([
   ["No file was uploaded.", "invalid_file"],
   ["That file is empty.", "invalid_file"],
-  ["That file is over 10 MB.", "invalid_file"],
+  ["That file is over 10 MB.", "file_too_large"],
   ["Please upload a PDF.", "invalid_file"],
   ["We couldn't open that PDF. Try a different file.", "unreadable"],
   [
@@ -53,6 +53,10 @@ export const httpClient: AnalysisClient = {
       if (signal?.aborted) throw error;
       throw new AnalysisError("upload_failed");
     }
+
+    // The hosting in front of the service turns away a request body over its
+    // limit before the service sees it, with a page rather than JSON.
+    if (response.status === 413) throw new AnalysisError("file_too_large");
 
     let payload: unknown;
     try {

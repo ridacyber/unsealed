@@ -2,6 +2,8 @@
 import { mockNotFound, mockResult } from "@/lib/mock";
 import type { AnalysisResult, Citation } from "@/lib/schema";
 import { indexDocument, locate } from "@/lib/verify";
+import { verifiedConflicts } from "./citation";
+import { countByStatus } from "./fields";
 
 export type SampleId = "partial" | "not-found" | "conflict";
 
@@ -144,4 +146,26 @@ export function getSample(id: SampleId): SampleLetterInfo {
   const sample = SAMPLE_LETTERS.find((candidate) => candidate.id === id);
   if (!sample) throw new Error(`Unknown sample: ${id}`);
   return sample;
+}
+
+/**
+ * What a sample's prepared result holds, in a few words: how many answers
+ * have each status, and whether two passages disagree. Read from the result
+ * itself, so it can't drift from what opening the sample shows.
+ */
+export function evidenceSummary(result: AnalysisResult): string[] {
+  const counts = countByStatus(result);
+  const parts: string[] = [];
+  if (counts.verified) parts.push(`${counts.verified} verified`);
+  if (counts.unsure) parts.push(`${counts.unsure} unsure`);
+  if (counts.not_found) parts.push(`${counts.not_found} not found`);
+  const conflicts = verifiedConflicts(result).length;
+  if (conflicts === 1) parts.push("two passages disagree");
+  if (conflicts > 1) parts.push(`${conflicts} pairs of passages disagree`);
+  return parts;
+}
+
+/** The sender, as the letter's first line gives it. */
+export function senderOf(result: AnalysisResult): string {
+  return result.documentText.split("\n").find((line) => line.trim())?.trim() ?? "";
 }

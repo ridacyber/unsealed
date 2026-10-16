@@ -60,6 +60,16 @@ test("a reply that isn't JSON is a general failure", async () => {
   assert.equal(await failureCode(), "processing_failed");
 });
 
+test("a 413 from the hosting, with no JSON, is the file being too large", async () => {
+  respondWith("<html>413 Request Entity Too Large</html>", 413);
+  assert.equal(await failureCode(), "file_too_large");
+});
+
+test("the service's own size message is the file being too large", async () => {
+  respondWith({ ok: false, error: "That file is over 10 MB." }, 422);
+  assert.equal(await failureCode(), "file_too_large");
+});
+
 test("a request that never gets a reply is a connection failure", async () => {
   globalThis.fetch = async () => {
     throw new TypeError("fetch failed");

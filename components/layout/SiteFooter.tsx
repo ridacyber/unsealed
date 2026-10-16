@@ -6,10 +6,11 @@ const LEGAL_LINKS = [
   { href: "/terms", label: "Terms of Service" },
 ] as const;
 
+/** The footer's colours follow the page it ends; see .site-footer in globals.css. */
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-line">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-5 py-6 text-sm text-ink-soft sm:px-8 md:flex-row md:items-start md:justify-between md:gap-10">
+    <footer className="site-footer mt-auto">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-5 py-6 text-sm sm:px-8 md:flex-row md:items-start md:justify-between md:gap-10">
         <p className="max-w-2xl">
           Unsealed helps you read a letter. It isn&rsquo;t legal or financial
           advice, and it&rsquo;s no substitute for the letter itself. If
@@ -22,7 +23,7 @@ export function SiteFooter() {
               <li key={href}>
                 <Link
                   href={href}
-                  className="inline-flex min-h-11 items-center underline decoration-ink-soft/40 underline-offset-4 hover:text-ink hover:decoration-ink"
+                  className="inline-flex min-h-11 items-center underline underline-offset-4"
                 >
                   {label}
                 </Link>

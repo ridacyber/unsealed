@@ -1,0 +1,675 @@
+/* owner: m */
+
+/*
+ * What Unsealed can and can't confirm, on the midnight desk. One made-up
+ * letter shows the three states in turn. The letter, its answers and its
+ * threads are decoration (aria-hidden); the steps beside them say the same
+ * in words.
+ *
+ * Wide screens (1280px and up): the letter stays in view (sticky) and
+ * shows the state whose step crosses the middle of the screen; the
+ * component sets data-active. Narrower: each step carries an excerpt.
+ */
+
+.chapter {
+  position: relative;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: 3.5rem 1.25rem 4.5rem;
+}
+
+.head {
+  display: grid;
+  gap: 0.9rem 4rem;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-fog);
+}
+
+.title {
+  max-width: 40rem;
+  font: 600 2.15rem/1.08 var(--font-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.title em {
+  font-weight: 500;
+  color: var(--color-ice);
+}
+
+.lead {
+  max-width: 34rem;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  color: var(--color-fog);
+}
+
+.body {
+  margin-top: 2.75rem;
+  display: grid;
+  gap: 2rem;
+}
+
+/* ---- The steps ---- */
+
+.steps {
+  position: relative;
+  margin: 0;
+  display: grid;
+  gap: 3.25rem;
+}
+
+.step dd {
+  margin: 0;
+}
+
+.meaning {
+  margin-top: 0.9rem;
+  max-width: 34rem;
+  font-size: 1.2rem;
+  line-height: 1.55;
+  color: var(--color-fog-strong);
+  text-wrap: pretty;
+}
+
+/*
+ * Says in words what the illustration shows. Below 1280px the excerpt right
+ * under it shows the same, so the words are kept for screen readers only.
+ */
+.example {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.exampleLabel {
+  margin-right: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-cyan-ink);
+}
+
+/* ---- The answers, in the shells they wear in the results ---- */
+
+.answer {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  padding: 1rem 1.1rem 1.1rem;
+  color: var(--color-ink);
+  box-shadow: 0 26px 50px -26px rgb(0 0 0 / 0.85);
+}
+
+.answer[data-status="verified"] {
+  border: 1px solid var(--color-line);
+  background: var(--color-sheet);
+}
+
+.answer[data-status="unsure"] {
+  border: 1px solid var(--color-unsure-line);
+  background: var(--color-unsure-tint);
+  padding-left: 1.5rem;
+}
+
+.answer[data-status="not_found"] {
+  border: 2px dashed var(--color-missing-line);
+  background: var(--color-missing-tint);
+}
+
+.answerBand {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 0.5rem;
+}
+
+/* As in the results: when the question and badge don't fit, the badge
+   wraps below rather than the question breaking. */
+.answerTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.4rem 0.75rem;
+}
+
+.answerQ {
+  padding-top: 0.15rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.answerValue {
+  margin-top: 0.4rem;
+  font: 600 2rem/1.1 var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.answerHeadline {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.answer[data-status="unsure"] .answerHeadline {
+  color: var(--color-unsure);
+}
+
+.answer[data-status="not_found"] .answerHeadline {
+  color: var(--color-missing);
+}
+
+.answerNote {
+  margin-top: 0.2rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--color-ink-soft);
+}
+
+/* ---- A phone's excerpt: the lines that matter, a thread, the answer ---- */
+
+.excerpt {
+  margin-top: 1.4rem;
+  display: grid;
+  justify-items: start;
+}
+
+.slip {
+  max-width: 30rem;
+  padding: 0.95rem 1.1rem;
+  border-radius: 4px;
+  background: var(--color-sheet);
+  color: var(--color-ink);
+  font: 400 0.82rem/1.65 var(--font-quote);
+  box-shadow: 0 22px 40px -24px rgb(0 0 0 / 0.85);
+}
+
+/* The tie between the letter and the answer, in the state's own line. */
+.tie {
+  position: relative;
+  margin-left: 2.25rem;
+  width: 0;
+  height: 1.9rem;
+  border-left: 1.5px solid var(--color-cyan-ink);
+}
+
+.excerpt[data-status="unsure"] .tie {
+  border-left: 1.5px dashed var(--color-unsure-line);
+}
+
+.excerpt[data-status="not_found"] .tie {
+  border-left: 1.5px dashed var(--color-missing-line);
+}
+
+/* Not found: the thread starts at an empty ring, with nothing to hold. */
+.excerpt[data-status="not_found"] .tie::before {
+  content: "";
+  position: absolute;
+  top: -0.45rem;
+  left: -0.55rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  border: 1.5px dashed var(--color-missing-line);
+  background: var(--color-midnight);
+}
+
+.excerpt .answer {
+  width: min(100%, 22rem);
+}
+
+/* ---- The letter's highlighter, shared by the excerpts and the specimen ---- */
+
+.slip mark,
+.sheet mark {
+  color: inherit;
+  border-radius: 2px;
+  padding: 0.04em 0.08em;
+  background: linear-gradient(var(--color-highlighter), var(--color-highlighter))
+    no-repeat 0 0 / 0% 100%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 160ms ease;
+}
+
+/* An excerpt's passages are swept once its step has been reached. */
+.step[data-seen] .slip mark {
+  background-size: 100% 100%;
+  transition: background-size 520ms var(--ease-out-strong) 120ms;
+}
+
+/* ---- The specimen: a wide screen's letter that stays in view ---- */
+
+.stickyColumn {
+  display: none;
+}
+
+.specimen {
+  position: relative;
+  padding: 1rem 0 2rem;
+}
+
+/*
+ * The light on the desk takes the colour of the state being shown: cool for
+ * verified, amber for unsure, grey for not found. Only opacity changes.
+ */
+.light {
+  position: absolute;
+  inset: -12% -10% -12% -18%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.light[data-for="verified"] {
+  background: radial-gradient(
+    closest-side at 38% 46%,
+    rgb(139 220 255 / 0.2),
+    rgb(49 75 236 / 0.08) 55%,
+    transparent
+  );
+}
+
+.light[data-for="unsure"] {
+  background: radial-gradient(
+    closest-side at 40% 46%,
+    rgb(219 166 51 / 0.22),
+    rgb(219 166 51 / 0.06) 55%,
+    transparent
+  );
+}
+
+.light[data-for="not_found"] {
+  background: radial-gradient(
+    closest-side at 40% 46%,
+    rgb(151 162 182 / 0.2),
+    rgb(151 162 182 / 0.05) 55%,
+    transparent
+  );
+}
+
+.specimen[data-active="verified"] .light[data-for="verified"],
+.specimen[data-active="unsure"] .light[data-for="unsure"],
+.specimen[data-active="not_found"] .light[data-for="not_found"] {
+  opacity: 1;
+}
+
+/*
+ * The letter, as it came out of the envelope: folded in three. Each crease
+ * is a soft shadow that deepens into the fold and stops at it, the way
+ * light falls on a sheet that has been folded and opened again.
+ */
+.sheet {
+  position: relative;
+  width: 54%;
+  padding: 1.7rem 1.75rem 1.9rem;
+  border-radius: 4px;
+  background-color: var(--color-sheet);
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent calc(33.3% - 14px),
+      rgb(20 33 58 / 0.05) 33.3%,
+      transparent 33.3%
+    ),
+    linear-gradient(
+      180deg,
+      transparent calc(66.6% - 14px),
+      rgb(20 33 58 / 0.045) 66.6%,
+      transparent 66.6%
+    ),
+    linear-gradient(180deg, rgb(20 33 58 / 0.02), transparent 30%);
+  color: var(--color-ink);
+  font: 400 0.82rem/1.62 var(--font-quote);
+  box-shadow:
+    0 40px 70px -34px rgb(0 0 0 / 0.9),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+.sheet p + p,
+.sheet p + div,
+.sheet div + p {
+  margin-top: 0.85em;
+}
+
+.sheetHead {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.versions {
+  display: grid;
+}
+
+.versions > p {
+  grid-area: 1 / 1;
+  transition:
+    opacity 220ms ease,
+    filter 220ms ease;
+}
+
+.withoutAmount {
+  opacity: 0;
+  filter: blur(3px);
+}
+
+.specimen[data-active="not_found"] .withAmount {
+  opacity: 0;
+  filter: blur(3px);
+}
+
+.specimen[data-active="not_found"] .withoutAmount {
+  opacity: 1;
+  filter: none;
+}
+
+/* The passages each state rests on. */
+.specimen[data-active="verified"] mark[data-key="amount"],
+.specimen[data-active="unsure"] mark[data-key="amount"],
+.specimen[data-active="unsure"] mark[data-key="due"],
+.specimen[data-active="unsure"] mark[data-key="form"] {
+  background-size: 100% 100%;
+  transition: background-size 480ms var(--ease-out-strong) 60ms;
+}
+
+/* One example answer at a time, in the same place; it arrives after the
+   previous one has gone. */
+.answers {
+  position: absolute;
+  top: 24%;
+  right: 0;
+  width: 37%;
+  display: grid;
+}
+
+.answers > .answer {
+  grid-area: 1 / 1;
+  align-self: start;
+  opacity: 0;
+  transform: translateY(10px);
+  filter: blur(4px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    filter 160ms ease;
+}
+
+.specimen[data-active="verified"] .answer[data-status="verified"],
+.specimen[data-active="unsure"] .answer[data-status="unsure"],
+.specimen[data-active="not_found"] .answer[data-status="not_found"] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition-duration: 380ms;
+  transition-delay: 140ms;
+  transition-timing-function: var(--ease-out-strong);
+}
+
+.threads {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.thread {
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.threadLine {
+  fill: none;
+  stroke: var(--color-cyan-ink);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.thread[data-for="unsure"] .threadLine {
+  stroke: var(--color-unsure-line);
+  stroke-dasharray: 3 5;
+}
+
+.thread[data-for="not_found"] .threadLine {
+  stroke: var(--color-missing-line);
+  stroke-dasharray: 3 5;
+}
+
+.threadReveal {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 10;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 160ms ease;
+}
+
+.threadPin {
+  fill: var(--color-highlighter);
+}
+
+.threadBracket {
+  fill: none;
+  stroke: var(--color-postal);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.thread[data-for="unsure"] .threadBracket {
+  stroke: #b7811d;
+}
+
+.thread[data-for="unsure"] .threadPin {
+  fill: var(--color-unsure-line);
+}
+
+.threadRing {
+  fill: var(--color-midnight);
+  stroke: var(--color-missing-line);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+/* The thread draws on once its answer has arrived. */
+.specimen[data-active="verified"] .thread[data-for="verified"],
+.specimen[data-active="unsure"] .thread[data-for="unsure"],
+.specimen[data-active="not_found"] .thread[data-for="not_found"] {
+  opacity: 1;
+  transition-delay: 200ms;
+}
+
+.specimen[data-active="verified"] .thread[data-for="verified"] .threadReveal,
+.specimen[data-active="unsure"] .thread[data-for="unsure"] .threadReveal,
+.specimen[data-active="not_found"] .thread[data-for="not_found"] .threadReveal {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 560ms var(--ease-out-strong) 280ms;
+}
+
+/* ---- The closing caution ---- */
+
+.caveat {
+  margin-top: 3.25rem;
+  max-width: 46rem;
+  padding-left: 1.25rem;
+  border-left: 2px solid rgb(214 236 255 / 0.3);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-fog-strong);
+}
+
+/* ---- Layouts ---- */
+
+@media (min-width: 640px) {
+  .chapter {
+    padding-inline: 2rem;
+  }
+
+  .title {
+    font-size: 2.75rem;
+  }
+}
+
+/* Tablet and small laptop: each step is a row, its excerpt beside it. */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .step dd {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+
+  .meaning {
+    grid-column: 1;
+  }
+
+  .excerpt {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 0.9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .chapter {
+    padding-block: 5rem 6rem;
+  }
+
+  .head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+    align-items: end;
+  }
+
+  .head .eyebrow {
+    grid-column: 1 / -1;
+  }
+
+  .title {
+    font-size: 3.25rem;
+  }
+}
+
+/* Wide: the letter stays in view while the steps go by. */
+@media (min-width: 1280px) {
+  .body {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    gap: 4.5rem;
+    align-items: start;
+  }
+
+  .stickyColumn {
+    display: block;
+    position: sticky;
+    top: max(4rem, calc(50vh - 17rem));
+  }
+
+  .excerpt {
+    display: none;
+  }
+
+  .example {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    margin-top: 0.75rem;
+    max-width: 34rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-fog);
+  }
+
+  /* A rail down the steps, with a node lit for the one on show. */
+  .steps {
+    gap: 0;
+    padding-left: 2.25rem;
+  }
+
+  .steps::before {
+    content: "";
+    position: absolute;
+    left: 0.45rem;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      var(--color-glass-line) 12%,
+      var(--color-glass-line) 88%,
+      transparent
+    );
+  }
+
+  .step {
+    position: relative;
+    min-height: 62vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .step:first-child {
+    min-height: 50vh;
+    justify-content: flex-start;
+    padding-top: 4.5rem;
+  }
+
+  .step::before {
+    content: "";
+    position: absolute;
+    left: -2.25rem;
+    top: 50%;
+    width: 0.95rem;
+    height: 0.95rem;
+    margin-top: -0.475rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-glass-line);
+    background: var(--color-midnight);
+    transition:
+      background-color 300ms ease,
+      border-color 300ms ease,
+      box-shadow 300ms ease;
+  }
+
+  .step:first-child::before {
+    top: 6.2rem;
+  }
+
+  .step[data-on][data-status="verified"]::before {
+    border-color: var(--color-cyan-ink);
+    background: var(--color-cyan-ink);
+    box-shadow: 0 0 0 5px rgb(139 220 255 / 0.16);
+  }
+
+  .step[data-on][data-status="unsure"]::before {
+    border-color: var(--color-unsure-line);
+    background: var(--color-unsure-line);
+    box-shadow: 0 0 0 5px rgb(219 166 51 / 0.18);
+  }
+
+  .step[data-on][data-status="not_found"]::before {
+    border-color: var(--color-missing-line);
+    border-style: dashed;
+    background: var(--color-midnight);
+    box-shadow: 0 0 0 5px rgb(151 162 182 / 0.16);
+  }
+}

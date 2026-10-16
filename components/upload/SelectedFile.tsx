@@ -1,32 +1,37 @@
 // owner: m
-import { CloseIcon, DocumentIcon } from "@/components/ui/icons";
 import { formatFileSize } from "@/components/lib/validateFile";
+
+const ACTION =
+  "inline-flex min-h-10 cursor-pointer items-center font-semibold text-white underline decoration-white/40 underline-offset-4 hover:decoration-white";
 
 interface SelectedFileProps {
   file: File;
+  /** The hidden file input, so "Choose a different file" can open it. */
+  inputId: string;
   onRemove: () => void;
 }
 
-export function SelectedFile({ file, onRemove }: SelectedFileProps) {
+/** The chosen file, in the drop zone, with the ways to change your mind. */
+export function SelectedFile({ file, inputId, onRemove }: SelectedFileProps) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-line bg-paper p-4">
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-tint text-postal">
-        <DocumentIcon width={24} height={24} />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="font-semibold break-words">{file.name}</p>
-        <p className="text-sm text-ink-soft">
-          PDF · {formatFileSize(file.size)}
-        </p>
+    <div className="min-w-0">
+      <p className="text-[1.05rem] font-bold break-words">{file.name}</p>
+      <p className="mt-0.5 text-[0.95rem] text-fog">
+        PDF &middot; {formatFileSize(file.size)} &middot; ready to analyze
+      </p>
+      <div className="flex flex-wrap gap-x-5">
+        <label htmlFor={inputId} className={ACTION}>
+          Choose a different file
+        </label>
+        <button
+          type="button"
+          onClick={onRemove}
+          aria-label={`Remove ${file.name}`}
+          className={ACTION}
+        >
+          Remove
+        </button>
       </div>
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label={`Remove ${file.name}`}
-        className="flex size-11 shrink-0 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-line/60 hover:text-ink"
-      >
-        <CloseIcon />
-      </button>
     </div>
   );
 }

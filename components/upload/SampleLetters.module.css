@@ -1,0 +1,313 @@
+/* owner: m */
+
+/*
+ * The sample letters, each half out of its envelope on a card of paper.
+ * The window and the letter in it are decoration; the card's words name
+ * the sample and say what its prepared result holds.
+ */
+
+.list {
+  margin-top: 2.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  text-align: left;
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-panel);
+  background: var(--color-sheet);
+  box-shadow: var(--shadow-raised);
+  cursor: pointer;
+  transition:
+    transform 200ms var(--ease-out-strong),
+    box-shadow 200ms ease,
+    border-color 160ms ease;
+}
+
+/* Keep the card's own corners under the focus ring. */
+.card:focus-visible {
+  border-radius: var(--radius-panel);
+}
+
+.card:active {
+  transform: scale(0.985);
+}
+
+.window {
+  position: relative;
+  display: block;
+  flex: none;
+  height: 8.5rem;
+  overflow: hidden;
+}
+
+.sheet {
+  position: absolute;
+  left: 17%;
+  right: 17%;
+  top: 1.1rem;
+  height: 9rem;
+  display: block;
+  padding: 0.85rem 0.9rem;
+  border-radius: 3px;
+  background: var(--color-sheet);
+  box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.7);
+  transition: transform 320ms var(--ease-out-strong);
+}
+
+.sender {
+  display: block;
+  overflow: hidden;
+  font: 700 0.62rem/1.3 var(--font-quote);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-ink);
+}
+
+.lines {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+}
+
+.lines i {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-line);
+}
+
+.lines i:nth-child(1) {
+  width: 92%;
+}
+
+.lines i:nth-child(2) {
+  width: 64%;
+  background: var(--color-highlighter);
+}
+
+.lines i:nth-child(3) {
+  width: 100%;
+}
+
+.lines i:nth-child(4) {
+  width: 86%;
+}
+
+.lines i:nth-child(5) {
+  width: 58%;
+}
+
+/* Each part of the summary stays on one line. */
+.tallyPart {
+  white-space: nowrap;
+}
+
+/* The envelope's front, with the lit edge the hero's envelope has. */
+.pocket {
+  position: absolute;
+  inset: auto 0 0;
+  height: 58%;
+  clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+  background-color: var(--color-brand-navy);
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgb(255 255 255 / 0.1) 0 1.5px,
+      transparent 1.5px 7px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgb(255 255 255 / 0.1) 0 1.5px,
+      transparent 1.5px 7px
+    ),
+    linear-gradient(
+      135deg,
+      var(--color-brand-navy) 20%,
+      var(--color-navy-2) 65%,
+      #4a3fb0
+    );
+}
+
+.pocket::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    0 0,
+    50% 55%,
+    100% 0,
+    100% 3px,
+    50% calc(55% + 2px),
+    0 3px
+  );
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-cyan),
+    var(--color-brand-blue) 50%,
+    var(--color-brand-violet)
+  );
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.2rem 1.35rem 1.35rem;
+}
+
+.kicker {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.title {
+  margin-top: 0.4rem;
+  font: 600 1.35rem/1.2 var(--font-display);
+  text-wrap: balance;
+}
+
+.shows {
+  margin-top: 0.35rem;
+  line-height: 1.45;
+  color: var(--color-ink-soft);
+}
+
+.tally {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.marks {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.marks i {
+  display: block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 3px;
+}
+
+.marks i[data-status="verified"] {
+  background: var(--color-verified);
+}
+
+.marks i[data-status="unsure"] {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-unsure-line) 0 2px,
+    var(--color-unsure-tint) 2px 4px
+  );
+  box-shadow: inset 0 0 0 1px var(--color-unsure-line);
+}
+
+.marks i[data-status="not_found"] {
+  border: 1.5px dashed var(--color-missing-line);
+}
+
+.cta {
+  margin-top: auto;
+  padding-top: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+  color: var(--color-postal);
+}
+
+.chevron {
+  transition: transform 200ms var(--ease-out-strong);
+}
+
+.upload {
+  margin-top: 2.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--color-line);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    border-color: rgb(49 75 236 / 0.55);
+    box-shadow: var(--shadow-float);
+    transform: translateY(-2px);
+  }
+
+  .card:hover .chevron {
+    transform: translateX(3px);
+  }
+
+  .card:hover .sheet {
+    transform: translateY(-0.65rem);
+  }
+}
+
+/* Focus shows the same lift as pointing does. */
+.card:focus-visible .sheet {
+  transform: translateY(-0.65rem);
+}
+
+/* A phone: a shorter window, so three cards don't run on. */
+@media (max-width: 639px) {
+  .window {
+    height: 6.25rem;
+  }
+
+  .sheet {
+    left: 22%;
+    right: 22%;
+    top: 0.85rem;
+  }
+
+  .body {
+    padding: 1rem 1.15rem 1.15rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Three across as soon as three fit; two and one would leave one alone. */
+@media (min-width: 768px) {
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .list {
+    gap: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card:hover,
+  .card:active,
+  .card:hover .sheet,
+  .card:focus-visible .sheet,
+  .card:hover .chevron {
+    transform: none;
+  }
+}
