@@ -730,3 +730,725 @@ h1:focus {
     transition-delay: 0s !important;
   }
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * The results workspace (components/results, components/document).
+ * Everything here is prefixed rw- and used only by the results view, so the
+ * landing page is untouched. It sits in the components layer, so a utility
+ * class on the same element (text-unsure, mt-3) still wins.
+ *
+ * The results sit on the midnight desk, like the landing page. Everything a
+ * person reads closely is paper on that desk: the answers, the notices and
+ * the letter, so the verification colours keep the contrast they were
+ * checked for on paper.
+ * ---------------------------------------------------------------------------
+ */
+@layer components {
+  .rw-results {
+    position: relative;
+  }
+
+  .rw-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-fog);
+  }
+
+  .rw-title {
+    margin-top: 0.9rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 1.5rem + 2.4vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    color: #fff;
+  }
+
+  .rw-summary {
+    margin-top: 0.5rem;
+    max-width: 44rem;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--color-fog-strong);
+  }
+
+  /* Paper on the desk: ink-coloured text and the paper focus ring. */
+  .rw-slip,
+  .rw-card,
+  .rw-notice,
+  .rw-passage,
+  .rw-evidence-figure,
+  .rw-sheet {
+    color: var(--color-ink);
+    --focus-ring: var(--color-postal);
+  }
+
+  .rw-slip {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-sheet);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .rw-preview-notice {
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+  }
+
+  /*
+   * The answers beside the letter. On a small laptop the letter gives up
+   * some width so the answers keep enough to read; on a phone the letter
+   * follows the answers.
+   */
+  .rw-workspace {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .rw-aside {
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .rw-workspace {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+      column-gap: 3rem;
+    }
+
+    .rw-aside {
+      position: sticky;
+      top: 1.5rem;
+      align-self: start;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .rw-workspace {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+      column-gap: 4.5rem;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .rw-workspace {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 34rem);
+      column-gap: 5rem;
+    }
+  }
+
+  /* Notices: slips laid on the desk above the answers. */
+  .rw-notice {
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .rw-notice-caution {
+    border: 1px solid var(--color-unsure-line);
+    background: var(--color-unsure-tint);
+  }
+
+  .rw-notice-verified {
+    border: 1px solid color-mix(in srgb, var(--color-verified) 35%, transparent);
+    background: var(--color-verified-tint);
+  }
+
+  /* The answer cards. */
+  .rw-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.25rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-sheet);
+    box-shadow: var(--shadow-raised);
+    transition:
+      transform 220ms var(--ease-out-strong),
+      box-shadow 220ms var(--ease-out-strong),
+      border-color 160ms ease;
+  }
+
+  .rw-card[data-status="unsure"] {
+    padding-left: 1.75rem;
+    border-color: var(--color-unsure-line);
+    background: var(--color-unsure-tint);
+  }
+
+  .rw-card[data-status="not_found"] {
+    border: 2px dashed var(--color-missing-line);
+    background: var(--color-missing-tint);
+    box-shadow: none;
+  }
+
+  @media (min-width: 640px) {
+    .rw-card {
+      padding: 1.5rem;
+    }
+
+    .rw-card[data-status="unsure"] {
+      padding-left: 2rem;
+    }
+  }
+
+  .rw-card-band {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 0.5rem;
+  }
+
+  .rw-card[data-clickable] {
+    cursor: pointer;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .rw-card[data-clickable]:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-float);
+    }
+  }
+
+  .rw-card[data-open] {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 2px var(--color-postal),
+      var(--shadow-float);
+  }
+
+  .rw-card-question {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+  }
+
+  .rw-card-value {
+    margin-top: 0.75rem;
+  }
+
+  .rw-card-value-figure {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .rw-card-value-long {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  .rw-card-value-sentence {
+    font-size: 1.2rem;
+    line-height: 1.55;
+  }
+
+  /* Where the thread leaves the card, when the letter is beside it. */
+  .rw-card-pin {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .rw-card-pin {
+      position: absolute;
+      top: 36px;
+      right: 0;
+      display: block;
+      width: 4px;
+      height: 8px;
+      border-radius: 4px 0 0 4px;
+      background: var(--color-postal);
+    }
+  }
+
+  .rw-evidence-toggle {
+    margin-top: 1rem;
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+    color: var(--color-postal);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-postal) 40%, transparent);
+    text-underline-offset: 4px;
+  }
+
+  .rw-evidence-toggle:hover,
+  .rw-link:hover {
+    text-decoration-color: var(--color-postal);
+  }
+
+  .rw-link {
+    font-weight: 600;
+    color: var(--color-postal);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-postal) 40%, transparent);
+    text-underline-offset: 4px;
+  }
+
+  .rw-link-on-desk {
+    font-weight: 600;
+    color: var(--color-cyan-ink);
+    text-decoration: underline;
+    text-decoration-color: rgb(139 220 255 / 0.45);
+    text-underline-offset: 4px;
+  }
+
+  .rw-link-on-desk:hover {
+    text-decoration-color: var(--color-cyan-ink);
+  }
+
+  /* The evidence inside a card: the passage, in the letter's own type. */
+  .rw-evidence {
+    margin-top: 1rem;
+    animation: rw-unfold 320ms var(--ease-out-strong) both;
+  }
+
+  .rw-evidence-figure {
+    padding: 1rem 1rem 1rem 1.25rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    background: var(--color-sheet);
+    box-shadow: inset 3px 0 0 var(--color-postal);
+  }
+
+  /* A quote that couldn't be matched never looks like the letter's own. */
+  .rw-evidence-figure:not([data-located]) {
+    border-style: dashed;
+    border-color: var(--color-missing-line);
+    box-shadow: inset 3px 0 0 var(--color-missing-line);
+  }
+
+  .rw-context {
+    color: var(--color-ink-soft);
+  }
+
+  /*
+   * Marks in the letter. Resting: underlined, for every passage an answer
+   * rests on. Active: highlighter, swept on. Related: the other passage of
+   * a conflict, lighter and outlined. Unsure evidence is dashed.
+   */
+  .rw-mark {
+    /* The amber for unsure and conflict marks on paper: a darker step of
+       --color-unsure-line, 3.3:1 against the white sheet. Outlines stand
+       off the fill, so the sheet is what they meet on both sides. */
+    --rw-mark-line: #b18629;
+    padding: 0.05em 0.08em;
+    border-radius: 2px;
+    background: transparent;
+    color: var(--color-ink);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .rw-mark[data-tone="resting"] {
+    background: color-mix(in srgb, var(--color-highlighter) 16%, transparent);
+    text-decoration: underline 2px;
+    text-decoration-color: #9c7400;
+    text-underline-offset: 0.22em;
+  }
+
+  .rw-mark[data-tone="resting"][data-status="unsure"] {
+    background: transparent;
+    text-decoration-style: dashed;
+    text-decoration-color: var(--rw-mark-line);
+  }
+
+  .rw-mark[data-tone="active"] {
+    background: linear-gradient(var(--color-highlighter), var(--color-highlighter)) no-repeat 0 0 / 100% 100%;
+    outline: 2px solid var(--rw-mark-line);
+    outline-offset: 1px;
+    animation: rw-sweep 420ms var(--ease-out-strong) both;
+  }
+
+  .rw-mark[data-tone="active"][data-status="unsure"] {
+    background-image: linear-gradient(#ffeaa3, #ffeaa3);
+    outline-style: dashed;
+  }
+
+  .rw-mark[data-tone="related"] {
+    background: color-mix(in srgb, var(--color-highlighter) 38%, transparent);
+    outline: 1px dashed var(--rw-mark-line);
+    outline-offset: 1px;
+  }
+
+  /*
+   * A conflict's passage number, matching the number in the warning. It is
+   * drawn on the passage's first character, which can't be wrapped away from
+   * it, so the number never ends a line on its own.
+   */
+  .rw-mark-lead {
+    white-space: nowrap;
+  }
+
+  .rw-mark-lead::before {
+    content: attr(data-tag);
+    display: inline-grid;
+    place-items: center;
+    width: 1.35em;
+    height: 1.35em;
+    margin-right: 0.3em;
+    border-radius: 999px;
+    background: var(--color-unsure);
+    color: #fff;
+    font: 700 0.72em/1 var(--font-sans);
+    vertical-align: 0.12em;
+  }
+
+  /* Conflicts. */
+  .rw-dispute {
+    padding: 1.25rem 1.25rem 1.25rem 1.75rem;
+    border-color: var(--color-unsure-line);
+    background: var(--color-unsure-tint);
+  }
+
+  @media (min-width: 640px) {
+    .rw-dispute {
+      padding: 1.5rem 1.5rem 1.5rem 2rem;
+    }
+  }
+
+  .rw-dispute-next {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-unsure-line);
+  }
+
+  .rw-dispute-count {
+    margin-bottom: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-unsure);
+  }
+
+  .rw-passage {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    background: var(--color-sheet);
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  .rw-passage[data-active] {
+    border-color: var(--color-postal);
+    box-shadow:
+      0 0 0 2px var(--color-postal),
+      var(--shadow-raised);
+  }
+
+  .rw-passage-tag {
+    display: inline-grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 999px;
+    background: var(--color-unsure);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* The letter: a sheet held in a tray on the desk. */
+  .rw-tray {
+    overflow: hidden;
+    border: 1px solid var(--color-glass-line);
+    border-radius: var(--radius-panel);
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.03));
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.8);
+    color: #fff;
+  }
+
+  .rw-tray-head {
+    padding: 1.25rem 1.5rem 1rem;
+  }
+
+  .rw-scroller {
+    max-height: 70vh;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 1rem;
+    border-block: 1px solid var(--color-glass-line);
+    background: rgb(4 10 32 / 0.45);
+  }
+
+  @media (min-width: 640px) {
+    .rw-scroller {
+      padding: 1.5rem;
+    }
+  }
+
+  /*
+   * Beside the answers, the tray never runs taller than the window, so its
+   * caption and controls stay in reach while it stays in place; the letter's
+   * own window gives up the height.
+   */
+  @media (min-width: 1024px) {
+    .rw-tray {
+      display: flex;
+      max-height: calc(100vh - 3rem);
+      flex-direction: column;
+    }
+
+    .rw-tray-head,
+    .rw-tray-foot {
+      flex: none;
+    }
+
+    .rw-scroller {
+      max-height: none;
+      min-height: 10rem;
+      flex: 1 1 auto;
+    }
+  }
+
+  .rw-sheet {
+    position: relative;
+    padding: 1.5rem 1.25rem 1.75rem 2rem;
+    border-radius: 3px;
+    background: var(--color-sheet);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.3),
+      0 24px 48px -20px rgb(0 0 0 / 0.7);
+  }
+
+  @media (min-width: 640px) {
+    .rw-sheet {
+      padding: 2.25rem 2.25rem 2.5rem 2.75rem;
+    }
+  }
+
+  .rw-sheet-empty {
+    color: var(--color-ink-soft);
+  }
+
+  .rw-tray-foot {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .rw-legend {
+    margin-top: 0.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    font-size: 0.8rem;
+    color: var(--color-fog);
+  }
+
+  .rw-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .rw-swatch {
+    flex: none;
+    width: 1.4rem;
+    height: 0.8rem;
+    border-radius: 2px;
+  }
+
+  .rw-swatch-active {
+    background: var(--color-highlighter);
+  }
+
+  .rw-swatch-related {
+    background: color-mix(in srgb, var(--color-highlighter) 38%, transparent);
+    outline: 1px dashed var(--color-unsure-line);
+  }
+
+  .rw-swatch-resting {
+    height: 0.6rem;
+    border-bottom: 2px solid #9c7400;
+    border-radius: 0;
+    background: color-mix(in srgb, var(--color-highlighter) 16%, transparent);
+  }
+
+  /*
+   * The thread from the chosen card to the bracket beside its passage. Only
+   * drawn where the card and the letter stand side by side; never takes a
+   * pointer. Verified evidence is a solid thread; unsure evidence and
+   * conflicting passages are broken, in amber.
+   */
+  .rw-threads {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  @media (min-width: 1024px) {
+    .rw-threads {
+      display: block;
+    }
+  }
+
+  .rw-thread-line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .rw-thread[data-tone="unsure"] .rw-thread-line,
+  .rw-thread[data-tone="conflict"] .rw-thread-line {
+    stroke-dasharray: 4 6;
+  }
+
+  .rw-thread-ink-from {
+    stop-color: var(--color-ice);
+  }
+
+  .rw-thread-ink-to {
+    stop-color: var(--color-highlighter);
+  }
+
+  .rw-thread[data-tone="unsure"] .rw-thread-ink-from,
+  .rw-thread[data-tone="conflict"] .rw-thread-ink-from {
+    stop-color: #ffd98a;
+  }
+
+  .rw-thread[data-tone="unsure"] .rw-thread-ink-to,
+  .rw-thread[data-tone="conflict"] .rw-thread-ink-to {
+    stop-color: var(--color-unsure-line);
+  }
+
+  /* A solid copy that draws on and reveals the visible line through a mask. */
+  .rw-thread-reveal {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 12;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: rw-draw 560ms var(--ease-out-strong) 60ms forwards;
+  }
+
+  .rw-thread-bracket {
+    fill: none;
+    stroke: #9c7400;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    animation: rw-appear 240ms ease 420ms forwards;
+  }
+
+  .rw-thread[data-tone="unsure"] .rw-thread-bracket,
+  .rw-thread[data-tone="conflict"] .rw-thread-bracket {
+    stroke: var(--color-unsure);
+  }
+
+  .rw-thread-pin {
+    fill: var(--color-ice);
+    stroke: var(--color-midnight);
+    stroke-width: 1.5;
+  }
+
+  /* Said when a file is dropped on the results: it isn't opened. */
+  .rw-drop-note {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    z-index: 50;
+    width: min(34rem, calc(100vw - 2rem));
+    padding: 0.9rem 1.1rem;
+    border: 1px solid rgb(139 220 255 / 0.35);
+    border-radius: var(--radius-card);
+    background: rgb(10 20 52 / 0.95);
+    box-shadow: var(--shadow-float);
+    color: #fff;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 1rem);
+    transition:
+      opacity 180ms ease,
+      transform 240ms var(--ease-out-strong);
+  }
+
+  .rw-drop-note[data-on] {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  @keyframes rw-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes rw-appear {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes rw-sweep {
+    from {
+      background-size: 0% 100%;
+    }
+  }
+
+  @keyframes rw-unfold {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+
+  /* Reduced motion: everything arrives at once, and nothing lifts. */
+  @media (prefers-reduced-motion: reduce) {
+    .rw-evidence,
+    .rw-mark,
+    .rw-thread-reveal,
+    .rw-thread-bracket {
+      animation: none !important;
+    }
+
+    .rw-thread-reveal {
+      stroke-dashoffset: 0;
+    }
+
+    .rw-thread-bracket {
+      opacity: 1;
+    }
+
+    .rw-card,
+    .rw-card[data-open],
+    .rw-card[data-clickable]:hover {
+      transform: none !important;
+    }
+
+    .rw-drop-note {
+      transform: translate(-50%, 0) !important;
+    }
+  }
+}

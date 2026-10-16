@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { TextRange } from "@/components/lib/citation";
 import { HighlightedText } from "./HighlightedText";
+import type { LetterMark } from "./letterMarks";
 
 /**
  * The evidence being inspected: the quote behind one answer, or one of two
@@ -25,12 +26,20 @@ interface DocumentPanelProps {
   documentText: string;
   letterName: string;
   focus: EvidenceFocus | null;
+  /** Confirmed passages to mark in the letter. */
+  marks: readonly LetterMark[];
 }
 
+/**
+ * The letter as Unsealed read it: a sheet of paper held in a tray on the
+ * desk. It scrolls on its own, so a long letter never pushes the answers
+ * away, and it brings the passage being inspected into view.
+ */
 export function DocumentPanel({
   documentText,
   letterName,
   focus,
+  marks,
 }: DocumentPanelProps) {
   const [isLarge, setIsLarge] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -40,6 +49,8 @@ export function DocumentPanel({
   const range = focus?.range ?? null;
   const rangeStart = range?.start;
   const rangeEnd = range?.end;
+  const hasResting = marks.some((mark) => mark.tone === "resting");
+  const hasRelated = marks.some((mark) => mark.tone === "related");
 
   // Bring the highlighted passage into view inside the panel, without
   // moving the rest of the page.
@@ -58,50 +69,77 @@ export function DocumentPanel({
     <section
       id="your-letter"
       aria-labelledby="letter-heading"
-      className="scroll-mt-4 overflow-hidden rounded-2xl border border-line bg-sheet"
+      className="rw-tray scroll-mt-4"
     >
-      <div className="px-5 py-4">
-        <h2 id="letter-heading" className="font-display text-xl font-semibold">
+      <div className="rw-tray-head">
+        <p className="rw-eyebrow">
+          <span aria-hidden="true" className="eyebrow-rule" />
+          The source
+        </p>
+        <h2 id="letter-heading" className="mt-2 font-display text-2xl font-semibold">
           Your letter
         </h2>
-        <p className="text-sm break-words text-ink-soft lg:truncate">
+        <p className="mt-0.5 text-sm break-words text-fog lg:truncate">
           {letterName} · the text as Unsealed read it
         </p>
       </div>
 
       <div
         ref={scrollerRef}
-        className="envelope-lining-soft scroll-calm max-h-[75vh] overflow-auto p-4 sm:p-6 lg:max-h-[calc(100vh-15rem)]"
+        data-letter-scroller=""
+        className="rw-scroller scroll-calm"
       >
         {hasText ? (
-          <div className="bg-white p-5 shadow-[0_1px_3px_rgb(20_33_58/0.2),0_10px_24px_-12px_rgb(20_33_58/0.35)] sm:p-8">
+          <div data-letter-sheet="" className="rw-sheet">
             <HighlightedText
               text={documentText}
-              range={range}
+              marks={marks}
               markRef={markRef}
               className={
-                isLarge ? "text-xl leading-loose" : "text-base leading-relaxed"
+                isLarge ? "text-xl leading-loose" : "text-[0.95rem] leading-[1.75]"
               }
             />
           </div>
         ) : (
-          <p className="rounded-lg bg-sheet p-6 text-ink-soft">
+          <p className="rw-sheet rw-sheet-empty">
             The text of this letter isn&rsquo;t available. The quotes beside
             each detail still show what the letter says.
           </p>
         )}
       </div>
 
-      <div className="flex items-start justify-between gap-4 border-t border-line px-5 py-4">
-        <div aria-live="polite" className="text-ink-soft">
-          <EvidenceCaption focus={focus} />
+      <div className="rw-tray-foot">
+        <div className="min-w-0">
+          <div aria-live="polite" className="text-fog-strong">
+            <EvidenceCaption focus={focus} />
+          </div>
+          {hasText && (hasResting || focus) && (
+            <ul className="rw-legend" aria-label="How the letter is marked">
+              <li>
+                <span aria-hidden="true" className="rw-swatch rw-swatch-active" />
+                Highlighted: the passage you chose
+              </li>
+              {hasRelated && (
+                <li>
+                  <span aria-hidden="true" className="rw-swatch rw-swatch-related" />
+                  Numbered: the two passages that may disagree
+                </li>
+              )}
+              {hasResting && (
+                <li>
+                  <span aria-hidden="true" className="rw-swatch rw-swatch-resting" />
+                  Underlined: passages the answers rest on
+                </li>
+              )}
+            </ul>
+          )}
         </div>
         {hasText && (
           <button
             type="button"
             aria-pressed={isLarge}
             onClick={() => setIsLarge((large) => !large)}
-            className="shrink-0 font-semibold text-postal underline decoration-postal/40 underline-offset-4 hover:decoration-postal"
+            className="rw-link-on-desk shrink-0"
           >
             Larger text
           </button>

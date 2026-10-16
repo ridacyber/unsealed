@@ -10,26 +10,42 @@ import {
   type SampleId,
 } from "@/components/lib/samples";
 import { ResultsView } from "@/components/results/ResultsView";
+import type { Fixture } from "./fixtures";
 
-const LINK =
-  "font-semibold text-postal underline decoration-postal/40 underline-offset-4 hover:decoration-postal";
+const LINK = "rw-link mr-4 inline-block";
 
-export function ResultsPreview({ sample }: { sample: SampleId }) {
+// A fixture arrives already chosen by the server page, so the fixtures
+// themselves never ship to the browser.
+type ResultsPreviewProps = { sample: SampleId; fixture?: never } | { fixture: Fixture; sample?: never };
+
+export function ResultsPreview(props: ResultsPreviewProps) {
   const router = useRouter();
-  const { title, result } = getSample(sample);
   const goHome = () => router.push("/");
 
-  return (
-    <>
-      <SiteHeader onStartOver={goHome} showDemoTag wide />
-
-      <main className="flex-1">
-        <ResultsView
-          // A fresh view per sample, so no evidence stays open across them.
-          key={sample}
-          result={result}
-          letterName={title}
-          notice={
+  const view = props.fixture
+    ? (() => {
+        const { id, title, result, checks } = props.fixture;
+        return {
+          key: `fixture-${id}`,
+          title,
+          result,
+          notice: (
+            <>
+              <strong>Test fixture: a made-up letter with prepared answers.</strong>{" "}
+              It isn&rsquo;t an analysis and no AI call was made. It checks how
+              results are shown: {checks.toLowerCase()}.
+            </>
+          ),
+        };
+      })()
+    : (() => {
+        const sample = props.sample;
+        const { title, result } = getSample(sample);
+        return {
+          key: sample,
+          title,
+          result,
+          notice: (
             <>
               <strong>Preview: this is sample data.</strong> It shows a
               sample result, not a letter you uploaded.{" "}
@@ -41,16 +57,31 @@ export function ResultsPreview({ sample }: { sample: SampleId }) {
                       ? "/results"
                       : `/results?mock=${other.id}`
                   }
-                  className={`${LINK} mr-4 inline-block`}
+                  className={LINK}
                 >
                   See &ldquo;{other.title}&rdquo;
                 </Link>
               ))}
             </>
-          }
+          ),
+        };
+      })();
+
+  return (
+    // The results sit on the midnight desk, as they do after an analysis.
+    <div className="surface-midnight flex flex-1 flex-col">
+      <SiteHeader onStartOver={goHome} showDemoTag wide surface="midnight" />
+
+      <main className="flex-1">
+        <ResultsView
+          // A fresh view per sample, so no evidence stays open across them.
+          key={view.key}
+          result={view.result}
+          letterName={view.title}
+          notice={view.notice}
           onStartOver={goHome}
         />
       </main>
-    </>
+    </div>
   );
 }

@@ -22,7 +22,8 @@ interface ConflictWarningsProps {
 
 /**
  * Says that two passages of the letter may not agree, and shows both. It
- * takes no side: which passage is right is for the sender to say.
+ * takes no side: which passage is right is for the sender to say. Each
+ * conflict stands alone; nothing here ties it to a particular answer.
  */
 export function ConflictWarnings({
   conflicts,
@@ -35,14 +36,8 @@ export function ConflictWarnings({
   if (conflicts.length === 0) return null;
 
   return (
-    <section
-      aria-labelledby={headingId}
-      className="relative overflow-hidden rounded-xl border border-unsure-line bg-unsure-tint p-5 pl-7 sm:p-6 sm:pl-8"
-    >
-      <span
-        aria-hidden="true"
-        className="unsure-band absolute inset-y-0 left-0 w-2"
-      />
+    <section aria-labelledby={headingId} className="rw-slip rw-dispute">
+      <span aria-hidden="true" className="unsure-band rw-card-band" />
 
       <h2
         id={headingId}
@@ -60,10 +55,13 @@ export function ConflictWarnings({
       {conflicts.map((conflict, index) => (
         <div
           key={index}
-          className={
-            index === 0 ? "mt-5" : "mt-6 border-t border-unsure-line pt-5"
-          }
+          className={index === 0 ? "mt-5" : "rw-dispute-next"}
         >
+          {conflicts.length > 1 && (
+            <p className="rw-dispute-count">
+              Possible conflict {index + 1} of {conflicts.length}
+            </p>
+          )}
           <h3 className="text-sm font-semibold text-ink-soft">
             What Unsealed noticed
           </h3>
@@ -78,16 +76,19 @@ export function ConflictWarnings({
                 return (
                   <figure
                     key={side}
-                    className={`flex flex-col rounded-lg border bg-sheet p-4 ${
-                      isActive ? "border-postal ring-2 ring-postal" : "border-line"
-                    }`}
+                    data-active={isActive ? "" : undefined}
+                    data-evidence-source={isActive ? "" : undefined}
+                    className="rw-passage"
                   >
-                    <figcaption className="text-sm font-semibold text-ink-soft">
+                    <figcaption className="flex items-center gap-2 text-sm font-semibold text-ink-soft">
+                      <span aria-hidden="true" className="rw-passage-tag">
+                        {side + 1}
+                      </span>
                       {PASSAGE_CAPTIONS[side]}
                     </figcaption>
                     <blockquote
                       id={quoteId}
-                      className="mt-1.5 font-quote text-[1.05rem] leading-relaxed break-words"
+                      className="mt-2 font-quote text-[1rem] leading-[1.65] break-words"
                     >
                       &ldquo;{passage.quote}&rdquo;
                     </blockquote>
@@ -103,14 +104,14 @@ export function ConflictWarnings({
                               : { index, side: side === 0 ? 0 : 1 },
                           )
                         }
-                        className="inline-flex min-h-11 items-center text-left font-semibold text-postal underline decoration-postal/40 underline-offset-4 hover:decoration-postal"
+                        className="rw-evidence-toggle mt-0 text-left"
                       >
                         Show passage {side + 1} in your letter
                       </button>
                       {isActive && (
                         <a
                           href="#your-letter"
-                          className="mt-1 block font-semibold text-postal underline decoration-postal/40 underline-offset-4 hover:decoration-postal lg:hidden"
+                          className="rw-link mt-1 block lg:hidden"
                         >
                           See it in your letter
                         </a>

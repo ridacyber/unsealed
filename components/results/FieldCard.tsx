@@ -2,10 +2,11 @@
 "use client";
 
 import { useId, type MouseEvent } from "react";
+import type { PassageInContext } from "@/components/document/letterMarks";
 import { quoteOf } from "@/components/lib/citation";
 import { displayStatus, FIELD_META } from "@/components/lib/fields";
 import { ChevronIcon } from "@/components/ui/icons";
-import type { Field, FieldName, FieldStatus } from "@/lib/schema";
+import type { Field, FieldName } from "@/lib/schema";
 import { Evidence } from "./Evidence";
 import { StatusBadge } from "./StatusBadge";
 
@@ -14,12 +15,6 @@ const SHORT_VALUE_LENGTH = 20;
 
 const UNSURE_HEADLINE = "We couldn't confirm this";
 const NOT_FOUND_HEADLINE = "The letter doesn't say";
-
-const SHELLS: Record<FieldStatus, string> = {
-  verified: "border border-line bg-sheet",
-  unsure: "border border-unsure-line bg-unsure-tint pl-3",
-  not_found: "border-2 border-dashed border-missing-line bg-missing-tint",
-};
 
 /** A note worth showing: present, and more than the headline repeated. */
 function addsTo(headline: string, note: string | null): note is string {
@@ -38,15 +33,24 @@ interface FieldCardProps {
   isOpen: boolean;
   /** Whether the quote's place in the letter is known. */
   located: boolean;
+  /** The located passage with a little of the letter around it. */
+  context?: PassageInContext | null;
   onToggle: (open: boolean) => void;
 }
 
+/**
+ * One of the four answers, on a card of its own. Its state is said in words
+ * and shown by its badge, its border and its shape, never by colour alone:
+ * a verified answer is printed; an unsure one is striped and gives no value;
+ * a missing one is a dashed gap that says so.
+ */
 export function FieldCard({
   name,
   field,
   prominent = false,
   isOpen,
   located,
+  context,
   onToggle,
 }: FieldCardProps) {
   const headingId = useId();
@@ -69,20 +73,21 @@ export function FieldCard({
     <article
       aria-labelledby={headingId}
       data-status={status}
+      data-field={name}
+      data-open={isOpen ? "" : undefined}
+      data-clickable={quote && !isOpen ? "" : undefined}
+      // The thread to the letter starts here, and only for a passage the
+      // letter has been confirmed to hold.
+      data-evidence-source={isOpen && located ? "" : undefined}
       onClick={handleCardClick}
-      className={`relative overflow-hidden rounded-xl p-5 transition-shadow sm:p-6 ${SHELLS[status]} ${
-        isOpen ? "ring-2 ring-postal" : ""
-      } ${quote && !isOpen ? "cursor-pointer hover:shadow-md" : ""}`}
+      className="rw-card"
     >
       {status === "unsure" && (
-        <span
-          aria-hidden="true"
-          className="unsure-band absolute inset-y-0 left-0 w-2"
-        />
+        <span aria-hidden="true" className="unsure-band rw-card-band" />
       )}
 
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-        <h2 id={headingId} className="text-lg font-semibold text-ink-soft">
+        <h2 id={headingId} className="rw-card-question">
           {question}
         </h2>
         <StatusBadge status={status} />
@@ -92,10 +97,10 @@ export function FieldCard({
         <p
           className={
             prominent && value.length <= SHORT_VALUE_LENGTH
-              ? "mt-3 font-display text-4xl leading-tight font-semibold"
+              ? "rw-card-value rw-card-value-figure"
               : prominent
-                ? "mt-3 font-display text-2xl leading-snug font-semibold text-balance"
-                : "mt-3 text-xl leading-relaxed"
+                ? "rw-card-value rw-card-value-long"
+                : "rw-card-value rw-card-value-sentence"
           }
         >
           {value}
@@ -109,7 +114,7 @@ export function FieldCard({
           <p className="mt-3 text-xl font-semibold text-unsure">
             {UNSURE_HEADLINE}
           </p>
-          <p className="mt-2 text-lg leading-relaxed">
+          <p className="mt-2 text-[1.05rem] leading-relaxed">
             {addsTo(UNSURE_HEADLINE, field.note)
               ? field.note
               : `Unsealed found something about ${claim} but couldn't confirm it, so no answer is given here. Check the letter itself, or ask the sender.`}
@@ -122,7 +127,7 @@ export function FieldCard({
           <p className="mt-3 text-xl font-semibold text-missing">
             {NOT_FOUND_HEADLINE}
           </p>
-          <p className="mt-2 text-lg leading-relaxed">
+          <p className="mt-2 text-[1.05rem] leading-relaxed">
             {addsTo(NOT_FOUND_HEADLINE, field.note)
               ? field.note
               : `Unsealed found nothing about ${claim} in this letter, so this is left blank rather than guessed.`}
@@ -137,7 +142,7 @@ export function FieldCard({
             aria-expanded={isOpen}
             aria-controls={evidenceId}
             onClick={() => onToggle(!isOpen)}
-            className="mt-4 inline-flex min-h-11 items-center gap-1 font-semibold text-postal underline decoration-postal/40 underline-offset-4 hover:decoration-postal"
+            className="rw-evidence-toggle"
           >
             {!located
               ? "Show the unmatched quote"
@@ -151,10 +156,14 @@ export function FieldCard({
             />
           </button>
           <div id={evidenceId} hidden={!isOpen}>
-            {isOpen && <Evidence quote={quote} located={located} />}
+            {isOpen && (
+              <Evidence quote={quote} located={located} context={context} />
+            )}
           </div>
         </>
       )}
+
+      {isOpen && located && <span aria-hidden="true" className="rw-card-pin" />}
     </article>
   );
 }

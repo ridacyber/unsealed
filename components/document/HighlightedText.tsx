@@ -1,39 +1,77 @@
 // owner: m
 import type { Ref } from "react";
-import type { TextRange } from "@/components/lib/citation";
+import {
+  segmentLetter,
+  splitLead,
+  strongest,
+  type LetterMark,
+} from "./letterMarks";
 
 interface HighlightedTextProps {
   text: string;
-  /** The passage to mark, or null to show the text plain. */
-  range: TextRange | null;
+  /** Confirmed passages to mark; an empty list shows the text plain. */
+  marks: readonly LetterMark[];
+  /** Given to the first part of the active passage, to scroll it into view. */
   markRef?: Ref<HTMLElement>;
   className?: string;
 }
 
-/** The letter's text, with one passage marked like a highlighter pen. */
+/**
+ * The letter's text, exactly as read, with its passages marked like a
+ * highlighter pen: the one being inspected brightly, the passages other
+ * answers rest on faintly. The marks only decorate the text; every character
+ * is shown, in order.
+ */
 export function HighlightedText({
   text,
-  range,
+  marks,
   markRef,
   className = "",
 }: HighlightedTextProps) {
+  const segments = segmentLetter(text, marks);
+  // The ref goes to the first part of the active passage.
+  const firstActive = segments.find(
+    (segment) => strongest(segment.marks)?.tone === "active",
+  )?.start;
+
   return (
     <p className={`font-quote break-words whitespace-pre-wrap ${className}`}>
-      {range ? (
-        <>
-          {text.slice(0, range.start)}
+      {segments.map((segment) => {
+        const lead = strongest(segment.marks);
+        if (!lead) return segment.text;
+
+        const isActive = lead.tone === "active";
+        const giveRef = isActive && segment.start === firstActive;
+        // A tag is shown once, where its passage begins.
+        const tag =
+          lead.tag && lead.range.start === segment.start ? lead.tag : undefined;
+        // The tag is held to the passage's first character, so a line can't
+        // end between the number and the words it numbers.
+        const [first, rest] = tag ? splitLead(segment.text) : ["", segment.text];
+
+        return (
           <mark
-            ref={markRef}
-            data-testid="letter-highlight"
-            className="rounded-xs bg-highlighter/60 box-decoration-clone text-ink outline-2 outline-unsure-line/80"
+            key={segment.start}
+            ref={giveRef ? markRef : undefined}
+            data-testid={isActive ? "letter-highlight" : undefined}
+            data-mark-active={isActive ? "" : undefined}
+            data-tone={lead.tone}
+            data-status={lead.status}
+            className="rw-mark"
           >
-            {text.slice(range.start, range.end)}
+            {tag ? (
+              <>
+                <span className="rw-mark-lead" data-tag={tag}>
+                  {first}
+                </span>
+                {rest}
+              </>
+            ) : (
+              segment.text
+            )}
           </mark>
-          {text.slice(range.end)}
-        </>
-      ) : (
-        text
-      )}
+        );
+      })}
     </p>
   );
 }
