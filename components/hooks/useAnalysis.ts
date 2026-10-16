@@ -70,6 +70,28 @@ export function analysisReducer(
   }
 }
 
+/** The screen a state is shown on. */
+export type Screen = "landing" | "processing" | "results" | "error";
+
+/**
+ * Which screen to show. A prepared sample has nothing to wait for: its answers
+ * arrive a moment after it is chosen, so the landing stays up until then
+ * rather than a waiting screen flashing past. The state still passes through
+ * "processing" as before; only what is drawn for it differs.
+ */
+export function screenFor(state: AnalysisState): Screen {
+  switch (state.phase) {
+    case "idle":
+      return "landing";
+    case "processing":
+      return state.source.kind === "sample" ? "landing" : "processing";
+    case "done":
+      return "results";
+    case "failed":
+      return "error";
+  }
+}
+
 export function useAnalysis(client: AnalysisClient = defaultClient) {
   const [state, dispatch] = useReducer(analysisReducer, { phase: "idle" });
   const controllerRef = useRef<AbortController | null>(null);

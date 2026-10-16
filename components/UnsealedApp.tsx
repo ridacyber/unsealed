@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { ErrorView } from "@/components/errors/ErrorView";
 import {
+  screenFor,
   sourceLabel,
   useAnalysis,
   type AnalysisSource,
@@ -28,31 +29,31 @@ export function UnsealedApp() {
     state.phase === "done" && mode === "mock" && state.source.kind === "upload";
   // A sample's answers were written ahead of time; nothing analyzes it.
   const isSample = state.phase !== "idle" && state.source.kind === "sample";
-  // The landing page and the results sit on the midnight desk; processing
-  // and failures are still on paper.
-  const onDesk = state.phase === "idle" || state.phase === "done";
+  const screen = screenFor(state);
 
+  // Every step of the flow sits on the midnight desk: the landing page, the
+  // wait, the results and a failure.
   return (
-    <div
-      className={`flex flex-1 flex-col ${onDesk ? "surface-midnight" : ""}`}
-    >
+    <div className="surface-midnight flex flex-1 flex-col">
       <SiteHeader
-        onStartOver={state.phase === "idle" ? undefined : reset}
+        onStartOver={screen === "landing" ? undefined : reset}
         showDemoTag={mode === "mock"}
         wide={state.phase === "done"}
-        surface={onDesk ? "midnight" : "paper"}
+        surface="midnight"
       />
 
       <main className="flex-1">
-        {state.phase === "idle" && (
+        {screen === "landing" && (
           <Landing
             onAnalyze={handleAnalyze}
             mode={mode}
-            returning={hasStarted}
+            // Only on coming back to it: a landing kept up while a sample
+            // opens must not jump to its top.
+            returning={hasStarted && state.phase === "idle"}
           />
         )}
 
-        {state.phase === "processing" && (
+        {screen === "processing" && state.phase === "processing" && (
           <ProcessingView
             fileName={sourceLabel(state.source)}
             stage={state.stage}
