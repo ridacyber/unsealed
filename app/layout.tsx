@@ -15,10 +15,11 @@ const atkinson = Atkinson_Hyperlegible_Next({
   fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
 });
 
-// Headings and key figures.
+// Headings and key figures. The italic is for emphasis within a heading.
 const besley = Besley({
   variable: "--font-besley",
   subsets: ["latin"],
+  style: ["normal", "italic"],
 });
 
 // The letter's own words, so quotes never look like Unsealed's words.

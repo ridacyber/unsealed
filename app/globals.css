@@ -4,24 +4,72 @@
 @theme {
   /* Paper and ink */
   --color-paper: #f4f6fb;
+  --color-paper-2: #e9edf6;
   --color-sheet: #ffffff;
   --color-ink: #14213a;
   --color-ink-soft: #46536b;
   --color-line: #d5dce9;
 
-  /* Fountain-pen blue: the one accent for links, buttons and focus */
-  --color-postal: #2447a8;
-  --color-postal-deep: #1a3582;
+  /*
+   * The one accent for links, buttons and focus: the logo's blue, the only
+   * brand colour dark enough to carry text on paper.
+   */
+  --color-postal: #314bec;
+  --color-postal-deep: #2a42cc;
 
   /*
-   * Brand colours from the logo artwork. Kept to the logo, the upload
-   * envelope and the hairline above the page, so the interface stays calm.
+   * Brand colours from the logo artwork. Cyan and violet are too light to
+   * read as text on paper, so on paper they stay with the logo, the hairline
+   * above the page and the wash behind it. On the midnight surface cyan is
+   * the focus ring and the small labels.
    */
   --color-brand-navy: #10225a;
   --color-brand-blue: #314bec;
   --color-brand-cyan: #0bc0fc;
   --color-brand-violet: #8662f6;
   --color-tint: #e8eefa;
+
+  /* The midnight desk: the dark surface the landing page sits on. */
+  --color-midnight: #0a1434;
+  --color-navy-2: #182f78;
+  --color-ice: #d6ecff;
+  /*
+   * Cyan for small text on midnight. The logo's cyan passes on midnight by
+   * the numbers but reads dim at label sizes; this lighter tint keeps the
+   * hue and is 11.8:1 on midnight.
+   */
+  --color-cyan-ink: #8bdcff;
+  --color-fog: rgb(255 255 255 / 0.72);
+  --color-fog-strong: rgb(255 255 255 / 0.88);
+  --color-glass: rgb(255 255 255 / 0.06);
+  --color-glass-line: rgb(255 255 255 / 0.14);
+
+  /*
+   * Elevation: how far a surface sits above the paper. Shadows are tinted
+   * with the brand navy so they read as depth rather than grey.
+   */
+  --shadow-rest: 0 1px 2px rgb(16 34 90 / 0.08);
+  --shadow-raised:
+    0 1px 2px rgb(16 34 90 / 0.08), 0 8px 20px -8px rgb(16 34 90 / 0.22);
+  --shadow-float:
+    0 2px 4px rgb(16 34 90 / 0.08), 0 20px 44px -16px rgb(16 34 90 / 0.32);
+
+  /* The primary button's lift: lit from above, with the accent beneath it. */
+  --shadow-accent:
+    inset 0 1px 0 rgb(255 255 255 / 0.22), 0 1px 2px rgb(16 34 90 / 0.24),
+    0 10px 26px -12px rgb(49 75 236 / 0.9);
+  --shadow-accent-raised:
+    inset 0 1px 0 rgb(255 255 255 / 0.22), 0 2px 4px rgb(16 34 90 / 0.24),
+    0 14px 30px -12px rgb(49 75 236 / 1);
+
+  /* Corners, by what the surface is rather than by size. */
+  --radius-control: 0.625rem;
+  --radius-card: 0.875rem;
+  --radius-panel: 1.25rem;
+
+  /* Motion: a strong ease-out for anything that enters or responds. */
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
 
   /* Verification states. Each also differs by icon, border and wording. */
   --color-verified: #14633f;
@@ -34,6 +82,7 @@
   --color-missing-line: #97a2b6;
   --color-alert: #9b2c2c;
   --color-alert-tint: #fcebea;
+  --color-alert-line: #e07a7a;
 
   --color-highlighter: #ffe04a;
 }
@@ -44,14 +93,109 @@
   --font-quote: var(--font-courier-prime), "Courier New", Courier, monospace;
 }
 
+/*
+ * Surfaces. The page is paper by default. The landing page sits on the
+ * midnight surface, where text is white and the focus ring is cyan; the
+ * paper bands inside it switch back. The secondary button and the labels
+ * dressed like it read these variables, so one component serves both.
+ */
 :root {
   color-scheme: light;
+  --focus-ring: var(--color-postal);
+  --btn-secondary-bg: var(--color-sheet);
+  --btn-secondary-text: var(--color-ink);
+  --btn-secondary-border: rgb(20 33 58 / 0.25);
+  --btn-secondary-hover-border: rgb(49 75 236 / 0.6);
+  --btn-secondary-hover-text: var(--color-postal-deep);
+}
+
+.surface-midnight {
+  color: #fff;
+  --focus-ring: var(--color-brand-cyan);
+  --btn-secondary-bg: var(--color-glass);
+  --btn-secondary-text: #fff;
+  --btn-secondary-border: rgb(255 255 255 / 0.3);
+  --btn-secondary-hover-border: rgb(255 255 255 / 0.5);
+  --btn-secondary-hover-text: #fff;
+}
+
+.band-paper {
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  --focus-ring: var(--color-postal);
+  --btn-secondary-bg: var(--color-sheet);
+  --btn-secondary-text: var(--color-ink);
+  --btn-secondary-border: rgb(20 33 58 / 0.25);
+  --btn-secondary-hover-border: rgb(49 75 236 / 0.6);
+  --btn-secondary-hover-text: var(--color-postal-deep);
+}
+
+.band-paper-2 {
+  background-color: var(--color-paper-2);
+  border-top: 1px solid var(--color-line);
+}
+
+/*
+ * Where the midnight desk gives way to paper: the light comes up, through
+ * the logo's blues. No text sits on the gradient; the band's content starts
+ * below it.
+ */
+.band-dawn {
+  padding-top: 14rem;
+  background-color: var(--color-paper-2);
+  background-image: linear-gradient(
+    180deg,
+    var(--color-midnight) 0,
+    #0e1940 20%,
+    #18275f 37%,
+    #2b3d8c 53%,
+    #5466b8 67%,
+    #95a3dd 80%,
+    #cbd3f0 92%,
+    var(--color-paper-2)
+  );
+  background-size: 100% 12.75rem;
+  background-repeat: no-repeat;
+}
+
+/* A phone: the same light, over a shorter distance. */
+@media (max-width: 639px) {
+  .band-dawn {
+    padding-top: 10rem;
+    background-size: 100% 8.75rem;
+  }
 }
 
 body {
-  background: var(--color-paper);
+  background-color: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/*
+ * The desk: midnight, lit from the top-left and the right. It does not move.
+ * The light is painted on the landing page itself rather than on the body:
+ * the body's background is drawn over the root's box, which is one window
+ * tall (h-full), so a light placed there stops in a hard line at the first
+ * window's foot once the page runs longer.
+ */
+body:has(.surface-midnight) {
+  background-color: var(--color-midnight);
+}
+
+.surface-midnight {
+  background-image:
+    radial-gradient(
+      66rem 42rem at -6% -8rem,
+      color-mix(in srgb, var(--color-brand-cyan) 30%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      64rem 50rem at 106% 38rem,
+      color-mix(in srgb, var(--color-brand-violet) 38%, transparent),
+      transparent 62%
+    );
+  background-repeat: no-repeat;
 }
 
 /* A hairline of the logo's gradient above every page. */
@@ -67,6 +211,36 @@ body::before {
   );
 }
 
+/* The footer follows the page it ends: paper, or the desk. */
+.site-footer {
+  border-top: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+}
+
+.site-footer a {
+  text-decoration-color: rgb(70 83 107 / 0.4);
+}
+
+.site-footer a:hover {
+  color: var(--color-ink);
+  text-decoration-color: var(--color-ink);
+}
+
+body:has(.surface-midnight) .site-footer {
+  border-top-color: rgb(255 255 255 / 0.1);
+  background: #07102b;
+  color: var(--color-fog);
+}
+
+body:has(.surface-midnight) .site-footer a {
+  color: #fff;
+  text-decoration-color: rgb(255 255 255 / 0.35);
+}
+
+body:has(.surface-midnight) .site-footer a:hover {
+  text-decoration-color: #fff;
+}
+
 /* The logo's soft neon halo. Static, so there is no motion to reduce. */
 .neon-glow {
   filter: drop-shadow(
@@ -74,17 +248,12 @@ body::before {
   );
 }
 
-.neon-glow-wide {
-  filter: drop-shadow(
-      -6px 10px 26px color-mix(in srgb, var(--color-brand-blue) 28%, transparent)
-    )
-    drop-shadow(
-      8px 12px 26px color-mix(in srgb, var(--color-brand-violet) 24%, transparent)
-    );
+.surface-midnight .neon-glow {
+  filter: drop-shadow(0 2px 8px rgb(49 75 236 / 0.55));
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-postal);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -96,8 +265,20 @@ h1:focus {
 
 /* The real file input is visually hidden; its label shows the focus ring. */
 .file-input:focus-visible ~ * label {
-  outline: 3px solid var(--color-postal);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
+}
+
+/* A short rule in the logo's gradient, before a small label. */
+.eyebrow-rule {
+  width: 2.5rem;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-cyan),
+    var(--color-brand-blue),
+    var(--color-brand-violet)
+  );
 }
 
 /*
@@ -131,12 +312,12 @@ h1:focus {
   background-image:
     repeating-linear-gradient(
       45deg,
-      rgb(36 71 168 / 0.09) 0 1.5px,
+      rgb(49 75 236 / 0.09) 0 1.5px,
       transparent 1.5px 7px
     ),
     repeating-linear-gradient(
       -45deg,
-      rgb(36 71 168 / 0.09) 0 1.5px,
+      rgb(49 75 236 / 0.09) 0 1.5px,
       transparent 1.5px 7px
     );
 }
@@ -144,6 +325,364 @@ h1:focus {
 /* An opened envelope seen from the back: the flap lifted into a point. */
 .envelope-open {
   clip-path: polygon(0 5rem, 50% 0, 100% 5rem, 100% 100%, 0 100%);
+}
+
+/*
+ * The upload panel's drop zone, on the midnight surface. Its state is set
+ * by the panel: empty, drag (a file held over it), chosen, error.
+ */
+.upload-drop {
+  border: 1.5px dashed rgb(255 255 255 / 0.32);
+  background: rgb(255 255 255 / 0.03);
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 220ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .upload-drop[data-state="empty"]:hover {
+    border-color: rgb(255 255 255 / 0.55);
+    background: rgb(255 255 255 / 0.05);
+  }
+}
+
+.upload-drop[data-state="drag"] {
+  border-style: solid;
+  border-color: var(--color-brand-cyan);
+  background: rgb(11 192 252 / 0.08);
+  box-shadow:
+    0 0 0 4px rgb(11 192 252 / 0.22),
+    0 18px 44px -16px rgb(11 192 252 / 0.55);
+}
+
+.upload-drop[data-state="chosen"] {
+  border-style: solid;
+  border-color: rgb(255 255 255 / 0.4);
+  background: rgb(255 255 255 / 0.06);
+}
+
+.upload-drop[data-state="error"] {
+  border-style: solid;
+  border-color: var(--color-alert-line);
+  background: rgb(224 122 122 / 0.08);
+}
+
+.file-input:focus-visible ~ .upload-drop {
+  border-color: var(--color-brand-cyan);
+}
+
+/*
+ * The little envelope in the drop zone (components/upload/DropSlot.tsx). Back
+ * to front: the envelope's back, its open flap, the letter, the front with
+ * its lit edge, the closed flap, the postmark. The state comes from the
+ * nearest [data-state] around it:
+ *   empty   the letter stands half out;
+ *   drag    a file is over the page: the letter lifts, the opening glows;
+ *   chosen  the letter slides in, the open flap folds down to its hinge, the
+ *           closed flap folds out from it, and a postmark lands;
+ *   error   the letter is pushed back out, in red, with a small shake.
+ * The two flaps swap at the hinge, edge-on, so neither has to pass through
+ * the letter. Only transform and opacity move; arriving is slower than
+ * leaving.
+ */
+.drop-slot {
+  position: relative;
+  width: 76px;
+  height: 92px;
+  flex: none;
+}
+
+/* Shared placement, at no specificity, so each part can change it. */
+:where(.drop-slot > span) {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.drop-slot-back,
+.drop-slot-front {
+  bottom: 0;
+  height: 54px;
+  border-radius: 6px;
+}
+
+.drop-slot-back {
+  background-color: #0a1640;
+  background-image:
+    repeating-linear-gradient(45deg, rgb(255 255 255 / 0.09) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(-45deg, rgb(255 255 255 / 0.09) 0 1px, transparent 1px 5px);
+  box-shadow: 0 14px 24px -12px rgb(0 0 0 / 0.8);
+  transition: box-shadow 200ms ease;
+}
+
+.drop-slot-flap-open {
+  bottom: 54px;
+  height: 28px;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-brand-violet) 58%, var(--color-brand-navy)),
+    var(--color-navy-2)
+  );
+  transform-origin: 50% 100%;
+  transition: transform 140ms var(--ease-in-out-strong) 120ms;
+}
+
+.drop-slot-sheet {
+  left: 11px;
+  right: 11px;
+  bottom: 6px;
+  height: 46px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 7px;
+  border-radius: 2px;
+  background: var(--color-sheet);
+  box-shadow: 0 6px 12px -6px rgb(0 0 0 / 0.6);
+  transform: translateY(-26px);
+  transform-origin: 50% 100%;
+  transition: transform 240ms var(--ease-out-strong);
+}
+
+.drop-slot-sheet i {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-line);
+  transition: background-color 200ms ease;
+}
+
+.drop-slot-sheet i:nth-child(1) {
+  width: 62%;
+}
+.drop-slot-sheet i:nth-child(2) {
+  width: 100%;
+}
+.drop-slot-sheet i:nth-child(3) {
+  width: 88%;
+}
+.drop-slot-sheet i:nth-child(4) {
+  width: 54%;
+}
+
+.drop-slot-front {
+  clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+  background-color: var(--color-brand-navy);
+  background-image:
+    repeating-linear-gradient(45deg, rgb(255 255 255 / 0.1) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(-45deg, rgb(255 255 255 / 0.1) 0 1px, transparent 1px 5px),
+    linear-gradient(135deg, var(--color-brand-navy) 20%, var(--color-navy-2) 65%, #4a3fb0);
+}
+
+.drop-slot-front::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 2px, 50% calc(58% + 2px), 0 2px);
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-cyan),
+    var(--color-brand-blue) 50%,
+    var(--color-brand-violet)
+  );
+}
+
+.drop-slot-flap-shut {
+  top: 38px;
+  height: 34px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background-color: var(--color-brand-navy);
+  background-image: linear-gradient(180deg, #4a3fb0, var(--color-navy-2) 55%, var(--color-brand-navy));
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 120ms ease;
+}
+
+.drop-slot-stamp {
+  left: auto;
+  right: -9px;
+  bottom: -7px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-sheet);
+  color: var(--color-postal);
+  box-shadow:
+    inset 0 0 0 2px var(--color-sheet),
+    inset 0 0 0 3px rgb(49 75 236 / 0.55),
+    0 6px 14px -6px rgb(0 0 0 / 0.8);
+  opacity: 0;
+  transform: scale(1.4) rotate(-14deg);
+  transition:
+    opacity 100ms ease,
+    transform 100ms ease;
+}
+
+.upload-drop[data-state="drag"] .drop-slot-back,
+.drop-veil-frame .drop-slot-back {
+  box-shadow:
+    0 0 0 1px rgb(11 192 252 / 0.45),
+    0 0 26px rgb(11 192 252 / 0.5),
+    0 14px 24px -12px rgb(0 0 0 / 0.8);
+}
+
+[data-state="drag"] .drop-slot-sheet {
+  transform: translateY(-34px) rotate(-5deg);
+}
+
+[data-state="chosen"] .drop-slot-sheet {
+  transform: translateY(0);
+  transition: transform 300ms var(--ease-out-strong);
+}
+
+[data-state="chosen"] .drop-slot-sheet i:nth-child(2) {
+  background: var(--color-highlighter);
+}
+
+[data-state="chosen"] .drop-slot-flap-open {
+  transform: scaleY(0);
+  transition: transform 140ms var(--ease-in-out-strong) 200ms;
+}
+
+[data-state="chosen"] .drop-slot-flap-shut {
+  transform: scaleY(1);
+  transition: transform 180ms var(--ease-out-strong) 340ms;
+}
+
+[data-state="chosen"] .drop-slot-stamp {
+  opacity: 1;
+  transform: scale(1) rotate(-14deg);
+  transition:
+    opacity 120ms ease 500ms,
+    transform 280ms var(--ease-out-strong) 500ms;
+}
+
+[data-state="error"] .drop-slot-sheet {
+  transform: translateY(-26px) rotate(4deg);
+}
+
+[data-state="error"] .drop-slot-sheet i {
+  background: var(--color-alert-line);
+}
+
+.upload-drop[data-state="error"] .drop-slot {
+  animation: slot-shake 360ms var(--ease-out-strong);
+}
+
+@keyframes slot-shake {
+  20% {
+    transform: translateX(-4px);
+  }
+  45% {
+    transform: translateX(3px);
+  }
+  70% {
+    transform: translateX(-2px);
+  }
+}
+
+/* On the narrowest phones the envelope gives its room to the words. */
+@media (max-width: 359px) {
+  .upload-drop .drop-slot {
+    display: none;
+  }
+}
+
+/*
+ * While a file is held anywhere over the page, the whole window is the
+ * target: a veil with the envelope, larger, waiting.
+ */
+.drop-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgb(7 16 43 / 0.8);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 120ms ease,
+    visibility 0s linear 120ms;
+}
+
+.drop-veil[data-on] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 160ms ease,
+    visibility 0s;
+}
+
+.drop-veil-frame {
+  width: min(34rem, 100%);
+  padding: 2.75rem 2rem 2.5rem;
+  display: grid;
+  justify-items: center;
+  border: 2px dashed rgb(139 220 255 / 0.7);
+  border-radius: 1.5rem;
+  text-align: center;
+  color: #fff;
+  background: rgb(255 255 255 / 0.03);
+  box-shadow:
+    0 0 0 6px rgb(11 192 252 / 0.07),
+    0 30px 80px -30px rgb(11 192 252 / 0.45);
+  transform: scale(0.97);
+  transition: transform 220ms var(--ease-out-strong);
+}
+
+.drop-veil[data-on] .drop-veil-frame {
+  transform: none;
+}
+
+/* Scaled up from its own box, so the margins make room for the growth. */
+.drop-slot-large {
+  margin: 2.75rem 0 3.75rem;
+  transform: scale(1.75);
+}
+
+.drop-veil-title {
+  font: 600 1.75rem/1.2 var(--font-display);
+}
+
+.drop-veil-hint {
+  margin-top: 0.4rem;
+  color: var(--color-fog);
+}
+
+/*
+ * Once a letter is chosen, a single glint crosses the Analyze button: the
+ * next step, pointed out once.
+ */
+.analyze-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgb(255 255 255 / 0.34) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+}
+
+.upload-panel[data-ready] .analyze-cta::after {
+  animation: cta-glint 900ms var(--ease-in-out-strong) 560ms both;
+}
+
+@keyframes cta-glint {
+  to {
+    transform: translateX(120%);
+  }
 }
 
 /* Striped band that marks a detail Unsealed could not confirm. */
@@ -183,5 +722,11 @@ h1:focus {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* The envelope's states arrive at once, without their staging. */
+  .drop-slot,
+  .drop-slot > span {
+    transition-delay: 0s !important;
   }
 }

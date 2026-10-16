@@ -1,5 +1,10 @@
 // owner: m
-export const MAX_FILE_SIZE_MB = 10;
+/**
+ * The hosted service accepts request bodies up to 4.5 MB, so a larger file
+ * is turned away before it reaches the service. The limit is stated to
+ * people as a round number below that.
+ */
+export const MAX_FILE_SIZE_MB = 4;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const ACCEPTED_TYPES: Readonly<Record<string, readonly string[]>> = {
