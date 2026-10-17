@@ -219,6 +219,14 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
     }
   }
 
+  // If the summary repeats a value a conflict warning disputes, say so in the summary itself.
+  const SUMMARY_NOTE = "Note: this letter contradicts itself, so confirm the details with the sender before acting.";
+  const rawSummary = typeof parsed?.summary === "string" ? parsed.summary : "";
+  const summaryRepeatsDisputed = (check?.contradictions ?? []).some((c) =>
+    disputedTokens(c.topic, c.quotes).some((t) => mentions(rawSummary, t)),
+  );
+  const summary = summaryRepeatsDisputed ? `${rawSummary} ${SUMMARY_NOTE}` : rawSummary;
+
   const all = Object.values(fields);
   const overall: AnalysisResult["overall"] = !all.some((f) => f.status === "verified")
     ? "abstained"
@@ -235,7 +243,7 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
     id: randomUUID(),
     documentType: typeof parsed?.documentType === "string" ? parsed.documentType : "Unknown document",
     documentText: text,
-    summary: typeof parsed?.summary === "string" ? parsed.summary : "",
+    summary,
     fields,
     overall,
     warnings: warnings.length ? warnings : undefined,
