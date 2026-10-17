@@ -81,8 +81,8 @@ export function HonestySection() {
         </h2>
         <p className={styles.lead}>
           A wrong date or amount is worse than none. Every detail is marked
-          with how sure Unsealed is, and the words it rests on are always one
-          tap away.
+          with how sure Unsealed is, and any words it rests on are one tap
+          away.
         </p>
       </div>
 

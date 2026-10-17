@@ -54,8 +54,8 @@ export function Landing({ onAnalyze, mode, returning }: LandingProps) {
             </h1>
             <p className="mt-5 max-w-[30rem] text-lg leading-[1.55] text-fog">
               Upload a bill, notice or demand. Unsealed explains it in plain
-              English and shows you the exact words in the letter behind every
-              answer.
+              English and shows you the exact words in the letter behind each
+              answer it can confirm.
             </p>
 
             <UploadPanel
