@@ -1,6 +1,6 @@
 // owner: m
 import { mockNotFound, mockResult } from "@/lib/mock";
-import type { AnalysisResult, Citation } from "@/lib/schema";
+import type { AnalysisResult, Citation, Field } from "@/lib/schema";
 import { indexDocument, locate } from "@/lib/verify";
 import { verifiedConflicts } from "./citation";
 import { countByStatus } from "./fields";
@@ -29,14 +29,17 @@ If your balance is not paid by the due date, a hold will be placed on your accou
 Sincerely,
 Student Accounts Office`;
 
-const conflictLetterIndex = indexDocument(conflictLetter);
-
 // Offsets are found the way the service finds them, never typed in by hand.
-function citeConflictLetter(quote: string): Citation {
-  const found = locate(quote, conflictLetterIndex);
-  if (!found) throw new Error(`Sample quote is not in the letter: ${quote}`);
-  return { quote, ...found };
+function citerFor(letter: string): (quote: string) => Citation {
+  const index = indexDocument(letter);
+  return (quote) => {
+    const found = locate(quote, index);
+    if (!found) throw new Error(`Sample quote is not in the letter: ${quote}`);
+    return { quote, ...found };
+  };
 }
+
+const citeConflictLetter = citerFor(conflictLetter);
 
 /** A letter that disagrees with itself, to show the conflict warning. */
 export const mockConflict: AnalysisResult = {
@@ -107,9 +110,46 @@ export const mockConflict: AnalysisResult = {
   },
 };
 
+// The financial aid notice from lib/mock.ts with its amount taken out, worded
+// as the landing page shows it, so the letter really doesn't say how much is
+// owed. Nothing else in the letter changes.
+const AMOUNT_STATED = "Your tuition balance of $1,250.00 is due by";
+const amountLeftOutLetter = mockResult.documentText.replace(
+  AMOUNT_STATED,
+  "Your tuition balance is due by",
+);
+if (amountLeftOutLetter === mockResult.documentText) {
+  throw new Error(`Sample letter no longer contains: ${AMOUNT_STATED}`);
+}
+
+const citeAmountLeftOutLetter = citerFor(amountLeftOutLetter);
+
+/** A field as the notice gives it, quoted from the letter without the amount. */
+function inAmountLeftOutLetter(field: Field): Field {
+  return field.citation
+    ? { ...field, citation: citeAmountLeftOutLetter(field.citation.quote) }
+    : field;
+}
+
 /**
- * Sample results a visitor can open without uploading anything. The first two
- * are the shared mocks from lib/mock.ts; the third is defined above. All are
+ * The same notice with no amount in it, to show a detail the letter doesn't
+ * give. Its other three answers are the notice's own.
+ */
+export const mockAmountLeftOut: AnalysisResult = {
+  ...mockNotFound,
+  id: "mock-amount-left-out",
+  documentText: amountLeftOutLetter,
+  fields: {
+    amountOwed: inAmountLeftOutLetter(mockNotFound.fields.amountOwed),
+    deadline: inAmountLeftOutLetter(mockNotFound.fields.deadline),
+    requiredAction: inAmountLeftOutLetter(mockNotFound.fields.requiredAction),
+    consequence: inAmountLeftOutLetter(mockNotFound.fields.consequence),
+  },
+};
+
+/**
+ * Sample results a visitor can open without uploading anything. The first is
+ * the shared mock from lib/mock.ts; the other two are defined above. All are
  * typed by the shared schema, so the UI and the backend agree on their shape
  * by construction.
  */
@@ -132,7 +172,7 @@ export const SAMPLE_LETTERS: readonly SampleLetterInfo[] = [
     id: "not-found",
     title: "The same notice, amount left out",
     shows: "How a detail looks when Unsealed reports it as not stated",
-    result: mockNotFound,
+    result: mockAmountLeftOut,
   },
   {
     id: "conflict",

@@ -1,5 +1,5 @@
 // owner: m
-import { mockNotFound, mockResult } from "@/lib/mock";
+import { mockResult } from "@/lib/mock";
 import type { AnalysisResult } from "@/lib/schema";
 import {
   PROCESSING_STAGES,
@@ -7,7 +7,7 @@ import {
   type AnalyzeOptions,
 } from "./client";
 import { AnalysisError, type AnalysisErrorCode } from "./errors";
-import { getSample, type SampleId } from "./samples";
+import { getSample, mockAmountLeftOut, type SampleId } from "./samples";
 
 /** How long each processing stage appears to take. */
 const DEFAULT_STAGE_DELAY_MS = 1100;
@@ -31,7 +31,7 @@ export function failureForFile(fileName: string): AnalysisErrorCode | null {
 }
 
 export function resultForFile(fileName: string): AnalysisResult {
-  return NOT_FOUND_HINT.test(fileName) ? mockNotFound : mockResult;
+  return NOT_FOUND_HINT.test(fileName) ? mockAmountLeftOut : mockResult;
 }
 
 function wait(ms: number, signal?: AbortSignal): Promise<void> {

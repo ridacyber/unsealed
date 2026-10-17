@@ -3,9 +3,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { mockNotFound, mockResult } from "@/lib/mock";
+import { mockResult } from "@/lib/mock";
 import type { AnalysisResult } from "@/lib/schema";
-import { mockConflict } from "@/components/lib/samples";
+import { getSample, SAMPLE_LETTERS } from "@/components/lib/samples";
 import { ResultsView } from "./ResultsView";
 
 const NOTICE =
@@ -60,9 +60,18 @@ test("a check that ran, or isn't reported on, shows no notice", () => {
 });
 
 test("the prepared samples show no notice", () => {
-  for (const sample of [mockResult, mockNotFound, mockConflict]) {
-    assert.equal(count(textOf(sample), NOTICE), 0);
+  for (const { id, result } of SAMPLE_LETTERS) {
+    assert.equal(count(textOf(result), NOTICE), 0, id);
   }
+});
+
+test("the amount-left-out sample shows the gap, and no amount owed anywhere", () => {
+  const text = textOf(getSample("not-found").result);
+  // Not in the letter beside the answers, the summary or the answers.
+  assert.equal(count(text, "1,250"), 0);
+  const howMuch = text.slice(text.indexOf("How much?"), text.indexOf("When?"));
+  assert.ok(howMuch.includes("Not found"), howMuch);
+  assert.ok(text.includes("Your tuition balance is due by November 15, 2026"));
 });
 
 test("verified details are not a plain success when the check failed", () => {

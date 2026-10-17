@@ -2,13 +2,33 @@
 // Run with: npx tsx --test components/hooks/useAnalysis.test.ts
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getSample } from "@/components/lib/samples";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import type { AnalysisClient } from "@/components/lib/client";
+import { getSample, SAMPLE_LETTERS } from "@/components/lib/samples";
 import {
   analysisReducer,
   screenFor,
+  useAnalysis,
   type AnalysisSource,
   type AnalysisState,
 } from "./useAnalysis";
+
+/** Starts one analysis through the hook itself, as the page does. */
+function startThroughHook(source: AnalysisSource, client?: AnalysisClient) {
+  let started = false;
+  function Probe() {
+    const { start } = useAnalysis(client);
+    if (!started) {
+      started = true;
+      start(source);
+    }
+    return null;
+  }
+  renderToStaticMarkup(createElement(Probe));
+}
+
+const settle = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 const upload: AnalysisSource = {
   kind: "upload",
@@ -68,6 +88,39 @@ test("each state has its screen, and an uploaded letter is waited on in view", (
   assert.equal(screenFor(processing(upload)), "processing");
   assert.equal(screenFor(analysisReducer(processing(upload), { type: "succeeded", result })), "results");
   assert.equal(screenFor(analysisReducer(processing(upload), { type: "failed", code: "no_text" })), "error");
+});
+
+test("opening a sample never reaches the analysis service; an upload does", async () => {
+  const analyzed: string[] = [];
+  const spy: AnalysisClient = {
+    mode: "live",
+    analyze: async (file) => {
+      analyzed.push(file.name);
+      throw new Error("not under test");
+    },
+  };
+  const realFetch = globalThis.fetch;
+  let requests = 0;
+  globalThis.fetch = (async () => {
+    requests += 1;
+    return new Response("{}", { status: 500 });
+  }) as typeof fetch;
+  try {
+    for (const { id } of SAMPLE_LETTERS) {
+      startThroughHook({ kind: "sample", id });
+      startThroughHook({ kind: "sample", id }, spy);
+    }
+    await settle();
+    assert.equal(requests, 0);
+    assert.deepEqual(analyzed, []);
+
+    // The same hook does send a person's own file.
+    startThroughHook(upload, spy);
+    await settle();
+    assert.deepEqual(analyzed, ["made-up-letter.pdf"]);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 });
 
 test("a prepared sample keeps the landing up while it opens, then shows its results", () => {
