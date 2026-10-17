@@ -136,8 +136,10 @@ export async function findContradictions(letterText: string): Promise<CheckResul
   let proposed = 0;
 
   const obj = asRecord(parseJson(out.content));
-  if (!obj) dropped.push("model did not return JSON");
-  const list = Array.isArray(obj?.contradictions) ? (obj.contradictions as unknown[]) : [];
+  if (!obj || !Array.isArray(obj.contradictions)) {
+    throw new Error("Contradiction check returned unusable output");
+  }
+  const list = obj.contradictions as unknown[];
 
   for (const item of list.slice(0, 3)) {
     const r = asRecord(item);
