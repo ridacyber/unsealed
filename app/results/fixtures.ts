@@ -285,7 +285,7 @@ const multiConflict: AnalysisResult = {
       quotes: [ls("Reply by: October 20, 2026"), ls("return the signed renewal form by October 25, 2026")],
     },
     // Deliberately unconfirmable: its second passage points at the wrong
-    // words. The page must leave this whole conflict out.
+    // words. The page must list it apart and mark none of it in the letter.
     {
       kind: "conflict",
       message: "This conflict has a passage that can't be confirmed.",
@@ -501,7 +501,7 @@ export const FIXTURES: readonly Fixture[] = [
   { id: "all-verified", title: "Water bill (fixture)", checks: "Four verified answers", result: allVerified },
   { id: "mixed", title: "Parking notice (fixture)", checks: "Verified, unsure and not found together", result: mixed },
   { id: "related-unsure", title: "Clinic statement (fixture)", checks: "One conflict, two related answers unsure", result: relatedUnsure },
-  { id: "multi-conflict", title: "Lease renewal (fixture)", checks: "Two conflicts, one unconfirmable conflict left out", result: multiConflict },
+  { id: "multi-conflict", title: "Lease renewal (fixture)", checks: "Two conflicts, and one whose passage can't be confirmed, listed apart", result: multiConflict },
   { id: "check-failed", title: "Water bill, check failed (fixture)", checks: "The consistency check didn't finish", result: checkFailed },
   { id: "none-confirmed", title: "Vague letter (fixture)", checks: "Nothing confirmed", result: noneConfirmed },
   { id: "unmatched", title: "Library notice (fixture)", checks: "Quotes whose place can't be confirmed", result: unmatched },

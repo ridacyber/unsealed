@@ -6,6 +6,7 @@ import {
   type FieldName,
   type FieldStatus,
 } from "@/lib/schema";
+import { resolveCitation } from "./citation";
 
 export const FIELD_META: Record<
   FieldName,
@@ -38,6 +39,33 @@ export function displayStatus(field: Field): FieldStatus {
   return field.status;
 }
 
+/**
+ * The status a field is shown with beside its letter. "Verified" means the
+ * quoted words were found in the letter, so a verified field whose quote is
+ * missing, or isn't found where the service says it is, is shown as unsure.
+ * The service's answer itself is left as it was.
+ */
+export function shownStatus(field: Field, located: boolean): FieldStatus {
+  const status = displayStatus(field);
+  return status === "verified" && !located ? "unsure" : status;
+}
+
+/** The status a result's field is shown with, judged against its letter. */
+export function statusIn(result: AnalysisResult, name: FieldName): FieldStatus {
+  const field = result.fields[name];
+  const located =
+    field.citation !== null &&
+    resolveCitation(result.documentText, field.citation) !== null;
+  return shownStatus(field, located);
+}
+
+/** Whether any answer reported as verified is shown as unsure for its quote. */
+export function hasHeldBackAnswer(result: AnalysisResult): boolean {
+  return FIELD_NAMES.some(
+    (name) => statusIn(result, name) !== displayStatus(result.fields[name]),
+  );
+}
+
 export function countByStatus(
   result: AnalysisResult,
 ): Record<FieldStatus, number> {
@@ -47,7 +75,7 @@ export function countByStatus(
     not_found: 0,
   };
   for (const name of FIELD_NAMES) {
-    counts[displayStatus(result.fields[name])] += 1;
+    counts[statusIn(result, name)] += 1;
   }
   return counts;
 }

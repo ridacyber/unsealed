@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { mockNotFound, mockResult } from "@/lib/mock";
 import type { AnalysisResult, Citation, Warning } from "@/lib/schema";
-import { verifiedConflicts } from "./citation";
-import { mockConflict } from "./samples";
+import { unplacedConflicts, verifiedConflicts } from "./citation";
+import { mockConflict, SAMPLE_LETTERS } from "./samples";
 
 const TEXT =
   "Balance due: $1,827.00\n\nYou owe the College $1,872.00. Pay by October 30, 2026.";
@@ -104,4 +104,41 @@ test("the samples: one conflict in the conflict sample, none in the others", () 
   }
   assert.deepEqual(verifiedConflicts(mockResult), []);
   assert.deepEqual(verifiedConflicts(mockNotFound), []);
+});
+
+test("a conflict that can be shown is not also kept as unplaced", () => {
+  assert.deepEqual(unplacedConflicts(withWarnings([conflict(FIRST, SECOND)])), []);
+  assert.deepEqual(unplacedConflicts(withWarnings(undefined)), []);
+});
+
+for (const [why, warning] of dropped) {
+  test(`kept as reported though not shown: ${why}`, () => {
+    const kept = unplacedConflicts(withWarnings([warning])).map(({ message }) => message);
+    // Only a warning with nothing to say is left out entirely.
+    assert.deepEqual(kept, why === "a blank message" ? [] : ["Two amounts."]);
+  });
+}
+
+test("an unplaced report says which of its quotes are found in the letter", () => {
+  const [report] = unplacedConflicts(withWarnings([conflict(FIRST, { ...SECOND, start: -1, end: -1 })]));
+  assert.deepEqual(report.quotes, [
+    { quote: FIRST.quote, located: true },
+    { quote: SECOND.quote, located: false },
+  ]);
+  // An empty quote has nothing to show and is left out of the report.
+  const [noQuote] = unplacedConflicts(withWarnings([conflict({ ...FIRST, quote: " " }, SECOND)]));
+  assert.deepEqual(noQuote.quotes, [{ quote: SECOND.quote, located: true }]);
+});
+
+test("a shown and an unplaced conflict each keep to their own list", () => {
+  const result = withWarnings([
+    conflict(FIRST, { ...SECOND, start: -1, end: -1 }, "Not located."),
+    conflict(FIRST, SECOND, "Located."),
+  ]);
+  assert.deepEqual(verifiedConflicts(result).map(({ message }) => message), ["Located."]);
+  assert.deepEqual(unplacedConflicts(result).map(({ message }) => message), ["Not located."]);
+});
+
+test("the samples have no unplaced conflicts", () => {
+  for (const { id, result } of SAMPLE_LETTERS) assert.deepEqual(unplacedConflicts(result), [], id);
 });

@@ -82,14 +82,22 @@ test("only conflicts with both passages confirmed are shown", () => {
   });
 });
 
-test("two conflicts are numbered, and the unconfirmable one is left out whole", () => {
-  const text = textOf(getFixture("multi-conflict").result);
+test("two conflicts are numbered, and the unconfirmable one is listed apart, unmarked", () => {
+  const { result } = getFixture("multi-conflict");
+  const text = textOf(result);
   assert.equal(count(text, "Possible conflict 1 of 2"), 1);
   assert.equal(count(text, "Possible conflict 2 of 2"), 1);
   assert.equal(count(text, "of 3"), 0);
-  assert.equal(count(text, "can't be confirmed"), 0);
   assert.equal(count(text, "Show passage 1 in your letter"), 2);
   assert.equal(count(text, "Show passage 2 in your letter"), 2);
+  // The third report is still said, in the service's words, but nothing of
+  // it is numbered or marked: only the two shown conflicts carry tags.
+  assert.equal(count(text, "This conflict has a passage that can't be confirmed."), 1);
+  assert.equal(count(text, "Not shown in your letter"), 1);
+  assert.equal(count(text, "Found in your letter"), 1);
+  assert.equal(count(text, "Not matched to your letter's text"), 1);
+  const markup = renderToStaticMarkup(<ResultsView result={result} letterName="letter.pdf" onStartOver={() => {}} />);
+  assert.equal(count(markup, "rw-passage-tag"), 4);
   // A single conflict isn't counted.
   assert.equal(count(textOf(getFixture("related-unsure").result), "Possible conflict 1 of"), 0);
 });
@@ -102,8 +110,12 @@ test("each fixture gets the overview its state calls for", () => {
     "multi-conflict": "3 of 4 details couldn’t be confirmed.",
     "check-failed": "Supporting passages are available for all four details.",
     "none-confirmed": "Unsealed couldn’t confirm the details of this letter.",
-    unmatched: "2 of 4 details couldn’t be confirmed.",
-    "no-text": "2 of 4 details couldn’t be confirmed.",
+    // The amount is reported verified, but its quote isn't where the
+    // service says, so it is shown as unsure with the action.
+    unmatched: "3 of 4 details couldn’t be confirmed.",
+    // With no letter text, no quote can be found in it, so the two answers
+    // reported verified are shown as unsure, and none is confirmed.
+    "no-text": "Unsealed couldn’t confirm the details of this letter.",
     long: "Each detail below is quoted from your letter, but the letter may disagree with itself.",
     "money-to-you": "1 of 4 details couldn’t be confirmed.",
   };
@@ -160,6 +172,44 @@ test("a quote that can't be placed is offered as unmatched, never as the letter'
   assert.equal(count(open, "See it in your letter"), 0);
 });
 
+test("an answer reported verified, with its quote not found, is shown as unsure without its value", () => {
+  const { result } = getFixture("unmatched");
+  assert.equal(result.fields.amountOwed.status, "verified");
+  const text = textOf(result);
+  const card = text.slice(text.indexOf("How much?"), text.indexOf("When?"));
+  assert.ok(card.includes("Unsure") && !card.includes("Verified"), card);
+  assert.equal(count(card, "$38.50"), 0);
+  assert.equal(count(card, "isn't shown as verified"), 1);
+  // The deadline's quote is found, so it is still verified.
+  const when = text.slice(text.indexOf("When?"), text.indexOf("What do I need to do?"));
+  assert.ok(when.includes("Verified"), when);
+});
+
+test("a fixture's summary is withheld exactly when an answer is held back for its quote", () => {
+  const withheld = "The summary isn’t shown, because some of the evidence behind the answers below couldn’t be confirmed in your letter.";
+  for (const { id, result } of FIXTURES) {
+    const heldBack = id === "unmatched" || id === "no-text";
+    const text = textOf(result);
+    assert.equal(count(text, withheld), heldBack ? 1 : 0, id);
+    assert.equal(count(text, result.summary), heldBack ? 0 : 1, id);
+  }
+});
+
+test("showing every fixture and sample makes no request", () => {
+  const realFetch = globalThis.fetch;
+  let requests = 0;
+  globalThis.fetch = (async () => {
+    requests += 1;
+    throw new Error("results must not make a request");
+  }) as typeof fetch;
+  try {
+    for (const { result } of [...FIXTURES, ...SAMPLE_LETTERS]) textOf(result);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+  assert.equal(requests, 0);
+});
+
 test("a located passage is shown in the letter's own words, in context", () => {
   const { result } = getFixture("all-verified");
   const field = result.fields.deadline;
@@ -194,7 +244,10 @@ test("with no letter text, the page says so and marks nothing", () => {
   const markup = renderToStaticMarkup(
     <ResultsView result={getFixture("no-text").result} letterName="letter.pdf" onStartOver={() => {}} />,
   );
-  assert.equal(count(plain(markup), "The text of this letter isn’t available."), 1);
+  assert.equal(
+    count(plain(markup), "The text of this letter isn’t available, so the quotes beside each detail can’t be checked against it."),
+    1,
+  );
   assert.doesNotMatch(markup, /<mark/);
   assert.doesNotMatch(markup, /data-letter-sheet/);
 });

@@ -102,8 +102,8 @@ export function DocumentPanel({
           </div>
         ) : (
           <p className="rw-sheet rw-sheet-empty">
-            The text of this letter isn&rsquo;t available. The quotes beside
-            each detail still show what the letter says.
+            The text of this letter isn&rsquo;t available, so the quotes
+            beside each detail can&rsquo;t be checked against it.
           </p>
         )}
       </div>

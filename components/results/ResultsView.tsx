@@ -13,10 +13,15 @@ import {
 import { useFocusOnMount } from "@/components/hooks/useFocusOnMount";
 import {
   resolveCitation,
+  unplacedConflicts,
   verifiedConflicts,
   type TextRange,
 } from "@/components/lib/citation";
-import { displayStatus, FIELD_META } from "@/components/lib/fields";
+import {
+  FIELD_META,
+  hasHeldBackAnswer,
+  shownStatus,
+} from "@/components/lib/fields";
 import { Button } from "@/components/ui/Button";
 import { ChevronIcon } from "@/components/ui/icons";
 import {
@@ -74,7 +79,15 @@ export function ResultsView({
   const [shown, setShown] = useState<Shown | null>(null);
   const refusingDrop = useResultsDropGuard();
   const conflicts = verifiedConflicts(result);
+  // Reported conflicts whose passages can't be shown still count as reported.
+  // A warning with a blank message is in neither list, so it is neither shown
+  // nor allowed to hold back the all-clear unseen.
+  const unplaced = unplacedConflicts(result);
+  const reported = conflicts.length + unplaced.length;
   const checkUnavailable = isCheckUnavailable(result);
+  // The generated summary may state an answer that is shown as unsure for its
+  // quote, so it isn't shown then; the text itself is never edited.
+  const summaryHeldBack = hasHeldBackAnswer(result);
 
   function rangeOf(name: FieldName): TextRange | null {
     const { citation } = result.fields[name];
@@ -114,8 +127,8 @@ export function ResultsView({
     }
     const marks: LetterMark[] = [];
     for (const name of FIELD_NAMES) {
-      const status = displayStatus(result.fields[name]);
       const range = rangeOf(name);
+      const status = shownStatus(result.fields[name], range !== null);
       if (status === "not_found" || !range) continue;
       const chosen = shown?.kind === "field" && shown.name === name;
       marks.push({ range, tone: chosen ? "active" : "resting", status });
@@ -129,7 +142,7 @@ export function ResultsView({
   if (shown?.kind === "field" && rangeOf(shown.name)) {
     threadKey = `field-${shown.name}`;
     threadTone =
-      displayStatus(result.fields[shown.name]) === "verified"
+      shownStatus(result.fields[shown.name], true) === "verified"
         ? "verified"
         : "unsure";
   } else if (shown?.kind === "conflict") {
@@ -155,13 +168,21 @@ export function ResultsView({
             <h2 className="mt-7 text-base font-semibold tracking-wide text-cyan-ink">
               What does this letter mean?
             </h2>
-            <p className="rw-summary">{result.summary}</p>
+            {summaryHeldBack ? (
+              <p className="rw-summary">
+                The summary isn&rsquo;t shown, because some of the evidence
+                behind the answers below couldn&rsquo;t be confirmed in your
+                letter. Check those answers against the letter itself.
+              </p>
+            ) : (
+              <p className="rw-summary">{result.summary}</p>
+            )}
 
             <div className="mt-8 space-y-4">
               {/* Where the page is one column, several conflicts stand between
                   the summary and the answers. This only skips ahead; the
                   warnings stay first and whole. */}
-              {conflicts.length > 1 && (
+              {reported > 1 && (
                 <p className="lg:hidden">
                   <a
                     href={`#${ANSWERS_ID}`}
@@ -174,6 +195,7 @@ export function ResultsView({
               )}
               <ConflictWarnings
                 conflicts={conflicts}
+                unplaced={unplaced}
                 active={shown?.kind === "conflict" ? shown : null}
                 onSelect={(selection) =>
                   setShown(selection && { kind: "conflict", ...selection })
@@ -182,7 +204,7 @@ export function ResultsView({
               {checkUnavailable && <CheckUnavailableNotice />}
               <VerificationOverview
                 result={result}
-                possibleConflict={conflicts.length > 0}
+                possibleConflict={reported > 0}
                 checkUnavailable={checkUnavailable}
               />
             </div>

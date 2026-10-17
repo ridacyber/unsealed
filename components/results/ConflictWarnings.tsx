@@ -2,7 +2,10 @@
 "use client";
 
 import { useId } from "react";
-import type { VerifiedConflict } from "@/components/lib/citation";
+import type {
+  UnplacedConflict,
+  VerifiedConflict,
+} from "@/components/lib/citation";
 import { AlertIcon } from "@/components/ui/icons";
 
 /** Which passage is being shown in the letter: the conflict, then the side. */
@@ -16,6 +19,8 @@ const PASSAGE_CAPTIONS = ["In one place", "In another place"] as const;
 interface ConflictWarningsProps {
   /** Conflicts whose two passages are both confirmed in the letter. */
   conflicts: VerifiedConflict[];
+  /** Conflicts reported with passages that can't be shown in the letter. */
+  unplaced?: UnplacedConflict[];
   active: ConflictSelection | null;
   onSelect: (selection: ConflictSelection | null) => void;
 }
@@ -24,16 +29,21 @@ interface ConflictWarningsProps {
  * Says that two passages of the letter may not agree, and shows both. It
  * takes no side: which passage is right is for the sender to say. Each
  * conflict stands alone; nothing here ties it to a particular answer.
+ *
+ * A conflict reported with passages that can't be shown in the letter is
+ * still said, in the service's words, with its quotes as quoted and nothing
+ * marked, numbered or linked in the letter.
  */
 export function ConflictWarnings({
   conflicts,
+  unplaced = [],
   active,
   onSelect,
 }: ConflictWarningsProps) {
   const headingId = useId();
   const quoteIdBase = useId();
 
-  if (conflicts.length === 0) return null;
+  if (conflicts.length === 0 && unplaced.length === 0) return null;
 
   return (
     <section aria-labelledby={headingId} className="rw-slip rw-dispute">
@@ -46,11 +56,20 @@ export function ConflictWarnings({
         <AlertIcon width={24} height={24} className="mt-0.5 shrink-0" />
         Possible conflicting information
       </h2>
-      <p className="mt-2 text-lg leading-relaxed">
-        Unsealed found two passages in your letter that may not agree. It
-        can&rsquo;t tell which one is correct. Please confirm the right
-        information with the sender before you act.
-      </p>
+      {conflicts.length > 0 ? (
+        <p className="mt-2 text-lg leading-relaxed">
+          Unsealed found two passages in your letter that may not agree. It
+          can&rsquo;t tell which one is correct. Please confirm the right
+          information with the sender before you act.
+        </p>
+      ) : (
+        <p className="mt-2 text-lg leading-relaxed">
+          Unsealed&rsquo;s check reported that your letter may not agree with
+          itself, but it couldn&rsquo;t confirm the passages it quoted. Check
+          the letter itself, and confirm the right information with the
+          sender before you act.
+        </p>
+      )}
 
       {conflicts.map((conflict, index) => (
         <div
@@ -122,6 +141,44 @@ export function ConflictWarnings({
               })}
             </div>
           </div>
+        </div>
+      ))}
+
+      {unplaced.map((report, index) => (
+        <div
+          key={`unplaced-${index}`}
+          className={conflicts.length === 0 && index === 0 ? "mt-5" : "rw-dispute-next"}
+        >
+          {(conflicts.length > 0 || unplaced.length > 1) && (
+            <p className="rw-dispute-count">Not shown in your letter</p>
+          )}
+          <h3 className="text-sm font-semibold text-ink-soft">
+            What Unsealed noticed
+          </h3>
+          <p className="mt-1 text-lg leading-relaxed">{report.message}</p>
+          <p className="mt-2 text-ink-soft">
+            Unsealed couldn&rsquo;t confirm these passages in your letter, so
+            nothing is marked there. Treat this as unconfirmed.
+          </p>
+
+          {report.quotes.length > 0 && (
+            <div className="@container mt-4">
+              <div className="grid grid-cols-1 gap-3 @lg:grid-cols-2">
+                {report.quotes.map(({ quote, located }, side) => (
+                  <figure key={side} className="rw-passage">
+                    <figcaption className="text-sm font-semibold text-ink-soft">
+                      {located
+                        ? "Found in your letter"
+                        : "Not matched to your letter's text"}
+                    </figcaption>
+                    <blockquote className="mt-2 font-quote text-[1rem] leading-[1.65] break-words">
+                      &ldquo;{quote}&rdquo;
+                    </blockquote>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </section>

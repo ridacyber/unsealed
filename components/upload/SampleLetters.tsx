@@ -1,7 +1,7 @@
 // owner: m
 "use client";
 
-import { displayStatus } from "@/components/lib/fields";
+import { statusIn } from "@/components/lib/fields";
 import {
   evidenceSummary,
   SAMPLE_LETTERS,
@@ -82,7 +82,7 @@ export function SampleLetters({
                     {FIELD_NAMES.map((name) => (
                       <i
                         key={name}
-                        data-status={displayStatus(sample.result.fields[name])}
+                        data-status={statusIn(sample.result, name)}
                       />
                     ))}
                   </span>

@@ -3,7 +3,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { mockNotFound, mockResult } from "@/lib/mock";
+import { FIELD_NAMES } from "@/lib/schema";
 import { resolveCitation } from "./citation";
+import { statusIn } from "./fields";
 import { analyzeSample, resultForFile } from "./mockClient";
 import {
   evidenceSummary,
@@ -12,6 +14,14 @@ import {
   SAMPLE_LETTERS,
   senderOf,
 } from "./samples";
+
+test("each prepared sample is shown with the statuses it was prepared with", () => {
+  for (const { id, result } of SAMPLE_LETTERS) {
+    for (const name of FIELD_NAMES) {
+      assert.equal(statusIn(result, name), result.fields[name].status, `${id}/${name}`);
+    }
+  }
+});
 
 test("the amount-left-out sample's letter really leaves the amount out", () => {
   const { result } = getSample("not-found");

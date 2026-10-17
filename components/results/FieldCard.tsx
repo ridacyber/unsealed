@@ -4,7 +4,11 @@
 import { useId, type MouseEvent } from "react";
 import type { PassageInContext } from "@/components/document/letterMarks";
 import { quoteOf } from "@/components/lib/citation";
-import { displayStatus, FIELD_META } from "@/components/lib/fields";
+import {
+  displayStatus,
+  FIELD_META,
+  shownStatus,
+} from "@/components/lib/fields";
 import { ChevronIcon } from "@/components/ui/icons";
 import type { Field, FieldName } from "@/lib/schema";
 import { Evidence } from "./Evidence";
@@ -55,7 +59,9 @@ export function FieldCard({
 }: FieldCardProps) {
   const headingId = useId();
   const evidenceId = useId();
-  const status = displayStatus(field);
+  const status = shownStatus(field, located);
+  // Reported as verified, but with no quote found in the letter to show for it.
+  const heldBack = status !== displayStatus(field);
   const { question, name: claim } = FIELD_META[name];
   const quote = status === "not_found" ? null : quoteOf(field.citation);
   const value = field.value ?? "";
@@ -115,9 +121,13 @@ export function FieldCard({
             {UNSURE_HEADLINE}
           </p>
           <p className="mt-2 text-[1.05rem] leading-relaxed">
-            {addsTo(UNSURE_HEADLINE, field.note)
-              ? field.note
-              : `Unsealed found something about ${claim} but couldn't confirm it, so no answer is given here. Check the letter itself, or ask the sender.`}
+            {heldBack
+              ? quote
+                ? "Unsealed couldn't match the quote behind this answer to the text it read from your letter, so it isn't shown as verified and no answer is given here. Check the letter itself, or ask the sender."
+                : "No quote from your letter came with this answer, so it isn't shown as verified and no answer is given here. Check the letter itself, or ask the sender."
+              : addsTo(UNSURE_HEADLINE, field.note)
+                ? field.note
+                : `Unsealed found something about ${claim} but couldn't confirm it, so no answer is given here. Check the letter itself, or ask the sender.`}
           </p>
         </>
       )}
