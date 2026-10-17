@@ -269,6 +269,11 @@ h1:focus {
   outline-offset: 3px;
 }
 
+/* The letter's tray clips anything drawn past its edges, so the ring goes inside. */
+.rw-scroller:focus-visible {
+  outline-offset: -3px;
+}
+
 /* A short rule in the logo's gradient, before a small label. */
 .eyebrow-rule {
   width: 2.5rem;

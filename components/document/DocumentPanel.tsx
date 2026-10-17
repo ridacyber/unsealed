@@ -30,6 +30,13 @@ interface DocumentPanelProps {
   marks: readonly LetterMark[];
 }
 
+/** Whether a box holds more than it shows, so there is something to scroll. */
+export function overflows(
+  box: Pick<Element, "scrollHeight" | "clientHeight" | "scrollWidth" | "clientWidth">,
+): boolean {
+  return box.scrollHeight > box.clientHeight || box.scrollWidth > box.clientWidth;
+}
+
 /**
  * The letter as Unsealed read it: a sheet of paper held in a tray on the
  * desk. It scrolls on its own, so a long letter never pushes the answers
@@ -42,6 +49,7 @@ export function DocumentPanel({
   marks,
 }: DocumentPanelProps) {
   const [isLarge, setIsLarge] = useState(false);
+  const [canScroll, setCanScroll] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const markRef = useRef<HTMLElement>(null);
 
@@ -64,6 +72,20 @@ export function DocumentPanel({
       scroller.scrollTop;
     scroller.scrollTo?.({ top: top - scroller.clientHeight / 3, left: 0 });
   }, [rangeStart, rangeEnd, isLarge]);
+
+  // A letter longer than its window needs a keyboard route to the rest of it.
+  // Chromium makes such a box focusable on its own, but Safari doesn't, so it
+  // is made a tab stop here, and only while there is something to scroll.
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const measure = () => setCanScroll(overflows(scroller));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(scroller);
+    if (scroller.firstElementChild) observer.observe(scroller.firstElementChild);
+    return () => observer.disconnect();
+  }, [hasText]);
 
   return (
     <section
@@ -88,6 +110,11 @@ export function DocumentPanel({
         ref={scrollerRef}
         data-letter-scroller=""
         className="rw-scroller scroll-calm"
+        // A group, not a region: the section around it is already the
+        // "Your letter" landmark.
+        tabIndex={canScroll ? 0 : undefined}
+        role={canScroll ? "group" : undefined}
+        aria-label={canScroll ? "Text of your letter" : undefined}
       >
         {hasText ? (
           <div data-letter-sheet="" className="rw-sheet">
