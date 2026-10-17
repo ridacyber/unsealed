@@ -57,6 +57,10 @@ export const httpClient: AnalysisClient = {
     // The hosting in front of the service turns away a request body over its
     // limit before the service sees it, with a page rather than JSON.
     if (response.status === 413) throw new AnalysisError("file_too_large");
+    // It answers the same way, with a 504, when the service runs past its time
+    // limit (maxDuration in app/api/analyze/route.ts). The service itself never
+    // sends a 504.
+    if (response.status === 504) throw new AnalysisError("timed_out");
 
     let payload: unknown;
     try {

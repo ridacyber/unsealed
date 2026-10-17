@@ -56,8 +56,25 @@ test("an unlisted service message is a general failure", async () => {
 });
 
 test("a reply that isn't JSON is a general failure", async () => {
-  respondWith("<html>504 Gateway Timeout</html>", 504);
+  for (const status of [200, 500, 502, 503]) {
+    respondWith(`<html>${status} Error</html>`, status);
+    assert.equal(await failureCode(), "processing_failed", `HTTP ${status}`);
+  }
+});
+
+test("a JSON reply that isn't the service's is a general failure", async () => {
+  respondWith({ error: { code: "502", message: "Bad Gateway" } }, 502);
   assert.equal(await failureCode(), "processing_failed");
+});
+
+test("a 504 from the hosting, with a page rather than JSON, is a timeout", async () => {
+  respondWith("<html>504 Gateway Timeout</html>", 504);
+  assert.equal(await failureCode(), "timed_out");
+});
+
+test("a 504 with a JSON body is a timeout", async () => {
+  respondWith({ error: { code: "504", message: "Gateway Timeout" } }, 504);
+  assert.equal(await failureCode(), "timed_out");
 });
 
 test("a 413 from the hosting, with no JSON, is the file being too large", async () => {

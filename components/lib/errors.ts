@@ -9,7 +9,8 @@
  * - unreadable: the PDF arrived but could not be opened.
  * - no_text: the PDF opened but held no text to read, as a scan does.
  * - too_long: the letter has more text than the service takes.
- * - timed_out: the service gave up because the analysis ran too long.
+ * - timed_out: the analysis ran too long, and the service or the hosting in
+ *   front of it (an HTTP 504) gave up.
  * - processing_failed: anything else that went wrong while analyzing.
  */
 export type AnalysisErrorCode =
