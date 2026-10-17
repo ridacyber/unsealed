@@ -1,0 +1,610 @@
+{
+  "commit": "5bf355a",
+  "model": "Qwen/Qwen3-30B-A3B-Instruct-2507 + checker nvidia/Nemotron-3-Ultra-550b-a55b",
+  "runs": [
+    {
+      "file": "C01.txt",
+      "result": {
+        "id": "bdc73e19-352a-4f87-a208-9c1c060ed8aa",
+        "documentType": "Payment Date Agreement - Invoice 26-11482",
+        "documentText": "BRACKWATER VETERINARY HOSPITAL\nClient Accounts\n\nOctober 15, 2026\n\nClient: Seren Mbatha-Lowry\nClient account: BVH-20937\nPatient: Juno (dog)\n\nPAYMENT DATE AGREEMENT - INVOICE 26-11482\n\nDear Seren Mbatha-Lowry,\n\nThank you for calling Client Accounts on October 13 about the bill for Juno's knee surgery. On that call you asked for more time to pay, and we agreed to move the payment date for this invoice. This letter confirms what we agreed.\n\n  Invoice number                    26-11482\n  Invoice date                      September 30, 2026\n  Treatment                         Cruciate ligament repair, left hind leg\n  Invoice total                     $3,860.00\n  Deposit paid at admission         $1,000.00\n  Balance                           $2,860.00\n  Due date printed on the invoice   October 30, 2026\n  Agreed payment date               November 20, 2026\n\nThe balance of $2,860.00 is now due on November 20, 2026. Because of this agreement, no late charge will be added for not paying by October 30, 2026.\n\nYou can pay the balance in the client portal, at reception during opening hours, or by calling Client Accounts.\n\nIf the balance has not been paid by November 20, 2026, a late charge of 1.5 percent of the unpaid balance will be added on the first day of each month until it is paid.\n\nThis agreement applies only to invoice 26-11482. Any other bills on your account keep their own due dates.\n\nWe hope Juno's recovery is going well.\n\nClient Accounts\nBrackwater Veterinary Hospital",
+        "summary": "This letter confirms a new payment date for a veterinary bill. The balance of $2,860.00 is now due on November 20, 2026, instead of the original October 30, 2026 date. If not paid by then, a late charge will apply.",
+        "fields": {
+          "amountOwed": {
+            "status": "verified",
+            "value": "$2,860.00",
+            "normalized": "2860.00",
+            "citation": {
+              "quote": "The balance of $2,860.00 is now due on November 20, 2026.",
+              "start": 863,
+              "end": 920
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "November 20, 2026",
+            "normalized": "2026-11-20",
+            "citation": {
+              "quote": "The balance of $2,860.00 is now due on November 20, 2026.",
+              "start": 863,
+              "end": 920
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Pay the balance of $2,860.00 by November 20, 2026.",
+            "normalized": null,
+            "citation": {
+              "quote": "The balance of $2,860.00 is now due on November 20, 2026.",
+              "start": 863,
+              "end": 920
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If the balance is not paid by November 20, 2026, a late charge of 1.5 percent of the unpaid balance will be added on the first day of each month until it is paid.",
+            "normalized": null,
+            "citation": {
+              "quote": "If the balance has not been paid by November 20, 2026, a late charge of 1.5 percent of the unpaid balance will be added on the first day of each month until it is paid.",
+              "start": 1127,
+              "end": 1295
+            },
+            "confidence": 0.95,
+            "note": null
+          }
+        },
+        "overall": "ok",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1936,
+          "outputTokens": 588,
+          "latencyMs": 21387,
+          "costUsd": 0.00037,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 920,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 1177,
+          "checkCostUsd": 0.000095
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "C02.txt",
+      "result": {
+        "id": "fddf6efa-7abe-4d94-9625-769ab9a9d0c2",
+        "documentType": "Notice of Special Assessment",
+        "documentText": "THISTLECOMBE COURT CONDOMINIUM ASSOCIATION\nc/o Stannick Community Management\n\nOctober 12, 2026\n\nUnit owner: Dr. Yusuf Hartigan-Mele\nUnit: B-207\n\nNOTICE OF SPECIAL ASSESSMENT - ROOF REPLACEMENT, BUILDINGS A AND B\n\nDear Dr. Hartigan-Mele,\n\nAt its open meeting on September 29, 2026, the Board of Directors voted to replace the roofs on Buildings A and B and approved a special assessment to pay for the part of the work that the reserve fund cannot cover. This letter is your formal notice of that assessment.\n\nHow the amount was worked out\n\n  Contract price for both roofs               $196,800.00\n  Paid from the Association's reserve fund     $49,200.00\n  Remainder to be assessed                    $147,600.00\n\nThe Declaration requires a special assessment to be divided equally among all 60 units. Each unit's share is therefore $2,460.00.\n\nWhat you owe and when\n\nThe special assessment for Unit B-207 is $2,460.00. It is due in full on or before January 15, 2027.\n\nThis is a one-time charge. It is separate from your regular monthly dues of $285.00, which stay the same and remain payable on the first of each month as usual. The assessment will not be collected through your automatic dues payment. Please pay it by check payable to Thistlecombe Court Condominium Association, mailed or delivered to Stannick Community Management, or through the special assessment page of the owner portal. Write your unit number on the check.\n\nThere is no extra cost to pay by check or by electronic bank transfer on the owner portal. Owners who choose to pay by credit or debit card on the owner portal are charged a convenience fee of 2.95 percent of the payment. On the full assessment of $2,460.00, that fee is $72.57, so a card payment would come to $2,532.57. The convenience fee applies only to card payments and does not change your assessment, which is $2,460.00 however you pay.\n\nIf the assessment is not paid on time\n\nAn assessment that has not been paid in full by January 15, 2027 is delinquent. A late charge of $40.00 is added, the unpaid amount bears interest at 8 percent a year from the due date, and the Association may record a lien against the unit as the Declaration allows.\n\nWork is scheduled to begin in March 2027, weather permitting. The contractor's schedule and the minutes of the September 29 meeting are posted on the owner portal.\n\nFor the Board of Directors,\n\nPetra Lindahl-Osei\nCommunity Manager, Stannick Community Management",
+        "summary": "This letter tells you that your condominium association is charging a one-time fee of $2,460.00 to cover part of the cost to replace the roofs on Buildings A and B. You must pay this amount by January 15, 2027, or face a late fee, interest, and a lien on your unit.",
+        "fields": {
+          "amountOwed": {
+            "status": "verified",
+            "value": "$2,460.00",
+            "normalized": "2460.00",
+            "citation": {
+              "quote": "The special assessment for Unit B-207 is $2,460.00.",
+              "start": 869,
+              "end": 920
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "January 15, 2027",
+            "normalized": "2027-01-15",
+            "citation": {
+              "quote": "It is due in full on or before January 15, 2027.",
+              "start": 921,
+              "end": 969
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Pay $2,460.00 by January 15, 2027, using a check, bank transfer, or the owner portal. If using a credit or debit card, you will pay an extra fee.",
+            "normalized": null,
+            "citation": {
+              "quote": "Please pay it by check payable to Thistlecombe Court Condominium Association, mailed or delivered to Stannick Community Management, or through the special assessment page of the owner portal.",
+              "start": 1206,
+              "end": 1397
+            },
+            "confidence": 0.9,
+            "note": "The letter gives multiple payment methods. The quote covers the main instruction. The card fee is mentioned separately but is not required."
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do not pay by January 15, 2027, a $40.00 late fee will be added, interest at 8% per year will start, and a lien may be placed on your unit.",
+            "normalized": null,
+            "citation": {
+              "quote": "An assessment that has not been paid in full by January 15, 2027 is delinquent. A late charge of $40.00 is added, the unpaid amount bears interest at 8 percent a year from the due date, and the Association may record a lien against the unit as the Declaration allows.",
+              "start": 1921,
+              "end": 2188
+            },
+            "confidence": 0.95,
+            "note": null
+          }
+        },
+        "overall": "ok",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 2154,
+          "outputTokens": 652,
+          "latencyMs": 23404,
+          "costUsd": 0.000411,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 1146,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 1163,
+          "checkCostUsd": 0.00011760000000000001
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "C03.txt",
+      "result": {
+        "id": "1d46fe92-3475-4b15-9260-1167c7ecfdca",
+        "documentType": "Monthly Statement - Internet Service",
+        "documentText": "KETTLEBROOK FIBER COOPERATIVE\nMember Billing\n\nStatement date: October 16, 2026\n\nMember: Roswitha Adeyemi-Clarke\nAccount number: 3307-115-9\nService address: 1180 County Road 14\n\nMONTHLY STATEMENT - INTERNET SERVICE\nService period: November 1 to November 30, 2026\n\n  Fiber 300 residential plan           $64.95\n  Wireless gateway rental               $9.00\n  State communications surcharge        $2.37\n  Amount due                           $76.32\n  Due date                   November 5, 2026\n\nLast statement: $76.32. Payment received October 2, 2026: $76.32. Thank you.\n\nHOW THIS BILL WILL BE PAID\n\nYou are enrolled in AutoPay. The amount due will be drawn from the checking account you have on file on the due date. Please do not send a separate payment for this bill. If you do, you may be charged twice.\n\nMESSAGES ABOUT YOUR ACCOUNT\n\nAutoPay is not active on this account. The amount due on this statement will not be drawn from your bank account. You must pay this bill yourself by the due date. You can pay through the Member Portal, by phone with a card, or by mailing a check with the stub at the bottom of this page.\n\nLATE PAYMENTS\n\nA late fee of $8.00 is added to any balance that has not been paid by its due date. Service may be suspended if a balance is still unpaid 30 days after its due date, and a $35.00 reconnection charge must be paid before service is restored.\n\nKettlebrook Fiber Cooperative is owned by the members it serves. Notice of the annual meeting will be mailed in January.\n\nMember Billing\nKettlebrook Fiber Cooperative",
+        "summary": "This is a monthly bill for internet service from Kettlebrook Fiber Cooperative. It shows a balance of $76.32 due by November 5, 2026. The letter says you must pay it yourself because AutoPay is not active, and warns that late fees or service suspension may happen if you don't pay on time.",
+        "fields": {
+          "amountOwed": {
+            "status": "verified",
+            "value": "$76.32",
+            "normalized": "76.32",
+            "citation": {
+              "quote": "Amount due                           $76.32",
+              "start": 403,
+              "end": 446
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "November 5, 2026",
+            "normalized": "2026-11-05",
+            "citation": {
+              "quote": "Due date                   November 5, 2026",
+              "start": 449,
+              "end": 492
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "requiredAction": {
+            "status": "unsure",
+            "value": "Pay the $76.32 bill by November 5, 2026 using the Member Portal, by phone with a card, or by mailing a check.",
+            "normalized": null,
+            "citation": {
+              "quote": "You must pay this bill yourself by the due date. You can pay through the Member Portal, by phone with a card, or by mailing a check with the stub at the bottom of this page.",
+              "start": 952,
+              "end": 1125
+            },
+            "confidence": 0.9,
+            "note": "This letter gives different answers in different places. Please confirm with the sender."
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do not pay by the due date, a $8.00 late fee will be added. If the balance is still unpaid 30 days after the due date, service may be suspended and a $35.00 reconnection charge will be required.",
+            "normalized": null,
+            "citation": {
+              "quote": "A late fee of $8.00 is added to any balance that has not been paid by its due date. Service may be suspended if a balance is still unpaid 30 days after its due date, and a $35.00 reconnection charge must be paid before service is restored.",
+              "start": 1142,
+              "end": 1381
+            },
+            "confidence": 0.9,
+            "note": null
+          }
+        },
+        "overall": "partial",
+        "warnings": [
+          {
+            "kind": "conflict",
+            "message": "The letter says AutoPay will draw the payment on the due date, but also says AutoPay is not active and the member must pay the bill themselves.",
+            "quotes": [
+              {
+                "quote": "The amount due will be drawn from the checking account you have on file on the due date.",
+                "start": 629,
+                "end": 717
+              },
+              {
+                "quote": "AutoPay is not active on this account. The amount due on this statement will not be drawn from your bank account. You must pay this bill yourself by the due date.",
+                "start": 838,
+                "end": 1000
+              }
+            ]
+          }
+        ],
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1934,
+          "outputTokens": 593,
+          "latencyMs": 21406,
+          "costUsd": 0.0003713,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 934,
+          "checkOutputTokens": 126,
+          "checkLatencyMs": 1407,
+          "checkCostUsd": 0.0001312
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "C04.txt",
+      "result": {
+        "id": "79e3dbf6-7dc4-46ac-a6fe-c7b1ddffd950",
+        "documentType": "Annual Escrow Account Review",
+        "documentText": "HOLLINSHEAD HOME LOANS\nLoan Servicing - Escrow Department\n\nStatement date: October 14, 2026\n\nBorrower: Mirela Kovac-Dunne\nLoan number: 0071-558-2093\nProperty address: 31 Wickerby Lane\n\nANNUAL ESCROW ACCOUNT REVIEW\n\nDear Mirela Kovac-Dunne,\n\nEach year we review the escrow account that we use to pay the property taxes and homeowners insurance on your home. This statement covers two separate things: a refund we are sending to you, and the monthly payment you will make to us starting in January.\n\n1. A REFUND TO YOU\n\nYour homeowners insurance premium for the past year was lower than we had planned for, so your escrow account now holds more than it needs. After keeping the cushion that federal rules allow, the extra amount, called a surplus, is $286.14.\n\nThe surplus is your money, and we are returning it to you. A check for $286.14, payable to you, is enclosed with this statement. You can deposit or cash it as you would any other check.\n\n2. YOUR MONTHLY PAYMENT STARTING JANUARY 2027\n\nThese are the amounts we expect to pay from your escrow account between January and December 2027:\n\n  Hartwell County property taxes                $3,842.16\n  Homeowners insurance, Allbright Mutual        $1,569.00\n  Total projected escrow payments               $5,411.16\n\nTo cover these, your monthly escrow deposit will be $450.93, which is the total divided by 12.\n\n  Principal and interest                        $1,161.47\n  Escrow deposit                                  $450.93\n  Monthly payment                               $1,612.40\n\nYour monthly payment of $1,612.40 begins with the payment due January 1, 2027, and is due on the first of each month after that. The principal and interest part of your payment does not change.\n\nPlease send each payment from January 1, 2027 onward for the full amount of $1,612.40.\n\nKEEP THE REFUND AND YOUR PAYMENT SEPARATE\n\nThe refund check is not a credit toward your mortgage payment. Do not subtract $286.14 from your January payment, and do not send the refund check back to us as a payment.\n\nIf you have questions about this statement, call the Escrow Department at the number shown on your monthly mortgage statement.\n\nEscrow Department\nHollinshead Home Loans",
+        "summary": "This letter tells you that you will get a refund of $286.14 from your escrow account because your insurance costs were lower than expected. Starting in January 2027, your monthly payment will increase to $1,612.40, which includes $450.93 for escrow.",
+        "fields": {
+          "amountOwed": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter is about money owed to the reader (a refund), not money the reader must pay. The $286.14 is a refund, not a debt."
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "January 1, 2027",
+            "normalized": "2027-01-01",
+            "citation": {
+              "quote": "Your monthly payment of $1,612.40 begins with the payment due January 1, 2027, and is due on the first of each month after that.",
+              "start": 1539,
+              "end": 1667
+            },
+            "confidence": 0.95,
+            "note": "The deadline is clearly stated as January 1, 2027, for the first payment."
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Start sending $1,612.40 each month beginning January 1, 2027, and pay the full amount on the first of each month.",
+            "normalized": null,
+            "citation": {
+              "quote": "Please send each payment from January 1, 2027 onward for the full amount of $1,612.40.",
+              "start": 1734,
+              "end": 1820
+            },
+            "confidence": 0.95,
+            "note": "The letter clearly states the action: send the full payment starting January 1, 2027."
+          },
+          "consequence": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not say what happens if the reader does not make the payment. No consequences are mentioned."
+          }
+        },
+        "overall": "ok",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 2099,
+          "outputTokens": 566,
+          "latencyMs": 19037,
+          "costUsd": 0.0003797,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 1087,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 1012,
+          "checkCostUsd": 0.0001117
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "C05.txt",
+      "result": {
+        "id": "44466044-ae72-4666-9863-40761a4e31e6",
+        "documentType": "Lease Maturity Notice",
+        "documentText": "HALCYARD MOTOR FINANCE\nLease Maturity Center\n\nOctober 13, 2026\n\nLessee: Benedikt Asher-Lowe\nLease account: 61-4402-88175\nVehicle: 2024 Corvell Tarn LX, VIN ending 7Q2814\n\nYOUR LEASE IS ENDING - WHAT TO DO BEFORE DECEMBER 18\n\nDear Benedikt Asher-Lowe,\n\nYour 36-month lease reaches its maturity date on Friday, December 18, 2026. By that date you need to do one of two things: turn the vehicle in, or buy it. This letter explains both, and what happens if you do neither.\n\nIF YOU TURN THE VEHICLE IN\n\n1. Book the free pre-return inspection. It is optional, but we suggest having it done at least 15 days before maturity, that is, by December 3, 2026, so that you have time to arrange any repairs yourself.\n2. Return the vehicle, both keys and the owner's manual to any authorized Corvell dealer on or before December 18, 2026, and sign the odometer statement there.\n3. After the return we will send you a final bill. It will include the $395.00 disposition fee set in your lease, 20 cents for each mile over your 36,000-mile allowance, and a charge for any wear beyond normal use. We cannot work out the mileage and wear charges until the vehicle has been returned and inspected.\n\nIF YOU BUY THE VEHICLE\n\nYour purchase option price is $14,275.00. Sales tax, title and registration fees are extra and differ from state to state, so that figure is not your final cost. Call us for a payoff quote, which is good for 10 days. The purchase must be completed by December 18, 2026. No disposition fee is charged on a purchase.\n\nIF YOU DO NEITHER\n\nThe lease does not simply end. If the vehicle has not been returned or purchased by December 18, 2026, you will be charged a holdover payment equal to your monthly payment of $318.44 for each month, or part of a month, that you keep it. We may also treat the lease as in default and take the vehicle back at your expense.\n\nLease Maturity Center\nHalcyard Motor Finance",
+        "summary": "This letter tells you that your car lease ends on December 18, 2026. You must either return the car or buy it by then. If you do neither, you will be charged extra each month and the company may take the car back.",
+        "fields": {
+          "amountOwed": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not state a total amount the reader must pay right now. The $14,275.00 is a purchase price, not an amount owed. Other charges like mileage, wear, and the $395.00 disposition fee are not final until after return."
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "December 18, 2026",
+            "normalized": "2026-12-18",
+            "citation": {
+              "quote": "Your 36-month lease reaches its maturity date on Friday, December 18, 2026.",
+              "start": 252,
+              "end": 327
+            },
+            "confidence": 0.95,
+            "note": "The deadline is clearly stated in the first paragraph and repeated in the 'IF YOU DO NEITHER' section."
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Return the car or buy it by December 18, 2026.",
+            "normalized": null,
+            "citation": {
+              "quote": "By that date you need to do one of two things: turn the vehicle in, or buy it.",
+              "start": 328,
+              "end": 406
+            },
+            "confidence": 0.9,
+            "note": "The letter gives two possible actions. The quote is the clearest statement of what must be done."
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do neither, you will be charged $318.44 for each month or part of a month you keep the car, and the company may take it back at your expense.",
+            "normalized": null,
+            "citation": {
+              "quote": "If the vehicle has not been returned or purchased by December 18, 2026, you will be charged a holdover payment equal to your monthly payment of $318.44 for each month, or part of a month, that you keep it. We may also treat the lease as in default and take the vehicle back at your expense.",
+              "start": 1569,
+              "end": 1859
+            },
+            "confidence": 0.95,
+            "note": "The consequence is clearly stated in the 'IF YOU DO NEITHER' section."
+          }
+        },
+        "overall": "ok",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 2044,
+          "outputTokens": 642,
+          "latencyMs": 21535,
+          "costUsd": 0.000397,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 1034,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 974,
+          "checkCostUsd": 0.00010640000000000001
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "C06.txt",
+      "result": {
+        "id": "40c3a116-e65e-434d-a714-a9bec65f1fbf",
+        "documentType": "Annual Waiting List Confirmation",
+        "documentText": "PORT OF SALTERHEAD\nHarbor Office - Moorage Services\n\nOctober 15, 2026\n\nTobiah Marchetti-Rowe\nWaiting list record: WL-30-0672\n\nANNUAL WAITING LIST CONFIRMATION - 30-FOOT SLIPS\n\nDear Mr. Marchetti-Rowe,\n\nYou are on the Port's waiting list for a permanent 30-foot slip in the Salterhead Boat Basin. As of October 1 you were number 41 on that list. Twelve slips of this size changed hands during the past year.\n\nOnce a year we ask everyone on the list to tell us whether they still want a slip. This keeps the list accurate and means that offers go to people who are ready to take them.\n\nTo stay on the list, you must confirm by Friday, November 6, 2026. You can do this in either of two ways:\n\n  - sign and return the confirmation card enclosed with this letter, or\n  - sign in to the Moorage Services page of the Port's website and choose the waiting list confirmation option.\n\nThere is no charge to confirm. The $80.00 waiting list deposit you paid when you joined the list in 2022 stays on file and will be credited to your first month's moorage when you accept a slip.\n\nIf you do not confirm by the date above, your name will be removed from the waiting list and your deposit will be forfeited. A person who has been removed and later wants a slip must send in a new application with a new deposit and starts again at the bottom of the list.\n\nPlease also check that the boat details and mailing address printed on the card are current, and correct anything that has changed.\n\nPort policy on unconfirmed names. Under Moorage Rule 7.4, a name that is not confirmed during the annual review is placed in inactive status. It keeps its place in line and its deposit remains on file, but no slip is offered while the name is inactive. The holder may return to active status at any time by notifying the Harbor Office.\n\nHarbor Office - Moorage Services\nPort of Salterhead",
+        "summary": "This letter asks you to confirm that you still want a 30-foot boat slip on the Port of Salterhead's waiting list. You must act by November 6, 2026, to stay on the list. If you don't confirm, your name will be removed and your deposit will be lost.",
+        "fields": {
+          "amountOwed": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not state any amount the reader must pay. The $80.00 deposit is mentioned as being on file and will be credited later, not owed now."
+          },
+          "deadline": {
+            "status": "verified",
+            "value": "Friday, November 6, 2026",
+            "normalized": "2026-11-06",
+            "citation": {
+              "quote": "To stay on the list, you must confirm by Friday, November 6, 2026.",
+              "start": 584,
+              "end": 650
+            },
+            "confidence": 0.95,
+            "note": "The date is stated clearly and unambiguously in the letter."
+          },
+          "requiredAction": {
+            "status": "unsure",
+            "value": "Sign and return the confirmation card or sign in to the Port's website and confirm your place on the waiting list.",
+            "normalized": null,
+            "citation": {
+              "quote": "You can do this in either of two ways: - sign and return the confirmation card enclosed with this letter, or - sign in to the Moorage Services page of the Port's website and choose the waiting list confirmation option.",
+              "start": 651,
+              "end": 874
+            },
+            "confidence": 0.9,
+            "note": "This letter gives different answers in different places. Please confirm with the sender."
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "If you do not confirm by the deadline, your name will be removed from the waiting list and your deposit will be forfeited.",
+            "normalized": null,
+            "citation": {
+              "quote": "If you do not confirm by the date above, your name will be removed from the waiting list and your deposit will be forfeited.",
+              "start": 1071,
+              "end": 1195
+            },
+            "confidence": 0.95,
+            "note": "The consequence is stated directly and clearly in the letter."
+          }
+        },
+        "overall": "partial",
+        "warnings": [
+          {
+            "kind": "conflict",
+            "message": "The letter says an unconfirmed name is removed from the waiting list and the deposit is forfeited, but the policy section says the name is placed in inactive status, keeps its place in line, and the deposit remains on file.",
+            "quotes": [
+              {
+                "quote": "If you do not confirm by the date above, your name will be removed from the waiting list and your deposit will be forfeited.",
+                "start": 1071,
+                "end": 1195
+              },
+              {
+                "quote": "Under Moorage Rule 7.4, a name that is not confirmed during the annual review is placed in inactive status. It keeps its place in line and its deposit remains on file",
+                "start": 1511,
+                "end": 1677
+              }
+            ]
+          }
+        ],
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1967,
+          "outputTokens": 578,
+          "latencyMs": 19461,
+          "costUsd": 0.0003701,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 951,
+          "checkOutputTokens": 155,
+          "checkLatencyMs": 982,
+          "checkCostUsd": 0.00014160000000000003
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "C07.txt",
+      "result": {
+        "id": "df013bf7-40fc-4a08-9493-47e69d42a3ec",
+        "documentType": "Appointment Confirmation",
+        "documentText": "OSPREY POINT SLEEP CENTER\n14 Market Street, Suite 2, Ashwick\n\nOctober 14, 2026\n\nPatient: Tomasz Abernethy-Quaye\nPatient number: OPS-55120\nReferring doctor: Dr. Halima Verhoeven\n\nYOUR OVERNIGHT SLEEP STUDY\n\nDear Tomasz Abernethy-Quaye,\n\nYour overnight sleep study has been booked. Please read this whole letter, because the place where our studies are done is changing.\n\nYour appointment\n\n  Study:       Overnight sleep study\n  Date:        Thursday, November 12, 2026\n  Arrive at:   8:30 p.m. You will go home at about 6:30 a.m. the next morning.\n  Place:       2250 Orchard Rise, Second Floor, Ashwick\n\nWE ARE MOVING\n\nUntil now, all of our patients have been seen at 14 Market Street, the address at the top of this letter. Our Market Street office will close for good at 5:00 p.m. on Friday, October 30, 2026. From Monday, November 2, 2026, every appointment, including all overnight studies, takes place at our new building at 2250 Orchard Rise. Your study is on November 12, so it will be at Orchard Rise. No staff will be at Market Street after October 30.\n\nParking at Orchard Rise is free in the lot behind the building. Use the entrance marked Sleep Center and take the elevator to the second floor.\n\nWhat to bring\n\nBring your insurance card, a photo ID, a list of the medicines you take, and whatever you normally sleep in. Your insurance plan's copay for this study is $75.00, which you pay when you arrive.\n\nIf you need to cancel or change the appointment\n\nCall us at least 48 hours before your arrival time. If you miss the study without giving at least 48 hours' notice, a $150.00 missed-appointment fee will be charged, and your doctor will be told that the study was not done.\n\nOsprey Point Sleep Center",
+        "summary": "This letter confirms your overnight sleep study on November 12, 2026, at 2250 Orchard Rise. It tells you to bring your insurance card, ID, medicine list, and sleep items. You must pay a $75.00 copay when you arrive.",
+        "fields": {
+          "amountOwed": {
+            "status": "verified",
+            "value": "$75.00",
+            "normalized": "75.00",
+            "citation": {
+              "quote": "Your insurance plan's copay for this study is $75.00, which you pay when you arrive.",
+              "start": 1332,
+              "end": 1416
+            },
+            "confidence": 0.95,
+            "note": null
+          },
+          "deadline": {
+            "status": "unsure",
+            "value": "at least 48 hours before your arrival time",
+            "normalized": null,
+            "citation": {
+              "quote": "Call us at least 48 hours before your arrival time.",
+              "start": 1467,
+              "end": 1518
+            },
+            "confidence": 0.5,
+            "note": "The deadline depends on the arrival time, which is not specified in the letter. The letter does not give a fixed date or time for cancellation."
+          },
+          "requiredAction": {
+            "status": "verified",
+            "value": "Call the center at least 48 hours before your appointment if you need to cancel or change it.",
+            "normalized": null,
+            "citation": {
+              "quote": "Call us at least 48 hours before your arrival time. If you miss the study without giving at least 48 hours' notice, a $150.00 missed-appointment fee will be charged, and your doctor will be told that the study was not done.",
+              "start": 1467,
+              "end": 1690
+            },
+            "confidence": 0.9,
+            "note": "The quote includes both the action and the consequence. The action is to call at least 48 hours before arrival."
+          },
+          "consequence": {
+            "status": "verified",
+            "value": "A $150.00 missed-appointment fee will be charged, and your doctor will be told that the study was not done.",
+            "normalized": null,
+            "citation": {
+              "quote": "If you miss the study without giving at least 48 hours' notice, a $150.00 missed-appointment fee will be charged, and your doctor will be told that the study was not done.",
+              "start": 1519,
+              "end": 1690
+            },
+            "confidence": 0.95,
+            "note": null
+          }
+        },
+        "overall": "partial",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 1986,
+          "outputTokens": 596,
+          "latencyMs": 22355,
+          "costUsd": 0.00037739999999999996,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 969,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 862,
+          "checkCostUsd": 0.0000999
+        }
+      },
+      "error": null
+    },
+    {
+      "file": "C08.txt",
+      "result": {
+        "id": "a6276a0e-e995-4fe2-b9b9-45356c43dc31",
+        "documentType": "Student Account Statement - Credit Balance",
+        "documentText": "STRATHEVEN UNIVERSITY\nOffice of Student Accounts\n\nStatement date: October 15, 2026\n\nStudent: Priyanka Oduya-Fenn\nStudent ID: 0048-21376\nTerm: Fall 2026\n\nSTUDENT ACCOUNT STATEMENT - CREDIT BALANCE\n\nDear Priyanka Oduya-Fenn,\n\nA scholarship payment of $2,350.00 from the Ferrant Family Foundation was posted to your student account on October 9, 2026. With that payment, the total paid into your account for Fall 2026 is now more than your Fall 2026 charges. The difference is a credit balance, which is money the University owes you.\n\nFall 2026 account summary\n\n  Tuition, full-time                               $6,840.00\n  Student services fee                               $415.00\n  Residence hall, Corrin House                     $3,210.00\n  Total charges                                   $10,465.00\n\n  Federal Pell Grant                               $3,697.50\n  Stratheven Merit Award                           $2,500.00\n  Your payment, August 14, 2026                    $3,100.00\n  Ferrant Family Foundation Scholarship            $2,350.00\n  Total payments and aid                          $11,647.50\n\n  Account balance                                 -$1,182.50 (credit)\n  Amount due                                           $0.00\n\nYour Fall 2026 charges are paid in full. There is no payment due on this statement.\n\nYour refund\n\nWe will refund the full credit balance of $1,182.50 to you. Because you are signed up for eRefund, the money will go by direct deposit to your checking account ending in 4471. Refunds in this cycle will be released on October 22, 2026. Most banks make the money available within two business days after that.\n\nYou do not need to do anything to receive your refund. If you would rather receive a paper check, or if the account ending in 4471 has been closed, contact the Office of Student Accounts as soon as possible.\n\nYour Spring 2027 bill will be sent separately in December.\n\nOffice of Student Accounts\nStratheven University",
+        "summary": "This letter tells you that your Fall 2026 student account has a credit balance of $1,182.50 because you paid more than your charges. The university will automatically refund this money to your bank account on October 22, 2026, unless you ask for a paper check instead.",
+        "fields": {
+          "amountOwed": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter is about money owed to the reader, not money the reader must pay."
+          },
+          "deadline": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter gives a date for when the refund will be released, but not a deadline for the reader to act. No action is required."
+          },
+          "requiredAction": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter says you do not need to do anything to receive your refund."
+          },
+          "consequence": {
+            "status": "not_found",
+            "value": null,
+            "normalized": null,
+            "citation": null,
+            "confidence": 0,
+            "note": "The letter does not say what happens if you do nothing. It says the refund will be sent automatically."
+          }
+        },
+        "overall": "abstained",
+        "disclaimer": "Unsealed explains what your letter says in plain language. It is not legal, tax, or financial advice. For anything important, confirm with the sender or a qualified person.",
+        "metrics": {
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "inputTokens": 2045,
+          "outputTokens": 418,
+          "latencyMs": 16449,
+          "costUsd": 0.0003299,
+          "checkStatus": "ok",
+          "checkModel": "nvidia/Nemotron-3-Ultra-550b-a55b",
+          "checkInputTokens": 1031,
+          "checkOutputTokens": 10,
+          "checkLatencyMs": 709,
+          "checkCostUsd": 0.0001061
+        }
+      },
+      "error": null
+    }
+  ]
+}

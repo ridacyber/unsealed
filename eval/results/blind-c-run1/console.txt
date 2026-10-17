@@ -1,0 +1,65 @@
+Holdout run: 8 letters | model Qwen/Qwen3-30B-A3B-Instruct-2507 + checker nvidia/Nemotron-3-Ultra-550b-a55b | commit 5bf355a
+
+C01  C01.txt
+  amount    verified   "$2,860.00"
+  deadline  verified   "November 20, 2026"
+  action    verified   "Pay the balance of $2,860.00 by November 20, 2026."
+  conseq    verified   "If the balance is not paid by November 20, 2026, a late charge of 1.5 "
+  check: ok
+
+C02  C02.txt
+  amount    verified   "$2,460.00"
+  deadline  verified   "January 15, 2027"
+  action    verified   "Pay $2,460.00 by January 15, 2027, using a check, bank transfer, or th"
+  conseq    verified   "If you do not pay by January 15, 2027, a $40.00 late fee will be added"
+  check: ok
+
+C03  C03.txt
+  amount    verified   "$76.32"
+  deadline  verified   "November 5, 2026"
+  action    unsure     "Pay the $76.32 bill by November 5, 2026 using the Member Portal, by ph"
+  conseq    verified   "If you do not pay by the due date, a $8.00 late fee will be added. If "
+  check: ok
+  WARNING: The letter says AutoPay will draw the payment on the due date, but also says AutoPay is not active and the member must pay the bill themselves. | A: "The amount due will be drawn from the checking account you h" | B: "AutoPay is not active on this account. The amount due on thi"
+
+C04  C04.txt
+  amount    not_found  
+  deadline  verified   "January 1, 2027"
+  action    verified   "Start sending $1,612.40 each month beginning January 1, 2027, and pay "
+  conseq    not_found  
+  check: ok
+
+C05  C05.txt
+  amount    not_found  
+  deadline  verified   "December 18, 2026"
+  action    verified   "Return the car or buy it by December 18, 2026."
+  conseq    verified   "If you do neither, you will be charged $318.44 for each month or part "
+  check: ok
+
+C06  C06.txt
+  amount    not_found  
+  deadline  verified   "Friday, November 6, 2026"
+  action    unsure     "Sign and return the confirmation card or sign in to the Port's website"
+  conseq    verified   "If you do not confirm by the deadline, your name will be removed from "
+  check: ok
+  WARNING: The letter says an unconfirmed name is removed from the waiting list and the deposit is forfeited, but the policy section says the name is placed in inactive status, keeps its place in line, and the deposit remains on file. | A: "If you do not confirm by the date above, your name will be r" | B: "Under Moorage Rule 7.4, a name that is not confirmed during "
+
+C07  C07.txt
+  amount    verified   "$75.00"
+  deadline  unsure     "at least 48 hours before your arrival time"
+  action    verified   "Call the center at least 48 hours before your appointment if you need "
+  conseq    verified   "A $150.00 missed-appointment fee will be charged, and your doctor will"
+  check: ok
+
+C08  C08.txt
+  amount    not_found  
+  deadline  not_found  
+  action    not_found  
+  conseq    not_found  
+  check: ok
+
+============================================================
+Letters 8 | errors 0 | cost $0.0030 | latency avg 20629ms max 23404ms
+Results for m to score: /tmp/unsealed-holdout-2026-10-17T17-30-09-320Z.csv
+Full outputs: /tmp/unsealed-holdout-2026-10-17T17-30-09-320Z.json
+Run this once per prompt version. Don't tune against these letters.
