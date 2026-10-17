@@ -213,19 +213,20 @@ export async function analyze(documentText: string): Promise<AnalysisResult> {
       const f = fields[name];
       if (f.status !== "verified") continue;
       const repeatsDisputed = tokens.some((t) => mentions(f.value, t));
-      if (name === target || repeatsDisputed) {
+      const cit = f.citation;
+      const citesDisputed =
+        c.topic === "action" && !!cit && cit.start >= 0 && c.quotes.some((q) => cit.start < q.end && q.start < cit.end);
+      if (name === target || repeatsDisputed || citesDisputed) {
         fields[name] = { ...f, status: "unsure", note: UNSURE_NOTE };
       }
     }
   }
 
-  // If the summary repeats a value a conflict warning disputes, say so in the summary itself.
+  // If any conflict warning fired, say so in the summary too, so it never reads as settled fact.
   const SUMMARY_NOTE = "Note: this letter contradicts itself, so confirm the details with the sender before acting.";
   const rawSummary = typeof parsed?.summary === "string" ? parsed.summary : "";
-  const summaryRepeatsDisputed = (check?.contradictions ?? []).some((c) =>
-    disputedTokens(c.topic, c.quotes).some((t) => mentions(rawSummary, t)),
-  );
-  const summary = summaryRepeatsDisputed ? `${rawSummary} ${SUMMARY_NOTE}` : rawSummary;
+  const hasConflict = (check?.contradictions ?? []).length > 0;
+  const summary = hasConflict ? `${rawSummary} ${SUMMARY_NOTE}` : rawSummary;
 
   const all = Object.values(fields);
   const overall: AnalysisResult["overall"] = !all.some((f) => f.status === "verified")
