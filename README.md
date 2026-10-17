@@ -1,162 +1,221 @@
+
 # Unsealed
 
-Unsealed takes a PDF of an official letter and returns four answers: **how much** is owed, **when** it is due, **what to do** next, and **what happens if you ignore it**.
+**Plain-language answers about official letters, each one traced to the exact words on the page.**
 
-<!-- TODO: add the live demo URL here once deployed -->
+Built in October 2026 for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
 
-To combat LLM hallucinations, Unsealed uses a **"Model Proposes, Application Verifies"** design pattern. The backend checks that every quote the model cites really appears in the text extracted from the PDF (ignoring whitespace, letter case, and quote style), and labels each answer **Verified**, **Unsure**, or **Not Found**. Verified means the cited words are in the letter and the model raised no conflict or doubt about them. It does not independently check the plain-language wording of the answer, so the app always shows the letter's own words next to it.
-
-A second model reads the same letter and looks for **passages that cannot both be followed or both be true** (for example, "pay through the new portal" and "keep paying the old way until you are notified"). When it finds one, the app shows a warning with both passages and downgrades only the affected answer from Verified to Unsure.
-
-Privacy and terms: see the in-app pages at `/privacy` and `/terms`.
+- **Live demo:** <DEMO_URL>
+- **Demo video (under 3 minutes):** <VIDEO_URL>
+- **Platform feedback for Nebius and NVIDIA:** [FEEDBACK.md](FEEDBACK.md)
+- **Evaluation record:** [eval/results/](eval/results/), including the [preregistration for blind set C](eval/letters/blind-c/PREREGISTRATION.md)
 
 ---
 
-## 🛠️ Tech Stack & Infrastructure
+## The problem
 
-*   **Frontend:** Next.js / React (Zod schema shared with the backend)
-*   **Backend:** Next.js route handler in TypeScript; plain `fetch` to an OpenAI-compatible endpoint (no SDK)
-*   **AI Infrastructure:** Nebius Token Factory (Serverless Inference)
-*   **Extraction model:** `Qwen/Qwen3-30B-A3B-Instruct-2507`
-*   **Contradiction-check model:** NVIDIA Nemotron Ultra (`nvidia/Nemotron-3-Ultra-550b-a55b`), served by Nebius
-*   **PDF Extraction:** `unpdf`
+Tuition bills, court notices, collection letters and benefit decisions are written to be legally precise, not readable. Misreading one costs a missed deadline, a late fee, or a payment of the wrong amount.
 
-### Why Qwen-30B for extraction?
-During development, we evaluated both the **30B model** and the **235B model** on Nebius's infrastructure. We chose the 30B variant:
-*   **Performance:** ~70 tokens/sec (30B) vs. ~27 tokens/sec (235B), per the Nebius console
-*   **Cost Efficiency:** \$0.10/\$0.30 per million tokens. Our 15-letter evaluation suite costs about half a cent for extraction (\$0.0048 on a recent run).
-*   **Logic Parity:** In our testing, the 235B model tripped over the same complex edge cases as the 30B model, which made the faster, cheaper 30B the clear choice.
+A fluent summarizer makes this worse, because fluent is exactly how a wrong deadline gets believed. Unsealed answers four questions about a letter:
 
-### Why NVIDIA Nemotron Ultra for the contradiction check?
-We tested four Nemotron models on Nebius, both as the extraction model and as the contradiction checker, on our 15-letter development set (4 of the letters contain a real contradiction). All numbers below are from single or few runs on a set we tuned against, and hosted inference is not fully repeatable even at `temperature: 0`, so treat them as rough.
+1. How much?
+2. By when?
+3. What do I have to do?
+4. What happens if I don't?
 
-**Contradiction check** (thinking turned off, 6000 max tokens):
+It refuses to answer any of them unless it can point to the words in the letter that say so.
 
-| Model | Conflict letters caught (out of 4) | False alarms on clean letters |
+## What you see
+
+Upload a PDF. You get one card per question, each marked **Verified**, **Unsure** or **Not found**. Verified answers carry the exact quoted passage, highlighted in the document beside the answer. If the letter contradicts itself, a warning appears above the results with both passages, each clickable to jump to its place in the letter. A short summary closes the page. If a letter's two halves disagree about an amount, Unsealed says so instead of choosing one.
+
+No letter handy? Download the fictional sample from [public/samples/](public/samples/).
+
+## Design principle: quote or abstain
+
+The two kinds of error are not equal. A confident wrong answer about a deadline or an amount can cost the reader money. An "I'm not sure" costs a phone call. Everything below follows from treating those costs asymmetrically:
+
+- **Grounding is enforced in code, not requested in a prompt.** A field is Verified only if its supporting quote is found in the letter's text. A model that invents a plausible quote gets Unsure.
+- **A second, independent model reviews the letter.** The reviewer is a different model family from the extractor, so the extractor's mistakes are not repeated by its own reviewer.
+- **Disputed values propagate.** When the letter contradicts itself, every answer that depends on the disputed passage drops to Unsure.
+- **The reviewer fails loudly.** If the contradiction check cannot run or returns unusable output, the response says the check failed. It never reports a clean result for a check that did not finish.
+- **Narrow prompts for the reviewer.** The checker is asked one question (do two passages give different answers about the amount, the date or the action?) and told to report nothing when unsure. Most letters contain no contradiction, and the prompt is written for that base rate.
+
+## How it works
+
+```mermaid
+flowchart LR
+  A[PDF upload] --> B[Text extraction]
+  B --> C[Extractor: Qwen3-30B-A3B<br/>on Nebius Token Factory]
+  B --> D[Independent checker: NVIDIA Nemotron-3-Ultra<br/>on Nebius Token Factory]
+  C --> E[Grounding in code<br/>quote must exist in the letter]
+  D --> F[Conflict warnings<br/>both quotes must exist]
+  E --> G[Reconcile<br/>disputed answers drop to Unsure]
+  F --> G
+  G --> H[Schema-validated response]
+  H --> I[Evidence workspace UI]
+```
+
+1. **Intake.** PDF only, up to 10 MB and 20,000 characters of text, extracted with `unpdf`. Non-PDF, empty and unreadable files are rejected with readable messages. Text extraction is the only step that touches the file itself.
+2. **Extraction.** `Qwen/Qwen3-30B-A3B-Instruct-2507` at temperature 0 returns strict JSON: for each of the four fields, the value, an exact supporting quote, a confidence, and flags for conflicting or vague wording, plus a document type and a short summary. The prompt treats the letter as untrusted text, tells the model not to pick between conflicting values, and routes money the reader is owed (refunds, payouts) away from the "how much do I owe" field.
+3. **Grounding** (`lib/verify.ts`). The quote is located in the letter with whitespace-insensitive matching. For amounts, the reported digits must also appear in the quote. Missing quotes, unlocatable quotes, conflict or vague flags and low confidence all produce Unsure, with a reason.
+4. **Independent check** (`lib/contradictions.ts`), run in parallel with extraction. `nvidia/Nemotron-3-Ultra-550b-a55b` (thinking off, 6,000 max tokens) returns up to two contradictions as pairs of exact quotes, at most 30 words each. A contradiction is reported only if both quotes are found in the letter and do not overlap.
+5. **Reconciliation** (`lib/explain.ts`). The answer a contradiction is about drops to Unsure. So does any Verified answer that repeats a disputed amount or date, and, for conflicts about what to do, any answer whose evidence is one of the disputed passages. If any warning fires, the summary ends with a note that the letter contradicts itself.
+6. **Response.** The result is validated against a shared Zod schema (`lib/schema.ts`), with quote offsets that refer to the exact text returned, so the interface can highlight evidence precisely.
+7. **Failure design.** The extraction retry budget (55 s) sits under the route limit (60 s). Internal errors are logged by name only, never with letter text, and the user sees a generic message.
+
+## Hackathon requirements
+
+| Requirement | How Unsealed meets it |
+|---|---|
+| Runs on Nebius Token Factory or AI Cloud | Every model call goes to Nebius Token Factory's chat completions endpoint. No other inference provider is used. |
+| At least one NVIDIA open-source model | NVIDIA Nemotron-3-Ultra is the independent contradiction checker in the live pipeline. |
+| Working, deployed application | <DEMO_URL>. The web app is on Vercel; all model inference is on Nebius Token Factory. |
+| Repository, README, feedback | This repository, this README, and [FEEDBACK.md](FEEDBACK.md). |
+
+## Model selection
+
+Roles were assigned by measurement on the 15-letter development set (60 fields). That set is open-book, so we treat it as a way to compare models and then confirmed the choice on blind sets (below).
+
+**Extractor** (one run per row unless stated):
+
+| Model | Fields correct | Dangerous errors* |
 |---|---|---|
-| Nemotron Ultra | 4/4 in all 14 dev runs we recorded, including L15 | 1 letter (L13) in 3 of the first 8 runs; 0 in 8 of 8 runs after one prompt line was added (that line was tuned on L13) |
-| Nemotron Nano | 3, 3, 4, 2 across four identical runs | 0 |
-| Nemotron Super | 1 | 0 |
-| Nemotron 3.5 Lightning | 0 | 0 |
-| Qwen 30B | 3 (misses L15) | 0 |
+| Qwen3-30B-A3B-Instruct-2507 | 56/60 | **0** in each of the last three runs |
+| NVIDIA Nemotron Super | 55-56/60 over six runs | 1 in every run (an overclaim on the same letter) |
+| NVIDIA Nemotron Ultra | 54/60 | 1 (an invented value shown as Verified) |
+| NVIDIA Nemotron Nano, thinking on | 51/60 | 4 |
+| NVIDIA Nemotron Nano, thinking off | 49/60 | 8 |
 
-**As the extraction model** (15 letters, 60 fields; "dangerous" means an invented value or a vague statement shown as Verified):
+\* A dangerous error is a wrong or invented value presented as Verified.
 
-| Model | Correct fields | Dangerous | Average time per letter |
+Super was several times faster than Qwen (about 3 seconds per letter against 10 to 20), but it overclaimed a field in every run. We took the slower model with no dangerous errors and put the effort into the waiting experience instead.
+
+**Checker** (the four dev letters with a real contradiction, thinking off):
+
+| Model | Contradictions caught |
+|---|---|
+| Nemotron Ultra | 4/4 in every repeat run |
+| Nemotron Nano | 2-4/4, varying run to run |
+| Qwen3-30B-A3B | 3/4 |
+| Nemotron Super | 1/4 |
+| Nemotron Lightning | 0/4 |
+
+Ultra's weakness was a false alarm on one dev letter in two of four runs. One added sentence in the checker prompt (leave out items you judge consistent) removed it: 8 of 8 runs caught 4/4 with no false alarms. That prompt change was tuned on a dev letter, so it is open-book evidence.
+
+## Evaluation
+
+Accuracy on a set you tuned against says little, so the evaluation is built around blind sets:
+
+- **Separation of duties.** Muhammad wrote every blind letter and kept the answer key private. Rida built the system and ran it. The builder never saw a blind key before the run.
+- **Run once, save first.** Each blind set is run once per code version. Raw outputs are committed before scoring, and first-run failures are kept in the record rather than overwritten.
+- **Preregistered set C.** Its rules, the frozen backend commit, the model settings, the runner command and a SHA-256 for every letter were committed before the run (see [PREREGISTRATION.md](eval/letters/blind-c/PREREGISTRATION.md)). The private key's hash is published too, so anyone can check it was not edited after the run.
+
+| Set | Letters | Role | Result |
 |---|---|---|---|
-| Qwen 30B | 55-56 of 60 | 0 in each of its last three runs | 10-20 s |
-| Nemotron Super | 55-56 of 60 (six runs) | 1 every run, always the same vague "may" wording on L14 | about 3 s |
-| Nemotron Ultra | 54 of 60 | 1 (an invented value) | about 12 s |
-| Nemotron Nano, thinking off | 49 of 60 | 8 | about 4 s |
-| Nemotron Nano, thinking on | 51 of 60 | 4 | about 21 s |
+| Dev, L01-L15 | 15 | Open-book, used to build | 54/60 fields at the last full run (Oct 14, before the post-C changes), 0 dangerous, 6 safe underclaims |
+| Holdout, H01-H08 | 8 | First blind set (extractor plus a separate detector) | 31/32 strict |
+| N01-N06 | 6 | Blind, run before the checker was wired in | 17/24 strict. Five fields were Verified despite conflicting evidence. This drove the pipeline in its current form. |
+| B01-B08 | 8 | Frozen baseline for the current pipeline | 24/32 strict. Findings: one missed date conflict, a refund read as a debt, three false warnings. |
+| C01-C08 | 8 | Preregistered, frozen at `5bf355a` | **27/32 (84.4%)**: 3 PASS, 3 SAFE, 2 FAIL |
 
-We kept Qwen for extraction because it had the cleanest record on invented or overstated answers, and use Ultra where it was clearly strongest. Super is a close, much faster alternative that we did not ship because of its repeated overclaim on vague wording.
+Set C in detail, as scored by Muhammad against the frozen rubric: all Verified amounts and deadlines were correct, both expected contradictions were detected, and there were no false warnings. The two FAIL letters share one problem: when the checker found conflicting evidence, a disputed instruction or consequence was still presented too confidently, especially in the summary. Verdict definitions are in the preregistration.
 
----
+**Post-C changes, not covered by any measurement.** After scoring we made hardening changes aimed at that failure: an unusable checker response now reports a failed check instead of a clean one, the summary carries a note whenever a conflict warning fires, and answers whose evidence is a disputed instruction passage drop to Unsure. They were spot-checked on earlier, non-blind letters. C was deliberately not re-run, because a better score on letters we have already seen would prove nothing. See the git log after commit `d98998d`.
 
-## 🏗️ Architecture & Project Layout
+**Integrity notes.**
+- The frozen commit `5bf355a` no longer sits on the main branch, because history was rewritten on Oct 17 for the deployment reason described under Team. It is preserved by the tag `blind-c-freeze`, and the backend files are byte-identical to it up to the first post-C commit.
+- A backend fix (`83c8d04`) landed after the C letters were handed over but before the run. The run used `5bf355a` and did not include it. Muhammad's audit keeps measured results separate from formal preregistration compliance, and [RUN-NOTES.md](eval/results/blind-c-run1/RUN-NOTES.md) lists every deviation.
 
-*   `app/api/analyze/route.ts`: Accepts the uploaded PDF and returns the result. Internal errors are logged on the server without the letter's text, and users see only a generic or timeout message.
-*   `app/privacy`, `app/terms`: Privacy Policy and Terms of Service pages.
-*   `lib/schema.ts`: The shared Zod schema used by both frontend and backend.
-*   `lib/extract.ts`: Extracts text from the uploaded PDF using `unpdf`. PDF only.
-*   `lib/explain.ts`: Sends the letter text to the extraction model (OpenAI-compatible chat completions, `response_format: json_object`), runs the contradiction check at the same time, and assembles the result. Extraction has a 55 second total budget so a request can never outlast the 60 second route limit.
-*   `lib/verify.ts`: Finds each quote the model cites in the letter's text (whitespace-, case-, and quote-style-insensitive) and sets the Verified, Unsure, or Not Found label.
-*   `lib/contradictions.ts`: The second-pass check. It reports two passages that cannot both be followed, only when both quotes are found in the letter, and only for conflicts about an amount, a date, or an action. A warning downgrades only the matching field (amount, deadline, or required action), and only if that field was Verified. If the check fails or times out, the analysis still returns, with no warnings, and `metrics.checkStatus` is `failed`.
-*   `lib/llmOptions.ts`: Optional per-model settings read from `.env`.
-*   `eval/`, `scripts/`: Evaluation sets and runners (see below). `eval/results/` holds saved blind-run outputs.
+## Known limitations
 
----
+- **Digital PDFs only.** Scanned pages and photos need OCR, and the grounding step needs a real text layer. Input limits are 10 MB and 20,000 characters.
+- **Contradiction checking covers amounts, dates and actions.** It can miss a conflict and can raise a false one (three false warnings on set B, none on set C). It is not a legal reading.
+- **A consequence that depends on a disputed value can stay Verified.** The summary carries a caution, but the field itself is not downgraded. Widening the rule would downgrade correct answers, so we left it.
+- **Only amounts are checked against their quote text.** For deadlines, actions and consequences, the quote is guaranteed to exist in the letter but not guaranteed to contain the reported value.
+- **Money owed to the reader** (refunds, payouts) shows Not found for the amount field by design. The summary states the amount and direction. Showing direction as a field needs a schema change and is future work.
+- **Latency is 10 to 25 seconds per letter.** Extraction dominates; the checker adds about a second and runs in parallel.
+- **Results vary from run to run.** Hosted inference is not fully repeatable even at temperature 0, so a single run can move by a field or two. This is why blind sets are run once and reported as run.
+- **Small, fictional test sets.** Eight letters and 32 fields per blind set describe failure modes and relative behavior. They are not a population accuracy estimate, and the dev set is open-book.
+- **Not legal, financial or professional advice.** Unsealed explains what a letter says. It does not tell anyone what to do about it.
 
-## 📊 Evaluation & Metrics
+## Privacy
 
-We built an open-book automated evaluation (`eval/run-eval.ts`) that grades a 15-letter development set, which we tuned against, covering hallucinated deadlines, estimates, and vague terms.
+Letter text is sent to models hosted on Nebius Token Factory (Qwen and NVIDIA Nemotron) to produce the answers. The server has no database and keeps no copy of uploads. Server logs record error names only, never letter contents. The repository contains only fictional or public letters. See the in-app Privacy and Terms pages.
 
-### Dev Set Scores
-*   **Qwen extraction + Nemotron Ultra check (two runs):** **55 and 56 / 60** correct fields, 0 invented values, 0 wrong amounts or dates, 0 dangerous overclaims, 3-4 safe underclaims. The extra underclaim in one run was a correct field downgraded to Unsure by a false alarm from the checker.
-*   **Earlier, Qwen alone:** 56 / 60, with 1 dangerous overclaim (L15, see below).
+## Run it yourself
 
-### Blind Set H01-H08 (earlier test, before the contradiction check existed)
-*   **Strict Scoring Accuracy:** **31 / 32** fields correct (**96.9%**).
-*   **Broad Correctness:** **32 / 32** fields correct (**100%**).
-*   **Zero Hallucinations:** The framework successfully returned *Not Found* across all four core fields for empty/irrelevant test letters (e.g., **H03**).
-*   **Edge Case Nuance (H08):** The single strict variance occurred on a semantic boundary where the letter stated a deadline *"by December 11"* and the model extracted *"before December 11"*.
-
-### Blind Set N01-N06, first run (before the check was connected to the app)
-Scored independently by Muhammad who wrote the letters and the key. These letters were deliberately harder.
-*   **Strict field accuracy:** 17 / 24 (70.8%).
-*   **Fields shown Verified despite conflicting evidence:** 5. Two fields were Unsure when they did not need to be.
-*   **Contradiction detector, run separately:** flagged 3 of the 4 letters with a real conflict, with no false alarms on the 2 clean letters. It missed N04, where the letter says "two hundred seventy dollars ($290.00)".
-*   We did not tune against these results. After this run we connected the check to the app and wrote a new blind set.
-
-### Blind Set B01-B08 (full pipeline: Qwen extraction + Nemotron Ultra check)
-*   Eight new letters written by Muhammad: two clear successes, two expected failures, two 50/50 cases, and two built to throw the model off. The answer key was kept outside the repository and the author of the pipeline had not seen it.
-*   One run per letter, with the rules written down and committed before the run (`eval/results/blind-b-prereg.md`). Raw outputs are in `eval/results/blind-b-run1/`.
-*   All 8 letters produced output with no errors, and the contradiction check ran on every letter.
-*   **RESULTS PENDING: scoring against the private key is still in progress. Rida will replace this line with the per-category and per-field results before submitting.**
-*   This run used the `.txt` versions of the letters, so it does not test PDF text extraction.
-
----
-
-## ⚠️ Known Limitations
-
-*   **The "Letter 15" edge case.** L15 tells the reader to pay through a new portal, then says the portal isn't active yet and to keep paying exactly as before. The answer key marks the required action Unsure because the instructions conflict. Qwen alone reads it as resolved and shows Verified almost every time (14 of 16 runs in one test), even at `temperature: 0`. The 235B model failed it too. With the contradiction check connected, Ultra flagged L15 in every dev run we recorded and the required action is downgraded to Unsure, but L15 is a letter we tuned against.
-*   **The check can be wrong in both directions.** Before we added one prompt line, Ultra sometimes reported a conflict on a clean letter (L13), once with an explanation that said there was no contradiction. The line fixed it on our dev runs, but it was tuned on that same letter. The check can also miss a conflict.
-*   **Conflicts about consequences are not covered.** The check only looks at amounts, dates, and actions, so a conflict about what happens if you do not act is not flagged, and a warning only downgrades the one field it is about. A related field that repeats the conflicting figure can stay Verified.
-*   **Words versus numbers.** A letter that writes an amount two ways ("two hundred seventy dollars ($290.00)") was missed in our blind test.
-*   **Vague wording.** A statement like "further action may be taken" can be shown as Verified by some models.
-*   **Results vary from run to run.** Hosted inference is not fully repeatable at `temperature: 0`, so single-run scores can move by a field or two.
-*   **Speed.** An upload takes about 10-20 seconds with the current extraction model.
-*   **Failed checks are quiet.** If the contradiction check fails, the app returns the normal answers with no warning. `metrics.checkStatus` reports `failed`, which a front end can use to tell the user the check was unavailable.
-*   **Input limits.** PDF only, with readable text (no scans), and up to 20,000 characters.
-*   The site's honesty section tells users that Unsealed can miss letters that say different things in different places.
-
----
-
-## 🚀 Getting Started
-
-### 1. Environment Configuration
-Copy `.env.example` to `.env` and fill in your API key:
 ```bash
-cp .env.example .env
-```
-The app reads `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`, `LLM_INPUT_USD_PER_M` and `LLM_OUTPUT_USD_PER_M` (any OpenAI-compatible endpoint; we use Nebius Token Factory). The two price variables are only used to report cost.
-
-The contradiction check uses its own optional settings and falls back to the `LLM_*` values for any it does not find:
-
-CHECK_MODEL=nvidia/Nemotron-3-Ultra-550b-a55b
-CHECK_MAX_TOKENS=6000
-CHECK_EXTRA_BODY={“chat_template_kwargs”:{“enable_thinking”:false}}
-CHECK_INPUT_USD_PER_M=...
-CHECK_OUTPUT_USD_PER_M=...
-
-`LLM_MAX_TOKENS` and `LLM_EXTRA_BODY` work the same way for the extraction model. If `CHECK_MODEL` is not set, the check runs on the extraction model.
-
-### 2. Install & Run Development
-```bash
+git clone https://github.com/ridacyber/unsealed.git
+cd unsealed
 npm install
-npm run dev
+cp .env.example .env     # then fill in your Nebius Token Factory key and model IDs
+npm run dev              # http://localhost:3000
 ```
 
-### 3. Run the Test Suites
-To run the 15-letter automated evaluation:
+| Variable | Purpose |
+|---|---|
+| `LLM_API_KEY`, `LLM_BASE_URL` | Nebius Token Factory credentials and endpoint |
+| `LLM_MODEL` | Extractor model, `Qwen/Qwen3-30B-A3B-Instruct-2507` |
+| `CHECK_MODEL` | Checker model, `nvidia/Nemotron-3-Ultra-550b-a55b` (falls back to `LLM_MODEL`) |
+| `CHECK_MAX_TOKENS`, `CHECK_EXTRA_BODY` | Checker settings: `6000` and `{"chat_template_kwargs":{"enable_thinking":false}}` |
+| `LLM_MAX_TOKENS`, `LLM_EXTRA_BODY` | Optional extractor equivalents |
+| `LLM_INPUT_USD_PER_M`, `LLM_OUTPUT_USD_PER_M` | Optional, for cost reporting in the response metrics |
+
+Checks:
+
 ```bash
-npx tsx eval/run-eval.ts
-```
-To run the contradiction check on its own against the dev letters:
-```bash
-npx tsx scripts/check-contradictions.ts
-```
-To check that every citation and warning points at the right text in the returned letter:
-```bash
-npx tsx scripts/check-offsets.ts eval/letters
-```
-To run a blind set (folder, filename prefix, file type):
-```bash
-npx tsx scripts/run-holdout.ts eval/letters B txt
+npx tsc --noEmit && npx eslint . && npm run build
+npx tsx --test components/lib/citation.test.ts     # each frontend test file lists its own run command
+npx tsx scripts/check-offsets.ts                   # quote offsets agree with the letter text
+npx tsx scripts/run-holdout.ts <letters-folder> [file-prefix]   # relative folder; writes a CSV and JSON to /tmp
 ```
 
----
+`eval/run-eval.ts` scores the development letters against `eval/answer-key.csv`.
 
-## 📄 License
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+## Repository map
+
+```
+app/api/analyze/route.ts        POST endpoint (backend)
+app/page.tsx, layout.tsx, results/    pages (frontend)
+app/privacy/, app/terms/        legal pages (text by the backend owner, styling by the frontend owner)
+components/                     interface, hooks, citation and sample logic, unit tests (frontend)
+lib/explain.ts                  extraction prompt, reconciliation, response assembly
+lib/verify.ts                   quote location and per-field grounding
+lib/contradictions.ts           independent checker
+lib/extract.ts                  PDF text extraction
+lib/llmOptions.ts               per-role model settings
+lib/schema.ts                   shared contract (Zod), changed only by agreement
+scripts/                        evaluation runners and regression checks
+eval/letters/                   fictional test letters: dev, holdout, blind sets
+eval/results/                   saved run outputs and preregistrations
+public/samples/                 fictional sample letter PDF
+OWNERS.md                       who owns which files
+```
+
+## Team
+
+Two authors, two lanes, agreed up front and written down in [OWNERS.md](OWNERS.md).
+
+| | Rida Rahim ([@ridacyber](https://github.com/ridacyber)) | Muhammad Bin Zeeshan ([@muhamzes](https://github.com/muhamzes)) |
+|---|---|---|
+| Owns | Backend and platform: `app/api/`, `lib/`, `scripts/`, the evaluation harness, deployment | **All frontend and design:** landing and upload, results and evidence workspace, waiting, failure and recovery screens, contradiction banner, samples, accessibility |
+| Also | Model selection, prompts, grounding and checker logic, running the blind sets | Wrote the development and blind test letters, scored every blind set against a private key, demo letters and video script |
+
+The interface was designed and built by Muhammad. The only frontend-lane changes that are Rida's own are the initial Next.js scaffold, the one-line switch that turns on the live API, and the text of the Privacy and Terms pages (styled by Muhammad). Everything that decides what a user is told was built by Rida, and Muhammad's commits touch nothing in `app/api/`, `lib/` or `scripts/` (`git log --author=Muhammad -- app/api lib scripts` prints nothing).
+
+### A note on commit authorship
+
+Unsealed is deployed on Vercel's free Hobby plan, which builds only commits authored by the account that owns the project. Muhammad's commits were rejected at deploy time, so to ship his frontend some of his commits were re-committed under Rida's account. This is visible in `git log` and GitHub's contributor graph. Three frontend commits show Rida as the author although Muhammad wrote them: the waiting, failure and recovery screens (`ff1cbdc`), the copy and social-sharing metadata (`ae2f6fa`), and the keyboard-accessible letter panel (`976a59f`). The last one carries a `Co-authored-by` trailer and says so in its message. History was rewritten on Oct 15 and Oct 17 to re-author the first two.
+
+**Do not read authorship off the commit author field.** The reliable record is [OWNERS.md](OWNERS.md), the `frontend` and `backend` scopes in commit messages, and the table above.
+
+This is the part of the workflow we would change. Deploying from a plan with team seats, or from pull requests merged by the project owner, would let each author's commits keep their own name.
+
+### AI-assisted development
+
+The running product uses no Anthropic or OpenAI models: every model call goes to Qwen or NVIDIA Nemotron on Nebius Token Factory. During development both authors used an AI coding assistant (Claude) for implementation help, debugging and drafting. Product decisions, the evaluation protocol and every reported number are ours, and the numbers are copied from saved run outputs. The repository contained assistant configuration files (`CLAUDE.md` and `AGENTS.md`). They are development tooling, not part of the product, and were removed before submission in commit `<REMOVAL_COMMIT>`. They remain visible in git history.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
