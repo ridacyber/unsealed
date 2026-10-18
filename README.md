@@ -5,6 +5,8 @@
 
 Built in October 2026 for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
 
+By **Rida Rahim** (backend, models, evaluation harness, deployment) and **Muhammad Bin Zeeshan** (interface and design, test letters, blind-set scoring). See [Team](#team).
+
 - **Live demo:** https://unsealed-one.vercel.app
 - **Demo video (under 3 minutes):** <VIDEO_URL>
 - **Platform feedback for Nebius and NVIDIA:** [FEEDBACK.md](FEEDBACK.md)
@@ -28,6 +30,15 @@ It refuses to answer any of them unless it can point to the words in the letter 
 ## What you see
 
 Upload a PDF. You get one card per question, each marked **Verified**, **Unsure** or **Not found**. Verified answers carry the exact quoted passage, highlighted in the document beside the answer. If the letter contradicts itself, a warning appears above the results with both passages, each clickable to jump to its place in the letter. A short summary closes the page. If a letter's two halves disagree about an amount, Unsealed says so instead of choosing one.
+
+The interface is Muhammad Bin Zeeshan's work, and it is where the quote-or-abstain idea becomes something a reader can use:
+
+- **The letter sits beside the answers.** Every confirmed passage is underlined in the letter. Choosing an answer highlights its passage and draws a line from the card to the words it rests on. Only passages the grounding step confirmed are ever marked.
+- **Doubt is shown, not hidden.** Unsure and Not found are designed states, not error messages. A Not found card says the letter doesn't say and leaves the gap blank instead of guessing. Unsure and conflict marks use a darker amber chosen for contrast.
+- **Conflicts are easy to follow.** Both passages are numbered in the warning and in the letter, several conflicts are counted, and on phones the warning links down to the answers.
+- **It works on small screens and with a keyboard.** On phones and tablets an opened card shows its passage in context, and the scrolling letter panel is keyboard accessible.
+- **Waiting and failure are designed.** Analysis takes 10 to 25 seconds, so there are waiting, failure and recovery screens, including a specific message when the host times out.
+- **Samples and a real test.** Three made-up letters with results prepared in advance (labeled as such) show the interface at once, and a downloadable fictional PDF lets anyone try a real upload.
 
 No letter handy? Download the fictional sample from [public/samples/](public/samples/).
 
@@ -107,7 +118,7 @@ Ultra's weakness was a false alarm on one dev letter in two of four runs. One ad
 
 Accuracy on a set you tuned against says little, so the evaluation is built around blind sets:
 
-- **Separation of duties.** Muhammad wrote every blind letter and kept the answer key private. Rida built the system and ran it. The builder never saw a blind key before the run.
+- **Separation of duties.** Muhammad wrote every blind letter (holdout, N, B and C), kept the answer key private, and scored each run by hand against it. Rida built the system and ran it. The builder never saw a blind key before the run.
 - **Run once, save first.** Each blind set is run once per code version. Raw outputs are committed before scoring, and first-run failures are kept in the record rather than overwritten.
 - **Preregistered set C.** Its rules, the frozen backend commit, the model settings, the runner command and a SHA-256 for every letter were committed before the run (see [PREREGISTRATION.md](eval/letters/blind-c/PREREGISTRATION.md)). The private key's hash is published too, so anyone can check it was not edited after the run.
 
@@ -196,20 +207,35 @@ OWNERS.md                       who owns which files
 
 ## Team
 
-Two authors, two lanes, agreed up front and written down in [OWNERS.md](OWNERS.md).
+Two authors, two lanes, agreed up front. [OWNERS.md](OWNERS.md) lists every piece and who owned it.
 
 | | Rida Rahim ([@ridacyber](https://github.com/ridacyber)) | Muhammad Bin Zeeshan ([@muhamzes](https://github.com/muhamzes)) |
 |---|---|---|
-| Owns | Backend and platform: `app/api/`, `lib/`, `scripts/`, the evaluation harness, deployment | **All frontend and design:** landing and upload, results and evidence workspace, waiting, failure and recovery screens, contradiction banner, samples, accessibility |
+| Owns | Backend and platform: `app/api/`, `lib/`, `scripts/`, the evaluation harness, deployment | Frontend and design: landing and upload, results and evidence workspace, waiting, failure and recovery screens, contradiction banner, samples, accessibility |
 | Also | Model selection, prompts, grounding and checker logic, running the blind sets | Wrote the development and blind test letters, scored every blind set against a private key, demo letters and video script |
+| Decided together | The project and its name, PDF-only uploads, the contradiction warning and its place in the schema, the C preregistration | |
 
-The interface was designed and built by Muhammad. The only frontend-lane changes that are Rida's own are the initial Next.js scaffold, the one-line switch that turns on the live API, and the text of the Privacy and Terms pages (styled by Muhammad). Everything that decides what a user is told was built by Rida, and Muhammad's commits touch nothing in `app/api/`, `lib/` or `scripts/` (`git log --author=Muhammad -- app/api lib scripts` prints nothing).
+Unsealed rests on one claim: an answer is only as good as the reader's ability to check it. The backend decides what is claimed. The interface decides whether a reader can see the evidence, notice a doubt and act on it. Both had to work, and Muhammad built the half that people actually see.
 
-#### Muhammad's testing, accessibility and evaluation work
+### What Muhammad built
 
-- **Frontend testing.** A unit-test suite for the evidence and citation logic (`components/lib/citation.test.ts` and the other test files in `components/`; each file lists its own `npx tsx --test` command), covering that only confirmed passages are marked, invalid citations, and conflict pairs. Test fixtures at `/results?fixture=<id>` are served only by `next dev` or a server started with `UNSEALED_TEST_FIXTURES=1`, so they stay out of the production browser. He also tested the deployed app by hand with PDFs, including a tuition statement and a fictional refund notice. That found a likely false conflict warning, the refund-direction gap listed under Known limitations, and the checker-status bug fixed in `83c8d04`.
-- **Accessibility.** Keyboard access to the scrolling letter panel, a darker amber for Unsure and conflict marks chosen for contrast (3.3:1 against the sheet), conflict numbers that stay attached to their passage, an opened answer card that shows its passage in context on phones and tablets, a jump link from the warning to the answers when there are several conflicts, and a PDF dropped on the results page is refused instead of replacing the page.
-- **Evaluation.** Wrote the blind letters for the holdout, N, B and C sets and kept every answer key private. Set the preregistration rules for set C (one primary attempt per letter, technical failures recorded separately), with the freeze details supplied by Rida, and published a SHA-256 for each letter. Scored every blind set by hand against the key and audited the frozen runs, including the timing of `83c8d04`. His findings on set B (a missed date conflict, a refund read as a debt, false warnings) set the order of the later backend fixes.
+**The interface.** The whole user-facing product: the landing page and its honesty section, the upload flow, the results and evidence workspace (letter beside the answers, passage highlighting, the line from card to evidence), the contradiction banner with clickable passages, waiting, failure and recovery screens, the prepared sample letters, the downloadable sample PDF, and the Privacy and Terms styling. He also added a second line of defense in the browser: if a Verified answer's citation cannot be located in the returned text, the interface shows it as Unsure.
+
+**Testing and accessibility.** A unit-test suite for the evidence and citation logic (`components/lib/citation.test.ts` and the other test files in `components/`; each file lists its own `npx tsx --test` command), covering that only confirmed passages are marked, invalid citations, and conflict pairs. Test fixtures at `/results?fixture=<id>` are served only by `next dev` or a server started with `UNSEALED_TEST_FIXTURES=1`, so they stay out of the production browser. Accessibility work covers keyboard access to the letter panel, contrast-checked amber (3.3:1 against the sheet), conflict numbers that stay attached to their passage, passage-in-context cards on phones and tablets, and a dropped PDF being refused instead of replacing the results page.
+
+**Test letters, scoring and demo material.** He wrote the blind letters for the holdout, N, B and C sets and kept every answer key private. He set the preregistration rules for set C (one primary attempt per letter, technical failures recorded separately) with the freeze details supplied by Rida, and published a SHA-256 for each letter. He scored every blind set by hand and audited the frozen runs, including the timing of `83c8d04`. He also wrote the demo letters and the video script.
+
+**Reviews that changed the backend.** He tested the deployed app by hand with PDFs and audited demo readiness. That found:
+- The checker-status bug fixed in `83c8d04` (an unparseable checker response was reported as a clean check).
+- A likely false conflict warning on a real tuition statement.
+- The refund-direction gap listed under Known limitations.
+- Open questions about whether a Verified field always has a locatable citation, whether the 55 s budget holds in production, and whether the public endpoint needs abuse protection.
+
+His set B findings (a missed date conflict, a refund read as a debt, false warnings) set the order of the later backend fixes.
+
+### What Rida built
+
+The extraction and checker pipeline, the grounding and reconciliation logic, the shared schema, model selection, the evaluation harness and every blind run, the Vercel deployment, and FEEDBACK.md. Rida's own changes in the frontend lane are the initial Next.js scaffold, the one-line switch that turns on the live API, and the text of the Privacy and Terms pages. Muhammad's commits touch nothing in `app/api/`, `lib/` or `scripts/` (`git log --author=Muhammad -- app/api lib scripts` prints nothing).
 
 ### A note on commit authorship
 
