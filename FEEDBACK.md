@@ -1,4 +1,4 @@
-<!-- owner: r -->
+<!-- owner: Rida Rahim -->
 # Nebius x NVIDIA Global AI Hackathon: Infrastructure & Model Feedback
 
 We built **Unsealed**, a web application that ingests official PDF letters and extracts four critical pillars: *how much, when, what to do,* and *what happens if you ignore it*. The application relies on a "model proposes, application verifies" architecture, matching LLM outputs against raw text extractions via custom schema validation. A second model, **NVIDIA Nemotron Ultra**, reads the same letter and flags passages that contradict each other.
@@ -9,7 +9,7 @@ We built **Unsealed**, a web application that ingests official PDF letters and e
 *   **Contradiction-check model:** `nvidia/Nemotron-3-Ultra-550b-a55b`
 *   **Also tested:** `NVIDIA-Nemotron-3-Nano-30B-A3B`, `nemotron-3-super-120b-a12b`, `Nemotron-3_5-Lightning`, and Qwen 235B
 
-A note on our numbers: they come from a 15-letter development set we tuned against, with one to a few runs per setting, so treat them as rough.
+A note on our numbers: the model comparisons come from a 15-letter development set we tuned against, with one to a few runs per setting, so treat them as rough. Results for the shipped pipeline on blind sets are in the README.
 
 ---
 
@@ -34,7 +34,7 @@ A note on our numbers: they come from a 15-letter development set we tuned again
 *   **Recommendation:** Document per model whether it reasons by default and which request option turns it off, and consider returning reasoning text separately from `content` so a small token limit does not produce an empty answer without explanation.
 
 ### 2. Results at temperature 0 varied for Nemotron too
-*   Across four identical runs, Nano caught 3, 3, 4, and 2 of the 4 contradicting letters. Ultra reported a conflict on the same clean letter in about 3 of its first 8 runs.
+*   Across four identical runs, Nano caught 3, 3, 4, and 2 of the 4 contradicting letters. Ultra caught all four in each of four repeat runs, but reported a conflict on the same clean letter (L13) in two of them.
 *   **Recommendation:** If speculative decoding or batching causes this, say so in the docs so developers plan for it.
 
 ### 3. Ultra sometimes reported a conflict and then argued against it
@@ -47,6 +47,9 @@ A note on our numbers: they come from a 15-letter development set we tuned again
 ### 5. A model with no description
 *   `nvidia/Nemotron-3_5-Lightning` appears in `/v1/models` with no description. We tried it as a contradiction checker with thinking off and it caught 0 of 4, but we do not know whether that reflects the model or our settings.
 *   **Recommendation:** Add a short description and capabilities field to each model entry (see below).
+
+### 6. Ultra as the checker on blind letters
+*   With the prompt sentence from finding 3 in place, Ultra ran as the checker (thinking off, 6,000 max tokens) on two blind sets of eight letters each. Set B: one real contradiction caught, one missed, three false warnings. Set C: both expected contradictions caught, no false warnings. Eight letters per set is too few for a rate, so treat these as observations. The full evaluation record is in the README.
 
 ---
 
@@ -77,7 +80,7 @@ A note on our numbers: they come from a 15-letter development set we tuned again
 ---
 
 ## Scope Limitations (What We Did Not Try)
-*   **Nemotron coverage:** We used Nemotron Ultra in the shipped app. We tested Nano, Super, Ultra, and Lightning on our dev set only, mostly with thinking turned off, and we did not tune prompts per model.
+*   **Nemotron coverage:** We used Nemotron Ultra in the shipped app and ran it on two blind sets (above). We tested Nano, Super, and Lightning on our dev set only, mostly with thinking turned off, and we did not tune prompts per model.
 *   **Advanced Features:** Due to the hackathon's time box and our explicit focus on text-based PDF verification, we did not test vision models, fine-tuning pipelines, dedicated cluster endpoints, or batch inference.
 
 ---

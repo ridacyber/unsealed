@@ -5,7 +5,7 @@
 
 Built in October 2026 for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
 
-- **Live demo:** <DEMO_URL>
+- **Live demo:** https://unsealed-one.vercel.app
 - **Demo video (under 3 minutes):** <VIDEO_URL>
 - **Platform feedback for Nebius and NVIDIA:** [FEEDBACK.md](FEEDBACK.md)
 - **Evaluation record:** [eval/results/](eval/results/), including the [preregistration for blind set C](eval/letters/blind-c/PREREGISTRATION.md)
@@ -56,7 +56,7 @@ flowchart LR
   H --> I[Evidence workspace UI]
 ```
 
-1. **Intake.** PDF only, up to 10 MB and 20,000 characters of text, extracted with `unpdf`. Non-PDF, empty and unreadable files are rejected with readable messages. Text extraction is the only step that touches the file itself.
+1. **Intake.** PDF only, up to 4 MB on the hosted demo (a hosting limit; the code itself allows 10 MB) and 20,000 characters of text, extracted with `unpdf`. Non-PDF, empty and unreadable files are rejected with readable messages. Text extraction is the only step that touches the file itself.
 2. **Extraction.** `Qwen/Qwen3-30B-A3B-Instruct-2507` at temperature 0 returns strict JSON: for each of the four fields, the value, an exact supporting quote, a confidence, and flags for conflicting or vague wording, plus a document type and a short summary. The prompt treats the letter as untrusted text, tells the model not to pick between conflicting values, and routes money the reader is owed (refunds, payouts) away from the "how much do I owe" field.
 3. **Grounding** (`lib/verify.ts`). The quote is located in the letter with whitespace-insensitive matching. For amounts, the reported digits must also appear in the quote. Missing quotes, unlocatable quotes, conflict or vague flags and low confidence all produce Unsure, with a reason.
 4. **Independent check** (`lib/contradictions.ts`), run in parallel with extraction. `nvidia/Nemotron-3-Ultra-550b-a55b` (thinking off, 6,000 max tokens) returns up to two contradictions as pairs of exact quotes, at most 30 words each. A contradiction is reported only if both quotes are found in the letter and do not overlap.
@@ -70,7 +70,7 @@ flowchart LR
 |---|---|
 | Runs on Nebius Token Factory or AI Cloud | Every model call goes to Nebius Token Factory's chat completions endpoint. No other inference provider is used. |
 | At least one NVIDIA open-source model | NVIDIA Nemotron-3-Ultra is the independent contradiction checker in the live pipeline. |
-| Working, deployed application | <DEMO_URL>. The web app is on Vercel; all model inference is on Nebius Token Factory. |
+| Working, deployed application | https://unsealed-one.vercel.app. The web app is on Vercel; all model inference is on Nebius Token Factory. |
 | Repository, README, feedback | This repository, this README, and [FEEDBACK.md](FEEDBACK.md). |
 
 ## Model selection
@@ -81,7 +81,7 @@ Roles were assigned by measurement on the 15-letter development set (60 fields).
 
 | Model | Fields correct | Dangerous errors* |
 |---|---|---|
-| Qwen3-30B-A3B-Instruct-2507 | 56/60 | **0** in each of the last three runs |
+| Qwen3-30B-A3B-Instruct-2507 | 55-56/60 over the last three runs | **0** in each of those runs |
 | NVIDIA Nemotron Super | 55-56/60 over six runs | 1 in every run (an overclaim on the same letter) |
 | NVIDIA Nemotron Ultra | 54/60 | 1 (an invented value shown as Verified) |
 | NVIDIA Nemotron Nano, thinking on | 51/60 | 4 |
@@ -121,15 +121,16 @@ Accuracy on a set you tuned against says little, so the evaluation is built arou
 
 Set C in detail, as scored by Muhammad against the frozen rubric: all Verified amounts and deadlines were correct, both expected contradictions were detected, and there were no false warnings. The two FAIL letters share one problem: when the checker found conflicting evidence, a disputed instruction or consequence was still presented too confidently, especially in the summary. Verdict definitions are in the preregistration.
 
-**Post-C changes, not covered by any measurement.** After scoring we made hardening changes aimed at that failure: an unusable checker response now reports a failed check instead of a clean one, the summary carries a note whenever a conflict warning fires, and answers whose evidence is a disputed instruction passage drop to Unsure. They were spot-checked on earlier, non-blind letters. C was deliberately not re-run, because a better score on letters we have already seen would prove nothing. See the git log after commit `d98998d`.
+**Changes after the freeze, not covered by any measurement.** Besides the checker-status fix (`83c8d04`, made before the run but not part of it), we made hardening changes after scoring, aimed at the failure above: the summary carries a note whenever a conflict warning fires, and answers whose evidence is a disputed instruction passage drop to Unsure. They were spot-checked on earlier, non-blind letters and have not had a full regression run. C was deliberately not re-run, because a better score on letters we have already seen would prove nothing. See the git log after commit `d98998d`.
 
 **Integrity notes.**
-- The frozen commit `5bf355a` no longer sits on the main branch, because history was rewritten on Oct 17 for the deployment reason described under Team. It is preserved by the tag `blind-c-freeze`, and the backend files are byte-identical to it up to the first post-C commit.
-- A backend fix (`83c8d04`) landed after the C letters were handed over but before the run. The run used `5bf355a` and did not include it. Muhammad's audit keeps measured results separate from formal preregistration compliance, and [RUN-NOTES.md](eval/results/blind-c-run1/RUN-NOTES.md) lists every deviation.
+- The frozen commit `5bf355a` no longer sits on the main branch, because history was rewritten on Oct 17 for the deployment reason described under Team. It is preserved by the tag `blind-c-freeze`. The backend files (`app/api/`, `lib/`, `scripts/`, `eval/run-eval.ts`, `package.json`) matched `5bf355a` exactly up to commit `ae2f6fa`; the first backend change after the freeze is `83c8d04`.
+- **Protocol deviation.** The preregistration says any backend change after hand-over invalidates the run. `83c8d04` (an unparseable checker response now reports a failed check instead of a clean one) was committed after the C letters were handed over and before the run. We ran from a detached checkout of `5bf355a`, so the run did not include it and the scores come from the frozen code. By the letter of the preregistration, a backend commit still landed inside the window, so we report C as a measured result and do not claim full preregistration compliance. Muhammad's audit draws the same line.
+- **How the run was made.** One primary attempt per letter: 8 letters, 0 errors, checker status ok on all 8, no reruns. The letters were copied out of the repository and the runner was pointed at the copy (`npx tsx scripts/run-holdout.ts ../c-run C`) instead of `eval/letters/blind-c` as written in the preregistration, after every letter was checked against `SHA256SUMS.txt`. The console output, CSV and JSON were committed unchanged in `d98998d` before scoring. The scores in this README are those original first-run results. [RUN-NOTES.md](eval/results/blind-c-run1/RUN-NOTES.md) lists every deviation.
 
 ## Known limitations
 
-- **Digital PDFs only.** Scanned pages and photos need OCR, and the grounding step needs a real text layer. Input limits are 10 MB and 20,000 characters.
+- **Digital PDFs only.** Scanned pages and photos need OCR, and the grounding step needs a real text layer. Input limits are 4 MB on the hosted demo (10 MB in the code) and 20,000 characters.
 - **Contradiction checking covers amounts, dates and actions.** It can miss a conflict and can raise a false one (three false warnings on set B, none on set C). It is not a legal reading.
 - **A consequence that depends on a disputed value can stay Verified.** The summary carries a caution, but the field itself is not downgraded. Widening the rule would downgrade correct answers, so we left it.
 - **Only amounts are checked against their quote text.** For deadlines, actions and consequences, the quote is guaranteed to exist in the letter but not guaranteed to contain the reported value.
@@ -203,6 +204,12 @@ Two authors, two lanes, agreed up front and written down in [OWNERS.md](OWNERS.m
 | Also | Model selection, prompts, grounding and checker logic, running the blind sets | Wrote the development and blind test letters, scored every blind set against a private key, demo letters and video script |
 
 The interface was designed and built by Muhammad. The only frontend-lane changes that are Rida's own are the initial Next.js scaffold, the one-line switch that turns on the live API, and the text of the Privacy and Terms pages (styled by Muhammad). Everything that decides what a user is told was built by Rida, and Muhammad's commits touch nothing in `app/api/`, `lib/` or `scripts/` (`git log --author=Muhammad -- app/api lib scripts` prints nothing).
+
+#### Muhammad's testing, accessibility and evaluation work
+
+- **Frontend testing.** A unit-test suite for the evidence and citation logic (`components/lib/citation.test.ts` and the other test files in `components/`; each file lists its own `npx tsx --test` command), covering that only confirmed passages are marked, invalid citations, and conflict pairs. Test fixtures at `/results?fixture=<id>` are served only by `next dev` or a server started with `UNSEALED_TEST_FIXTURES=1`, so they stay out of the production browser. He also tested the deployed app by hand with PDFs, including a tuition statement and a fictional refund notice. That found a likely false conflict warning, the refund-direction gap listed under Known limitations, and the checker-status bug fixed in `83c8d04`.
+- **Accessibility.** Keyboard access to the scrolling letter panel, a darker amber for Unsure and conflict marks chosen for contrast (3.3:1 against the sheet), conflict numbers that stay attached to their passage, an opened answer card that shows its passage in context on phones and tablets, a jump link from the warning to the answers when there are several conflicts, and a PDF dropped on the results page is refused instead of replacing the page.
+- **Evaluation.** Wrote the blind letters for the holdout, N, B and C sets and kept every answer key private. Set the preregistration rules for set C (one primary attempt per letter, technical failures recorded separately), with the freeze details supplied by Rida, and published a SHA-256 for each letter. Scored every blind set by hand against the key and audited the frozen runs, including the timing of `83c8d04`. His findings on set B (a missed date conflict, a refund read as a debt, false warnings) set the order of the later backend fixes.
 
 ### A note on commit authorship
 

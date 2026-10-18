@@ -1,7 +1,7 @@
 # Who owns what
-**m (frontend):** app/page.tsx, app/layout.tsx, app/globals.css, app/results/, components/, samples/, public/samples/, eval/letters/, eval/answer-key.csv
-**r (backend):** app/api/, lib/, scripts/, eval/run-eval.ts, FEEDBACK.md, .env*
-**Shared (talk first):** lib/schema.ts, README.md, config files
+**Muhammad Bin Zeeshan (frontend):** app/page.tsx, app/layout.tsx, app/globals.css, app/results/, components/, samples/, public/samples/, eval/letters/, eval/answer-key.csv
+**Rida Rahim (backend):** app/api/, lib/, scripts/, eval/run-eval.ts, eval/results/, FEEDBACK.md, .env*
+**Shared (talk first):** lib/schema.ts, README.md, OWNERS.md, config files, app/privacy/ and app/terms/ (text: Rida, styling: Muhammad)
 
 Files that can't hold a comment (json, csv, txt, svg) follow this list instead of a header.
 
@@ -29,6 +29,8 @@ Files that can't hold a comment (json, csv, txt, svg) follow this list instead o
 - Commit small and often (every time something works), not once a day.
 - If you see a merge conflict, do NOT click "Accept All." Message the other person and we'll fix it together in Live Share.
 - Changing `lib/schema.ts` means talking first. The UI and the backend both depend on it.
+
+- Vercel Hobby only builds commits authored by the project owner, so frontend commits are re-committed under Rida's account before they ship (see the Team section of the README).
 - Use only fabricated or public sample letters. Never commit a real person's document.
 
 ## Before submission
