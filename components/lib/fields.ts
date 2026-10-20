@@ -15,17 +15,36 @@ export const FIELD_META: Record<
     question: string;
     /** How to refer to the detail mid-sentence. */
     name: string;
+    /**
+     * Why a "not found" card is blank, when the service's note adds nothing.
+     * It says what Unsealed couldn't identify, not that the letter is silent.
+     */
+    notFound: string;
   }
 > = {
-  amountOwed: { question: "How much?", name: "the amount" },
-  deadline: { question: "When?", name: "the deadline" },
+  amountOwed: {
+    question: "How much?",
+    name: "the amount",
+    notFound:
+      "Unsealed couldn't identify an amount you're asked to pay in this letter, so it leaves this answer blank rather than guessing.",
+  },
+  deadline: {
+    question: "When?",
+    name: "the deadline",
+    notFound:
+      "Unsealed couldn't identify a date you need to act by in this letter, so it leaves this answer blank rather than guessing.",
+  },
   requiredAction: {
     question: "What do I need to do?",
     name: "what you need to do",
+    notFound:
+      "Unsealed couldn't identify anything you're asked to do in this letter, so it leaves this answer blank rather than guessing.",
   },
   consequence: {
     question: "What happens if I ignore it?",
     name: "what happens if you ignore it",
+    notFound:
+      "Unsealed couldn't identify what happens if you don't act in this letter, so it leaves this answer blank rather than guessing.",
   },
 };
 

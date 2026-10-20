@@ -16,7 +16,7 @@ const STATES: ReadonlyArray<{
   {
     status: "verified",
     meaning:
-      "The answer is supported by words found in your letter. You can review the supporting quote and, when available, see where it appears in the letter.",
+      "The answer is supported by words found in your letter. You can review the supporting quote and see where it appears in the letter.",
     example:
       "“How much?” is answered from the letter’s own words, “tuition balance of $1,250.00”.",
   },
@@ -118,11 +118,11 @@ export function HonestySection() {
       </div>
 
       <p className={styles.caveat}>
-        Verified is about those words only. A letter can say different things
-        in different places, and Unsealed can miss that, especially when two
-        instructions don&rsquo;t agree. Before you pay, sign or act on
-        something important, read the original letter and check with the
-        sender.
+        A Verified answer rests on the quoted words alone. It doesn&rsquo;t
+        mean the rest of the letter agrees. Unsealed looks for amounts, dates
+        and instructions that contradict each other and warns you when it
+        finds them, but it can miss some. Before you pay, sign or act on
+        anything important, read the full letter and confirm with the sender.
       </p>
     </section>
   );

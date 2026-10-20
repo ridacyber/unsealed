@@ -62,7 +62,7 @@ export function FieldCard({
   const status = shownStatus(field, located);
   // Reported as verified, but with no quote found in the letter to show for it.
   const heldBack = status !== displayStatus(field);
-  const { question, name: claim } = FIELD_META[name];
+  const { question, name: claim, notFound } = FIELD_META[name];
   const quote = status === "not_found" ? null : quoteOf(field.citation);
   const value = field.value ?? "";
 
@@ -83,8 +83,9 @@ export function FieldCard({
       data-open={isOpen ? "" : undefined}
       data-clickable={quote && !isOpen ? "" : undefined}
       // The thread to the letter starts here, and only for a passage the
-      // letter has been confirmed to hold.
-      data-evidence-source={isOpen && located ? "" : undefined}
+      // letter has been confirmed to hold. A missing answer has no quote, so
+      // it never points into the letter, whatever citation came with it.
+      data-evidence-source={isOpen && located && quote ? "" : undefined}
       onClick={handleCardClick}
       className="rw-card"
     >
@@ -138,9 +139,7 @@ export function FieldCard({
             {NOT_FOUND_HEADLINE}
           </p>
           <p className="mt-2 text-[1.05rem] leading-relaxed">
-            {addsTo(NOT_FOUND_HEADLINE, field.note)
-              ? field.note
-              : `Unsealed found nothing about ${claim} in this letter, so this is left blank rather than guessed.`}
+            {addsTo(NOT_FOUND_HEADLINE, field.note) ? field.note : notFound}
           </p>
         </>
       )}
@@ -173,7 +172,9 @@ export function FieldCard({
         </>
       )}
 
-      {isOpen && located && <span aria-hidden="true" className="rw-card-pin" />}
+      {isOpen && located && quote && (
+        <span aria-hidden="true" className="rw-card-pin" />
+      )}
     </article>
   );
 }
