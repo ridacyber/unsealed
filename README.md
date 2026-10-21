@@ -1,4 +1,3 @@
-
 # Unsealed
 
 **Plain-language answers about official letters, each one traced to the exact words on the page.**
@@ -10,7 +9,7 @@ By **Rida Rahim** (backend, models, evaluation harness, deployment) and **Muhamm
 - **Live demo:** https://unsealed-one.vercel.app
 - **Demo video (under 3 minutes):** <VIDEO_URL>
 - **Platform feedback for Nebius and NVIDIA:** [FEEDBACK.md](FEEDBACK.md)
-- **Evaluation record:** [eval/results/](eval/results/), including the [preregistration for blind set C](eval/letters/blind-c/PREREGISTRATION.md)
+- **Evaluation record:** [eval/results/](eval/results/) holds the saved raw outputs for blind sets B and C, including the [preregistration for blind set C](eval/letters/blind-c/PREREGISTRATION.md). Results for the earlier sets are summarized in this README; their raw outputs are not in the repository.
 
 ---
 
@@ -48,8 +47,8 @@ The two kinds of error are not equal. A confident wrong answer about a deadline 
 
 - **Grounding is enforced in code, not requested in a prompt.** A field is Verified only if its supporting quote is found in the letter's text. A model that invents a plausible quote gets Unsure.
 - **A second, independent model reviews the letter.** The reviewer is a different model family from the extractor, so the extractor's mistakes are not repeated by its own reviewer.
-- **Disputed values propagate.** When the letter contradicts itself, every answer that depends on the disputed passage drops to Unsure.
-- **The reviewer fails loudly.** If the contradiction check cannot run or returns unusable output, the response says the check failed. It never reports a clean result for a check that did not finish.
+- **Disputed values propagate, with limits.** The answer a conflict is about drops to Unsure, as do answers that repeat a disputed amount or date or rest on a disputed instruction. Some dependent consequences may still remain Verified; see Known limitations.
+- **The reviewer fails loudly.** If the contradiction check cannot run or returns unusable output, the response says the check failed. It never reports a clean result for a check that did not finish. (This was not true of the code frozen for blind set C; see Integrity notes.)
 - **Narrow prompts for the reviewer.** The checker is asked one question (do two passages give different answers about the amount, the date or the action?) and told to report nothing when unsure. Most letters contain no contradiction, and the prompt is written for that base rate.
 
 ## How it works
@@ -67,13 +66,13 @@ flowchart LR
   H --> I[Evidence workspace UI]
 ```
 
-1. **Intake.** PDF only, up to 4 MB on the hosted demo (a hosting limit; the code itself allows 10 MB) and 20,000 characters of text, extracted with `unpdf`. Non-PDF, empty and unreadable files are rejected with readable messages. Text extraction is the only step that touches the file itself.
+1. **Intake.** PDF only, extracted with `unpdf`, up to 20,000 characters of text. The frontend enforces a 4 MB upload limit, partly because of the hosting platform's request-size limit. The API itself accepts files up to 10 MB. Non-PDF, empty and unreadable files are rejected with readable messages. Text extraction is the only step that touches the file itself.
 2. **Extraction.** `Qwen/Qwen3-30B-A3B-Instruct-2507` at temperature 0 returns strict JSON: for each of the four fields, the value, an exact supporting quote, a confidence, and flags for conflicting or vague wording, plus a document type and a short summary. The prompt treats the letter as untrusted text, tells the model not to pick between conflicting values, and routes money the reader is owed (refunds, payouts) away from the "how much do I owe" field.
 3. **Grounding** (`lib/verify.ts`). The quote is located in the letter with whitespace-insensitive matching. For amounts, the reported digits must also appear in the quote. Missing quotes, unlocatable quotes, conflict or vague flags and low confidence all produce Unsure, with a reason.
 4. **Independent check** (`lib/contradictions.ts`), run in parallel with extraction. `nvidia/Nemotron-3-Ultra-550b-a55b` (thinking off, 6,000 max tokens) returns up to two contradictions as pairs of exact quotes, at most 30 words each. A contradiction is reported only if both quotes are found in the letter and do not overlap.
-5. **Reconciliation** (`lib/explain.ts`). The answer a contradiction is about drops to Unsure. So does any Verified answer that repeats a disputed amount or date, and, for conflicts about what to do, any answer whose evidence is one of the disputed passages. If any warning fires, the summary ends with a note that the letter contradicts itself.
+5. **Reconciliation** (`lib/explain.ts`). The answer a contradiction is about drops to Unsure. So does any Verified answer that repeats a disputed amount or date and, for conflicts about what to do, any answer whose evidence is one of the disputed passages. The consequence field has no topic mapping of its own, so a consequence that depends on a disputed value can stay Verified. If any warning fires, the summary ends with a note that the letter contradicts itself.
 6. **Response.** The result is validated against a shared Zod schema (`lib/schema.ts`), with quote offsets that refer to the exact text returned, so the interface can highlight evidence precisely.
-7. **Failure design.** The extraction retry budget (55 s) sits under the route limit (60 s). Internal errors are logged by name only, never with letter text, and the user sees a generic message.
+7. **Failure design.** The extraction retry budget (55 s) sits under the route limit (60 s). Server logs record error names, or short internal error messages for known application errors, and never letter text. The user sees a generic message.
 
 ## Hackathon requirements
 
@@ -86,7 +85,7 @@ flowchart LR
 
 ## Model selection
 
-Roles were assigned by measurement on the 15-letter development set (60 fields). That set is open-book, so we treat it as a way to compare models and then confirmed the choice on blind sets (below).
+Roles were assigned by measurement on the 15-letter development set (60 fields). That set is open-book, so we treat it as a way to compare models and then confirmed the choice on blind sets (below). The figures in this section come from the earlier model-selection runs; the later full dev run (54/60) is reported under Evaluation.
 
 **Extractor** (one run per row unless stated):
 
@@ -118,30 +117,31 @@ Ultra's weakness was a false alarm on one dev letter in two of four runs. One ad
 
 Accuracy on a set you tuned against says little, so the evaluation is built around blind sets:
 
-- **Separation of duties.** Muhammad wrote every blind letter (holdout, N, B and C), kept the answer key private, and scored each run by hand against it. Rida built the system and ran it. The builder never saw a blind key before the run.
-- **Run once, save first.** Each blind set is run once per code version. Raw outputs are committed before scoring, and first-run failures are kept in the record rather than overwritten.
-- **Preregistered set C.** Its rules, the frozen backend commit, the model settings, the runner command and a SHA-256 for every letter were committed before the run (see [PREREGISTRATION.md](eval/letters/blind-c/PREREGISTRATION.md)). The private key's hash is published too, so anyone can check it was not edited after the run.
+- **Separation of duties.** Muhammad wrote every blind letter (holdout, N, B and C), kept the answer keys private, and scored the runs by hand against them. Rida built the system and ran it. The builder never saw a blind key before the run.
+- **Run once, save first.** Each blind set is run once per code version. For sets B and C the raw outputs were committed before scoring, and first-run failures are kept in the record rather than overwritten.
+- **Preregistered set C.** Muhammad set the rules, and Rida supplied the freeze details. The rules, the frozen backend commit, the model settings, the runner command and a SHA-256 for every letter were committed before the run (see [PREREGISTRATION.md](eval/letters/blind-c/PREREGISTRATION.md)). The private key's hash is published too, so anyone can check it was not edited after the run. The answer keys themselves are not part of this repository.
 
 | Set | Letters | Role | Result |
 |---|---|---|---|
-| Dev, L01-L15 | 15 | Open-book, used to build | 54/60 fields at the last full run (Oct 14, before the post-C changes), 0 dangerous, 6 safe underclaims |
+| Dev, L01-L15 | 15 | Open-book, used to build | 54/60 fields at the last full run (Oct 14, before the post-C changes), 0 dangerous, 6 safe underclaims. Earlier model-selection runs scored 55-56/60. |
 | Holdout, H01-H08 | 8 | First blind set (extractor plus a separate detector) | 31/32 strict |
 | N01-N06 | 6 | Blind, run before the checker was wired in | 17/24 strict. Five fields were Verified despite conflicting evidence. This drove the pipeline in its current form. |
 | B01-B08 | 8 | Frozen baseline for the current pipeline | 24/32 strict. Findings: one missed date conflict, a refund read as a debt, three false warnings. |
-| C01-C08 | 8 | Preregistered, frozen at `5bf355a` | **27/32 (84.4%)**: 3 PASS, 3 SAFE, 2 FAIL |
+| C01-C08 | 8 | Preregistered, frozen at `5bf355a` | 3 PASS, 3 SAFE, 2 FAIL. One dangerous field and two dangerous summary breaches. 27/32 fields strictly correct (descriptive measurement, not a pass criterion). |
 
-Set C in detail, as scored by Muhammad against the frozen rubric: all Verified amounts and deadlines were correct, both expected contradictions were detected, and there were no false warnings. The two FAIL letters share one problem: when the checker found conflicting evidence, a disputed instruction or consequence was still presented too confidently, especially in the summary. Verdict definitions are in the preregistration.
+Set C in detail, as scored by Muhammad against the frozen rubric: all Verified amounts and deadlines were correct, both expected contradictions were detected, and there were no false warnings. The two FAIL letters share one problem: when the checker found conflicting evidence, a disputed instruction or consequence was still presented too confidently, especially in the summary. Verdict definitions are in the preregistration. The run is a descriptive measurement, not a fully preregistration-compliant one, because of the backend change described below.
 
-**Changes after the freeze, not covered by any measurement.** Besides the checker-status fix (`83c8d04`, made before the run but not part of it), we made hardening changes after scoring, aimed at the failure above: the summary carries a note whenever a conflict warning fires, and answers whose evidence is a disputed instruction passage drop to Unsure. They were spot-checked on earlier, non-blind letters and have not had a full regression run. C was deliberately not re-run, because a better score on letters we have already seen would prove nothing. See the git log after commit `d98998d`.
+**Changes after the run, not covered by any measurement.** Besides the checker-status fix (`83c8d04`, made before the run but not part of it), we made hardening changes after the run, aimed at the failure above: the summary carries a note whenever a conflict warning fires, and answers whose evidence is a disputed instruction passage drop to Unsure. They were spot-checked on earlier, non-blind letters and have not had a full regression run. C was deliberately not re-run, because a better score on letters we have already seen would prove nothing. See the git log after commit `d98998d`.
 
 **Integrity notes.**
 - The frozen commit `5bf355a` no longer sits on the main branch, because history was rewritten on Oct 17 for the deployment reason described under Team. It is preserved by the tag `blind-c-freeze`. The backend files (`app/api/`, `lib/`, `scripts/`, `eval/run-eval.ts`, `package.json`) matched `5bf355a` exactly up to commit `ae2f6fa`; the first backend change after the freeze is `83c8d04`.
 - **Protocol deviation.** The preregistration says any backend change after hand-over invalidates the run. `83c8d04` (an unparseable checker response now reports a failed check instead of a clean one) was committed after the C letters were handed over and before the run. We ran from a detached checkout of `5bf355a`, so the run did not include it and the scores come from the frozen code. By the letter of the preregistration, a backend commit still landed inside the window, so we report C as a measured result and do not claim full preregistration compliance. Muhammad's audit draws the same line.
-- **How the run was made.** One primary attempt per letter: 8 letters, 0 errors, checker status ok on all 8, no reruns. The letters were copied out of the repository and the runner was pointed at the copy (`npx tsx scripts/run-holdout.ts ../c-run C`) instead of `eval/letters/blind-c` as written in the preregistration, after every letter was checked against `SHA256SUMS.txt`. The console output, CSV and JSON were committed unchanged in `d98998d` before scoring. The scores in this README are those original first-run results. [RUN-NOTES.md](eval/results/blind-c-run1/RUN-NOTES.md) lists every deviation.
+- **Checker status in the C run.** All eight C results were recorded with checker status `ok`. The frozen code could also report `ok` when the checker's reply could not be parsed; `83c8d04` corrected that later. We therefore do not treat the eight `ok` statuses as proof that every check completed successfully.
+- **How the run was made.** One primary attempt per letter: 8 letters, 0 errors, no reruns. The letters were copied out of the repository and the runner was pointed at the copy (`npx tsx scripts/run-holdout.ts ../c-run C`) instead of `eval/letters/blind-c` as written in the preregistration, after every letter was checked against `SHA256SUMS.txt`. The console output, CSV and JSON were committed unchanged in `d98998d` before scoring. The scores in this README are those original first-run results. [RUN-NOTES.md](eval/results/blind-c-run1/RUN-NOTES.md) lists every deviation.
 
 ## Known limitations
 
-- **Digital PDFs only.** Scanned pages and photos need OCR, and the grounding step needs a real text layer. Input limits are 4 MB on the hosted demo (10 MB in the code) and 20,000 characters.
+- **Digital PDFs only.** Scanned pages and photos need OCR, and the grounding step needs a real text layer. The hosted demo accepts up to 4 MB (a frontend and hosting limit); the API accepts up to 10 MB. Text is capped at 20,000 characters.
 - **Contradiction checking covers amounts, dates and actions.** It can miss a conflict and can raise a false one (three false warnings on set B, none on set C). It is not a legal reading.
 - **A consequence that depends on a disputed value can stay Verified.** The summary carries a caution, but the field itself is not downgraded. Widening the rule would downgrade correct answers, so we left it.
 - **Only amounts are checked against their quote text.** For deadlines, actions and consequences, the quote is guaranteed to exist in the letter but not guaranteed to contain the reported value.
@@ -153,7 +153,7 @@ Set C in detail, as scored by Muhammad against the frozen rubric: all Verified a
 
 ## Privacy
 
-Letter text is sent to models hosted on Nebius Token Factory (Qwen and NVIDIA Nemotron) to produce the answers. The server has no database and keeps no copy of uploads. Server logs record error names only, never letter contents. The repository contains only fictional or public letters. See the in-app Privacy and Terms pages.
+Letter text is sent to models hosted on Nebius Token Factory (Qwen and NVIDIA Nemotron) to produce the answers. The server has no database and keeps no copy of uploads. Server logs record error names or short internal error messages, never letter contents. The repository contains only fictional or public letters. See the in-app Privacy and Terms pages.
 
 ## Run it yourself
 
@@ -200,7 +200,7 @@ lib/llmOptions.ts               per-role model settings
 lib/schema.ts                   shared contract (Zod), changed only by agreement
 scripts/                        evaluation runners and regression checks
 eval/letters/                   fictional test letters: dev, holdout, blind sets
-eval/results/                   saved run outputs and preregistrations
+eval/results/                   saved run outputs and preregistrations (sets B and C)
 public/samples/                 fictional sample letter PDF
 OWNERS.md                       who owns which files
 ```
@@ -211,23 +211,23 @@ Two authors, two lanes, agreed up front. [OWNERS.md](OWNERS.md) lists every piec
 
 | | Rida Rahim ([@ridacyber](https://github.com/ridacyber)) | Muhammad Bin Zeeshan ([@muhamzes](https://github.com/muhamzes)) |
 |---|---|---|
-| Owns | Backend and platform: `app/api/`, `lib/`, `scripts/`, the evaluation harness, deployment | Frontend and design: landing and upload, results and evidence workspace, waiting, failure and recovery screens, contradiction banner, samples, accessibility |
-| Also | Model selection, prompts, grounding and checker logic, running the blind sets | Wrote the development and blind test letters, scored every blind set against a private key, demo letters and video script |
-| Decided together | The project and its name, PDF-only uploads, the contradiction warning and its place in the schema, the C preregistration | |
+| Owns | Backend and platform: `app/api/`, `lib/`, `scripts/`, the evaluation harness, deployment | Frontend and design: architecture and the Midnight Desk design, landing and upload, results and evidence workspace, waiting, failure and recovery screens, contradiction banner, samples, accessibility |
+| Also | Model selection, prompts, grounding and checker logic, the analyze API, Nebius Token Factory integration, backend safety fixes, running the blind sets | Wrote the development and blind test letters, designed the blind-set scoring rubric and verdict definitions, independently scored sets N and C against the private answer keys (scoring of the holdout and B sets was reported in team chat), prepared the demo letters |
+| Decided together | The project and its name, PDF-only uploads, the contradiction warning and its place in the schema | |
 
 Unsealed rests on one claim: an answer is only as good as the reader's ability to check it. The backend decides what is claimed. The interface decides whether a reader can see the evidence, notice a doubt and act on it. Both had to work, and Muhammad built the half that people actually see.
 
 ### What Muhammad built
 
-**The interface.** The whole user-facing product: the landing page and its honesty section, the upload flow, the results and evidence workspace (letter beside the answers, passage highlighting, the line from card to evidence), the contradiction banner with clickable passages, waiting, failure and recovery screens, the prepared sample letters, the downloadable sample PDF, and the Privacy and Terms styling. He also added a second line of defense in the browser: if a Verified answer's citation cannot be located in the returned text, the interface shows it as Unsure.
+**The interface.** The whole user-facing product: the frontend architecture and the Midnight Desk design, the landing page and its honesty section, the upload flow, the results and evidence workspace (letter beside the answers, passage highlighting, the line from card to evidence), the contradiction banner with clickable passages, waiting, failure and recovery screens, the prepared sample letters, the downloadable sample PDF, and the Privacy and Terms styling. He also added a second line of defense in the browser, covering evidence safeguards: citations are matched against the returned text, warnings are preserved even when their evidence cannot be located, and misleading generated summaries are withheld. If a Verified answer's citation cannot be located, the interface shows it as Unsure.
 
-**Testing and accessibility.** A unit-test suite for the evidence and citation logic (`components/lib/citation.test.ts` and the other test files in `components/`; each file lists its own `npx tsx --test` command), covering that only confirmed passages are marked, invalid citations, and conflict pairs. Test fixtures at `/results?fixture=<id>` are served only by `next dev` or a server started with `UNSEALED_TEST_FIXTURES=1`, so they stay out of the production browser. Accessibility work covers keyboard access to the letter panel, contrast-checked amber (3.3:1 against the sheet), conflict numbers that stay attached to their passage, passage-in-context cards on phones and tablets, and a dropped PDF being refused instead of replacing the results page.
+**Testing and accessibility.** A unit-test suite for the evidence and citation logic (`components/lib/citation.test.ts` and the other test files in `components/`; each file lists its own `npx tsx --test` command): 154 frontend unit tests at the audited revision, all passing, covering that only confirmed passages are marked, invalid citations, and conflict pairs. He also ran responsive QA at desktop and mobile widths. Test fixtures at `/results?fixture=<id>` are served only by `next dev` or a server started with `UNSEALED_TEST_FIXTURES=1`, so they stay out of the production browser. Accessibility work covers the keyboard-accessible letter panel, contrast-checked amber (3.3:1 against the sheet), conflict numbers that stay attached to their passage, passage-in-context cards on phones and tablets, and a dropped PDF being refused instead of replacing the results page.
 
-**Test letters, scoring and demo material.** He wrote the blind letters for the holdout, N, B and C sets and kept every answer key private. He set the preregistration rules for set C (one primary attempt per letter, technical failures recorded separately) with the freeze details supplied by Rida, and published a SHA-256 for each letter. He scored every blind set by hand and audited the frozen runs, including the timing of `83c8d04`. He also wrote the demo letters and the video script.
+**Test letters, scoring and demo material.** He wrote the blind letters for the holdout, N, B and C sets and kept every answer key private. He designed the blind-set scoring rubric and verdict definitions, and wrote the preregistration rules for set C (one primary attempt per letter, technical failures recorded separately), with the freeze details supplied by Rida and a published SHA-256 for each letter. He scored the blind runs by hand against his private keys and audited the frozen runs, including the timing of `83c8d04`. He also prepared the demo letters.
 
 **Reviews that changed the backend.** He tested the deployed app by hand with PDFs and audited demo readiness. That found:
 - The checker-status bug fixed in `83c8d04` (an unparseable checker response was reported as a clean check).
-- A likely false conflict warning on a real tuition statement.
+- A likely false conflict warning on a real tuition statement, found in manual testing of the deployed app and not recorded in the repository.
 - The refund-direction gap listed under Known limitations.
 - Open questions about whether a Verified field always has a locatable citation, whether the 55 s budget holds in production, and whether the public endpoint needs abuse protection.
 
@@ -235,19 +235,21 @@ His set B findings (a missed date conflict, a refund read as a debt, false warni
 
 ### What Rida built
 
-The extraction and checker pipeline, the grounding and reconciliation logic, the shared schema, model selection, the evaluation harness and every blind run, the Vercel deployment, and FEEDBACK.md. Rida's own changes in the frontend lane are the initial Next.js scaffold, the one-line switch that turns on the live API, and the text of the Privacy and Terms pages. Muhammad's commits touch nothing in `app/api/`, `lib/` or `scripts/` (`git log --author=Muhammad -- app/api lib scripts` prints nothing).
+The extraction and checker pipeline, the analyze API, the Nebius Token Factory integration, the grounding and reconciliation logic, the shared schema, model selection, the evaluation harness and every blind run, the backend safety fixes made after the C run, the Vercel deployment, and FEEDBACK.md. Rida's own changes in the frontend lane are the initial Next.js scaffold, the one-line switch that turns on the live API, and the text of the Privacy and Terms pages. Muhammad's commits touch nothing in `app/api/`, `lib/` or `scripts/` (`git log --author=Muhammad -- app/api lib scripts` prints nothing).
 
 ### A note on commit authorship
 
-Unsealed is deployed on Vercel's free Hobby plan, which builds only commits authored by the account that owns the project. Muhammad's commits were rejected at deploy time, so to ship his frontend some of his commits were re-committed under Rida's account. This is visible in `git log` and GitHub's contributor graph. Three frontend commits show Rida as the author although Muhammad wrote them: the waiting, failure and recovery screens (`ff1cbdc`), the copy and social-sharing metadata (`ae2f6fa`), and the keyboard-accessible letter panel (`976a59f`). The last one carries a `Co-authored-by` trailer and says so in its message. History was rewritten on Oct 15 and Oct 17 to re-author the first two.
+Unsealed is deployed on Vercel's free Hobby plan, which builds only commits authored by the account that owns the project. Muhammad's commits were rejected at deploy time, so to ship his frontend some of his commits were re-committed under Rida's account. This is visible in `git log` and GitHub's contributor graph. Four frontend commits show Rida as the author although Muhammad wrote them: the waiting, failure and recovery screens (`ff1cbdc`), the copy and social-sharing metadata (`ae2f6fa`), the keyboard-accessible letter panel (`976a59f`), and the clarified verification wording and not-found explanations (`7e3526c`). The last two name him in their commit messages; the first two do not. Once Rida learned that GitHub supports co-authoring, later re-commits credited Muhammad that way. History was rewritten on Oct 15 and Oct 17 when the earlier commits were re-authored, which is why some hashes differ from earlier records.
 
-**Do not read authorship off the commit author field.** The reliable record is [OWNERS.md](OWNERS.md), the `frontend` and `backend` scopes in commit messages, and the table above.
+In `git log`, the author names "Rida", "Rida Rahim" and "ridarahim" are all the same person, Rida Rahim, because commits were made from different machines and tools.
+
+**Do not read authorship off the commit author field.** The reliable record is [OWNERS.md](OWNERS.md), the scopes in commit messages (used on some later frontend commits) and the table above.
 
 This is the part of the workflow we would change. Deploying from a plan with team seats, or from pull requests merged by the project owner, would let each author's commits keep their own name.
 
 ### AI-assisted development
 
-The running product uses no Anthropic or OpenAI models: every model call goes to Qwen or NVIDIA Nemotron on Nebius Token Factory. During development both authors used an AI coding assistant (Claude) for implementation help, debugging and drafting. Product decisions, the evaluation protocol and every reported number are ours, and the numbers are copied from saved run outputs. The repository contained assistant configuration files (`CLAUDE.md` and `AGENTS.md`). They are development tooling, not part of the product, and were removed before submission in commit `<REMOVAL_COMMIT>`. They remain visible in git history.
+The running product uses no Anthropic or OpenAI models: every model call goes to Qwen or NVIDIA Nemotron on Nebius Token Factory. During development both authors used an AI coding assistant (Claude) for implementation help, debugging and drafting. Product decisions, the evaluation protocol and every reported number are ours, and the numbers are copied from saved run outputs. The repository includes assistant configuration files (`CLAUDE.md`, `AGENTS.md`). They are development tooling, not part of the product.
 
 ## License
 
