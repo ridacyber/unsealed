@@ -173,6 +173,7 @@ npm run dev              # http://localhost:3000
 | `CHECK_MAX_TOKENS`, `CHECK_EXTRA_BODY` | Checker settings: `6000` and `{"chat_template_kwargs":{"enable_thinking":false}}` |
 | `LLM_MAX_TOKENS`, `LLM_EXTRA_BODY` | Optional extractor equivalents |
 | `LLM_INPUT_USD_PER_M`, `LLM_OUTPUT_USD_PER_M` | Optional, for cost reporting in the response metrics |
+| `CHECK_INPUT_USD_PER_M`, `CHECK_OUTPUT_USD_PER_M` | Optional, checker cost reporting (fall back to the `LLM_*` rates, so set them when the checker model is priced differently; for Nemotron Ultra: `1.00` and `3.00`) |
 
 Checks:
 
