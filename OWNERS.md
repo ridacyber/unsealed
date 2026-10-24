@@ -13,7 +13,7 @@ The final record at submission (October 2026). Do not read authorship off the co
 | `eval/letters/` | Every test letter: development, holdout and blind sets, including the set C preregistration files and SHA-256 list |
 | `eval/answer-key.csv` | Development answer key |
 
-Also his: scoring every blind set by hand against the private key, auditing the frozen runs, the demo letters and video script, hand-testing the deployed app, and the review findings listed in the README.
+Also his: scoring blind sets N and C by hand against the private key, auditing the frozen runs, the demo letters and video script, hand-testing the deployed app, and the review findings listed in the README.
 
 ## Rida Rahim (@ridacyber): backend, platform, evaluation harness, deployment
 
@@ -41,7 +41,7 @@ Also hers: model selection and prompts, running every blind set once per code ve
 
 ## Where one lane touched the other
 
-- Rida in the frontend lane: the initial Next.js scaffold, switching on the live API (`USE_LIVE_API` in `components/hooks/useAnalysis.ts`, with Muhammad's OK), the Privacy and Terms text, and re-committing three of Muhammad's frontend commits (`ff1cbdc`, `ae2f6fa`, `976a59f`) under her account so they would deploy.
+- Rida in the frontend lane: the initial Next.js scaffold, switching on the live API (`USE_LIVE_API` in `components/hooks/useAnalysis.ts`, with Muhammad's OK), the Privacy and Terms text, and re-committing four of Muhammad's frontend commits (`ff1cbdc`, `ae2f6fa`, `976a59f`, `7e3526c`) under her account so they would deploy.
 - Muhammad in the backend lane: none. `git log --author=Muhammad -- app/api lib scripts` prints nothing.
 - Dependencies across the line: `components/lib/citation.ts` imports `indexDocument` from `lib/verify.ts`, and the interface reads the optional `warnings` field from `lib/schema.ts`.
 

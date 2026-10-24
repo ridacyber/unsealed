@@ -11,3 +11,9 @@ Deviations from PREREGISTRATION.md, disclosed:
 2. History rewrite: on 2026-10-17 a commit re-author and force push rewrote branch history, so 5bf355a is no longer an ancestor of origin/main. It is preserved by the tag blind-c-freeze. Before the rewrite, git diff --stat 5bf355a HEAD over lib, app/api, scripts, eval/run-eval.ts and package.json was empty.
 3. Later backend change: commit 83c8d04 (a contradiction-check failure now reports checkStatus failed instead of ok) is on main but was NOT part of this run. It is a post-run change.
 4. The L04 dev letter was used on 2026-10-17 to test that change. No C letter went through anything before this run.
+
+## Correction (2026-10-24)
+
+Item 3 above calls commit 83c8d04 a "post-run change". That is wrong. 83c8d04 was committed on 2026-10-17 at 13:20 EDT (17:20 UTC), after the backend handover and before this run (output files stamped 17:30 UTC). The run itself used a detached checkout of 5bf355a, so 83c8d04 was not part of the code that ran.
+
+Caveat on checker status: under 5bf355a, a contradiction-check result was reported as checkStatus "ok" whenever the call returned, including when the model's response could not be parsed. 83c8d04 fixed this. The "ok" status on all 8 letters in this run therefore does not by itself show that every check returned a valid, parsed result.

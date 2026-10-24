@@ -9,7 +9,7 @@ We built **Unsealed**, a web application that ingests official PDF letters and e
 *   **Contradiction-check model:** `nvidia/Nemotron-3-Ultra-550b-a55b`
 *   **Also tested:** `NVIDIA-Nemotron-3-Nano-30B-A3B`, `nemotron-3-super-120b-a12b`, `Nemotron-3_5-Lightning`, and Qwen 235B
 
-A note on our numbers: the model comparisons come from a 15-letter development set we tuned against, with one to a few runs per setting, so treat them as rough. Results for the shipped pipeline on blind sets are in the README.
+A note on our numbers: the model comparisons come from a 15-letter development set we tuned against, with one to a few runs per setting, so treat them as rough. Results for the frozen versions we measured on blind sets are in the README.
 
 ---
 
