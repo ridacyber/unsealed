@@ -213,7 +213,7 @@ Two authors, two lanes, agreed up front. [OWNERS.md](OWNERS.md) lists every piec
 | | Rida Rahim ([@ridacyber](https://github.com/ridacyber)) | Muhammad Bin Zeeshan ([@muhamzes](https://github.com/muhamzes)) |
 |---|---|---|
 | Owns | Backend and platform: `app/api/`, `lib/`, `scripts/`, the evaluation harness, deployment | Frontend and design: architecture and the Midnight Desk design, landing and upload, results and evidence workspace, waiting, failure and recovery screens, contradiction banner, samples, accessibility |
-| Also | Model selection, prompts, grounding and checker logic, the analyze API, Nebius Token Factory integration, backend safety fixes, running the blind sets | Wrote the development and blind test letters, designed the blind-set scoring rubric and verdict definitions, independently scored sets N and C against the private answer keys (scoring of the holdout and B sets was reported in team chat), prepared the demo letters, wrote the frontend half of the video script, and edited the final demo video, combining both scripts | wrote the backend half of the video script |
+| Also | Model selection, prompts, grounding and checker logic, the analyze API, Nebius Token Factory integration, backend safety fixes, running the blind sets, and the backend half of the video script | Wrote the development and blind test letters, designed the blind-set scoring rubric and verdict definitions, independently scored sets N and C against the private answer keys (scoring of the holdout and B sets was reported in team chat), prepared the demo letters, wrote the frontend half of the video script, and edited the final demo video, combining both scripts |
 | Decided together | The project and its name, PDF-only uploads, the contradiction warning and its place in the schema ||
 
 Unsealed rests on one claim: an answer is only as good as the reader's ability to check it. The backend decides what is claimed. The interface decides whether a reader can see the evidence, notice a doubt and act on it. Both had to work, and Muhammad built the half that people actually see.
@@ -236,7 +236,7 @@ His set B findings (a missed date conflict, a refund read as a debt, false warni
 
 ### What Rida built
 
-The extraction and checker pipeline, the analyze API, the Nebius Token Factory integration, the grounding and reconciliation logic, the shared schema, model selection, the evaluation harness and every blind run, the backend safety fixes made after the C run, the Vercel deployment, and FEEDBACK.md. Rida's own changes in the frontend lane are the initial Next.js scaffold, the one-line switch that turns on the live API, and the text of the Privacy and Terms pages. Muhammad's commits touch nothing in `app/api/`, `lib/` or `scripts/` (`git log --author=Muhammad -- app/api lib scripts` prints nothing).
+The extraction and checker pipeline, the analyze API, the Nebius Token Factory integration, the grounding and reconciliation logic, the shared schema, model selection, the evaluation harness and every blind run, the backend safety fixes made after the C run, the Vercel deployment, FEEDBACK.md, and the backend half of the video script. Rida's own changes in the frontend lane are the initial Next.js scaffold, the one-line switch that turns on the live API, and the text of the Privacy and Terms pages. Muhammad's commits touch nothing in `app/api/`, `lib/` or `scripts/` (`git log --author=Muhammad -- app/api lib scripts` prints nothing).
 
 ### A note on commit authorship
 
