@@ -117,7 +117,7 @@ Ultra's weakness was a false alarm on one dev letter in two of four runs. One ad
 
 Accuracy on a set you tuned against says little, so the evaluation is built around blind sets:
 
-- **Separation of duties.** Muhammad wrote every blind letter (holdout, N, B and C), kept the answer keys private, and scored the runs by hand against them. Rida built the system and ran it. The builder never saw a blind key before the run.
+- **Separation of duties.** Muhammad wrote every blind letter (holdout, N, B and C) and kept the answer keys private. Rida built the system and ran it. Muhammad scored sets N and C by hand against his private keys; scoring of the holdout and B sets was reported in team chat. The builder never saw a blind key before the run.
 - **Run once, save first.** Each blind set is run once per code version. For sets B and C the raw outputs were committed before scoring, and first-run failures are kept in the record rather than overwritten.
 - **Preregistered set C.** Muhammad set the rules, and Rida supplied the freeze details. The rules, the frozen backend commit, the model settings, the runner command and a SHA-256 for every letter were committed before the run (see [PREREGISTRATION.md](eval/letters/blind-c/PREREGISTRATION.md)). The private key's hash is published too, so anyone can check it was not edited after the run. The answer keys themselves are not part of this repository.
 
@@ -213,8 +213,8 @@ Two authors, two lanes, agreed up front. [OWNERS.md](OWNERS.md) lists every piec
 | | Rida Rahim ([@ridacyber](https://github.com/ridacyber)) | Muhammad Bin Zeeshan ([@muhamzes](https://github.com/muhamzes)) |
 |---|---|---|
 | Owns | Backend and platform: `app/api/`, `lib/`, `scripts/`, the evaluation harness, deployment | Frontend and design: architecture and the Midnight Desk design, landing and upload, results and evidence workspace, waiting, failure and recovery screens, contradiction banner, samples, accessibility |
-| Also | Model selection, prompts, grounding and checker logic, the analyze API, Nebius Token Factory integration, backend safety fixes, running the blind sets | Wrote the development and blind test letters, designed the blind-set scoring rubric and verdict definitions, independently scored sets N and C against the private answer keys (scoring of the holdout and B sets was reported in team chat), prepared the demo letters |
-| Decided together | The project and its name, PDF-only uploads, the contradiction warning and its place in the schema | |
+| Also | Model selection, prompts, grounding and checker logic, the analyze API, Nebius Token Factory integration, backend safety fixes, running the blind sets | Wrote the development and blind test letters, designed the blind-set scoring rubric and verdict definitions, independently scored sets N and C against the private answer keys (scoring of the holdout and B sets was reported in team chat), prepared the demo letters, wrote the frontend half of the video script, and edited the final demo video, combining both scripts | wrote the backend half of the video script |
+| Decided together | The project and its name, PDF-only uploads, the contradiction warning and its place in the schema ||
 
 Unsealed rests on one claim: an answer is only as good as the reader's ability to check it. The backend decides what is claimed. The interface decides whether a reader can see the evidence, notice a doubt and act on it. Both had to work, and Muhammad built the half that people actually see.
 
