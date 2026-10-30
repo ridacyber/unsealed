@@ -13,7 +13,7 @@ The final record at submission (October 2026). Do not read authorship off the co
 | `eval/letters/` | Every test letter: development, holdout and blind sets, including the set C preregistration files and SHA-256 list |
 | `eval/answer-key.csv` | Development answer key |
 
-Also his: scoring blind sets N and C by hand against the private key, auditing the frozen runs, the demo letters and video script, hand-testing the deployed app, and the review findings listed in the README.
+Also his: scoring blind sets N and C by hand against the private key, auditing the frozen runs, the demo letters, the frontend half of the video script and the final video edit combining both scripts, hand-testing the deployed app, and the review findings listed in the README.
 
 ## Rida Rahim (@ridacyber): backend, platform, evaluation harness, deployment
 
@@ -26,7 +26,7 @@ Also his: scoring blind sets N and C by hand against the private key, auditing t
 | `FEEDBACK.md` | Platform feedback for Nebius and NVIDIA |
 | `.env*`, the Vercel project | Keys, environment variables, deployment |
 
-Also hers: model selection and prompts, running every blind set once per code version, and the freeze record for set C.
+Also hers: model selection and prompts, running every blind set once per code version, the freeze record for set C, and the backend half of the video script.
 
 ## Shared (talk first)
 
