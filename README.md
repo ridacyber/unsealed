@@ -7,7 +7,7 @@ Built in October 2026 for the Nebius x NVIDIA Global AI Hackathon, Best Apps and
 By **Rida Rahim** (backend, models, evaluation harness, deployment) and **Muhammad Bin Zeeshan** (interface and design, test letters, blind-set scoring). See [Team](#team).
 
 - **Live demo:** https://unsealed-one.vercel.app
-- **Demo video (under 3 minutes):** <VIDEO_URL>
+- **Demo video (under 3 minutes):** https://youtu.be/HIcoLHmVfBY?si=LK6mApxRNM06Sdnx
 - **Platform feedback for Nebius and NVIDIA:** [FEEDBACK.md](FEEDBACK.md)
 - **Evaluation record:** [eval/results/](eval/results/) holds the saved raw outputs for blind sets B and C, including the [preregistration for blind set C](eval/letters/blind-c/PREREGISTRATION.md). Results for the earlier sets are summarized in this README; their raw outputs are not in the repository.
 
